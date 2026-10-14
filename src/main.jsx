@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { createRoot } from "react-dom/client";
-import { motion, AnimatePresence, MotionConfig, useScroll, useSpring, useMotionValue, useTransform, useDragControls, animate } from "framer-motion";
+import { motion, AnimatePresence, MotionConfig, useScroll, useSpring, useMotionValue, useTransform, useDragControls, useReducedMotion, animate } from "framer-motion";
 import { logos } from "./logos.js";
 import { skillLogos } from "./skillLogos.js";
-import { G, me, about, projects, jobs, stack, certs, contact } from "./data.js";
+import { G, me, heroVisual, about, projects, jobs, stack, skillsIntro, certs, contact } from "./data.js";
 
 const ease = [0.22, 1, 0.36, 1];
 const Arrow = () => <i className="arr">↗</i>;
@@ -48,8 +48,9 @@ const NAV_ICON = {
 const DOCK = [...NAV, ["contact", "Contact"]];
 
 /* desktop: a slim vertical dock on the left. Drag the dots at the top to move it anywhere; double-click them to put it back. */
-function Dock({ on, theme, toggle }) {
-  const bounds = useRef(null), el = useRef(null);
+function Dock({ on, theme, toggle, show }) {
+  const bounds = useRef(null), el = useRef(null), shown = useRef(show);
+  shown.current = show;
   const controls = useDragControls();
   const saved = (() => { try { return JSON.parse(localStorage.getItem("dock") || "null"); } catch (e) { return null; } })();
   const x = useMotionValue(saved?.x || 0), y = useMotionValue(saved?.y || 0);
@@ -58,15 +59,18 @@ function Dock({ on, theme, toggle }) {
   // if a saved position is now off-screen (smaller window), bring the dock home
   useEffect(() => {
     const fix = () => {
+      if (!shown.current) return;   // while the dock is tucked away it is off to the side on purpose
       const r = el.current?.getBoundingClientRect(); if (!r || !r.width) return;
       if (r.right < 40 || r.left > innerWidth - 40 || r.bottom < 40 || r.top > innerHeight - 40) { x.set(0); y.set(0); }
     };
     fix(); addEventListener("resize", fix); return () => removeEventListener("resize", fix);
   }, []);
   return (
-    <div className="dockwrap" ref={bounds}>
+    <motion.div className="dockwrap" ref={bounds} initial={{ opacity: 0, x: -48, visibility: "hidden" }}
+      animate={show ? { opacity: 1, x: 0, visibility: "visible" } : { opacity: 0, x: -48, transitionEnd: { visibility: "hidden" } }}
+      transition={{ duration: 0.5, ease }}>
       <motion.nav ref={el} className="dock" aria-label="Main" style={{ x, y }} drag dragListener={false} dragControls={controls} dragConstraints={bounds} dragElastic={0.06} dragMomentum={false} onDragEnd={store}
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7, ease, delay: 0.3 }}>
+        >
         <button className="dgrip" onPointerDown={e => controls.start(e)} onDoubleClick={reset} aria-label="Drag to move the menu" title="Drag to move · double-click to reset">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">{[7, 12, 17].map(cx => [6, 12, 18].map(cy => <circle key={cx + "-" + cy} cx={cx} cy={cy} r="1.3" />))}</svg>
         </button>
@@ -84,13 +88,22 @@ function Dock({ on, theme, toggle }) {
           <span className="tip">{theme === "dark" ? "Light mode" : "Dark mode"}</span>
         </button>
       </motion.nav>
-    </div>
+    </motion.div>
   );
 }
 
+function useWide() {
+  const q = "(min-width: 901px)";   // same breakpoint as style.css
+  const [w, setW] = useState(() => matchMedia(q).matches);
+  useEffect(() => { const m = matchMedia(q), f = () => setW(m.matches); m.addEventListener("change", f); f(); return () => m.removeEventListener("change", f); }, []);
+  return w;
+}
+
 function Nav() {
-  const [on, setOn] = useState(""), [open, setOpen] = useState(false), [hide, setHide] = useState(false);
+  const [on, setOn] = useState(""), [open, setOpen] = useState(false), [hide, setHide] = useState(false), [away, setAway] = useState(false);
   const [theme, toggle] = useTheme();
+  const wide = useWide();
+  const side = wide && away;   // desktop and past the homepage: the menu moves to the side
   useEffect(() => {
     const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && setOn(e.target.id)), { rootMargin: "-45% 0px -50% 0px" });
     [...NAV.map(n => n[0]), "contact", "top"].forEach(id => { const el = document.getElementById(id); el && io.observe(el); });
@@ -99,15 +112,28 @@ function Nav() {
   // phones: the top bar slides away while you read down the page and returns when you scroll up
   useEffect(() => {
     let last = scrollY;
-    const f = () => { const y = scrollY; if (Math.abs(y - last) < 6) return; setHide(y > 120 && y > last); last = y; };
+    const f = () => {
+      const y = scrollY;
+      setAway(y > innerHeight * 0.55);
+      if (Math.abs(y - last) < 6) return; setHide(y > 120 && y > last); last = y;
+    };
+    f();
     addEventListener("scroll", f, { passive: true }); return () => removeEventListener("scroll", f);
   }, []);
   return (
     <>
-      <Dock on={on} theme={theme} toggle={toggle} />
-      <motion.header className="nav" initial={{ y: -30, opacity: 0 }} animate={{ y: hide && !open ? -90 : 0, opacity: 1 }} transition={{ duration: 0.45, ease }}>
+      <Dock on={on} theme={theme} toggle={toggle} show={side} />
+      <motion.header className={"nav" + (side ? " nav-away" : "")} initial={{ y: -30, opacity: 0 }} animate={{ y: side ? -40 : hide && !open ? -90 : 0, opacity: side ? 0 : 1 }} transition={{ duration: 0.45, ease }}>
         <a href="#top" className="brand" aria-label="Home"><span className="mark">H</span><span className="brand-t">Halima</span></a>
         <div className="nav-r">
+          <nav className="links" aria-label="Main">
+            {DOCK.map(([id, label]) => (
+              <a key={id} href={"#" + id} className={on === id ? "on" : undefined} aria-current={on === id ? "true" : undefined}>
+                {on === id && <motion.span layoutId="toppill" className="pillbg" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
+                {label}
+              </a>
+            ))}
+          </nav>
           <button className="theme" onClick={toggle} aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>{theme === "dark" ? <Sun /> : <Moon />}</button>
           <button className="menu-btn" onClick={() => setOpen(!open)} aria-expanded={open}>{open ? "Close" : "Menu"}</button>
         </div>
@@ -125,20 +151,44 @@ function Nav() {
   );
 }
 
-/* ---------- HERO: name, title, one button. The video melts into the page. ---------- */
+/* ---------- HERO HEADLINE: one big line under the name that keeps swapping (edit the words in data.js, me.rotator) ---------- */
+function Rotator({ words }) {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;   // reduced motion: the first phrase stays
+    const t = setInterval(() => setI(v => (v + 1) % words.length), 2800);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <motion.div className="rotator" aria-label={words.join(", ")} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease, delay: 0.55 }}>
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span key={i} className="rotator-w" aria-hidden="true" initial={{ y: "75%", opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: "-75%", opacity: 0 }} transition={{ duration: 0.45, ease }}>{words[i]}</motion.span>
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+/* ---------- HERO: name, title, two buttons, the big swapping line, the sentence, two buttons, and the masked-hero picture on the right (mirrored in CSS) ---------- */
 function Hero() {
   const vid = useRef(null);
   useEffect(() => {
-    const v = vid.current; if (!v) return;
+    const v = vid.current; if (!v) return;   // only used when heroVisual is "video"
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) { v.pause(); return; }
     const io = new IntersectionObserver(([e]) => e.isIntersecting ? v.play().catch(() => {}) : v.pause());
     io.observe(v); return () => io.disconnect();
   }, []);
   return (
     <section className="hero" id="top">
-      <motion.div className="hero-video" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.6, delay: 0.1 }} aria-hidden="true">
-        <video ref={vid} src="assets/hero.mp4" poster="assets/img/poster.jpg" autoPlay muted loop playsInline />
-      </motion.div>
+      {heroVisual === "video" ? (
+        <motion.div className="hero-video" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.6, delay: 0.1 }} aria-hidden="true">
+          <video ref={vid} src="assets/hero.mp4" poster="assets/img/poster.jpg" autoPlay muted loop playsInline />
+        </motion.div>
+      ) : (
+        <motion.div className="cutout hero-cutout" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease, delay: 0.4 }}>
+          <span className="glow" />
+          <img src="assets/img/about.webp" alt="Illustration of a masked hero with dark blue hair" />
+        </motion.div>
+      )}
       <div className="hero-scrim" aria-hidden="true" />
       <div className="wrap hero-copy">
         <h1 style={{ marginTop: 0 }}>
@@ -146,101 +196,67 @@ function Hero() {
             <span key={i} className="w"><motion.span className={i === 2 ? "em" : ""} initial={{ y: "110%" }} animate={{ y: 0 }} transition={{ duration: 1, ease, delay: 0.3 + i * 0.1 }}>{w}</motion.span>{" "}</span>
           ))}
         </h1>
+        <Rotator words={me.rotator} />
         <motion.p className="tagline" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .8, ease, delay: 0.7 }}>{me.tagline}</motion.p>
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .8, ease, delay: 0.9 }}>
-          <a className="btn" href="#work">View my work <span>→</span></a>
+        <motion.div className="hero-actions" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .8, ease, delay: 0.9 }}>
+          <a className="btn" href="assets/Halima_Abdirizak_CV.pdf" download>Download résumé <span>↓</span></a>
+          <a className="btn ghost" href="#work">View my work <span>→</span></a>
         </motion.div>
       </div>
     </section>
   );
 }
 
-/* ---------- ABOUT: framed by the ladybug's dotted trail ---------- */
-const LEFT_TRAIL = "M45 0 C45 40 8 70 12 108 C16 148 72 146 74 188 C76 226 24 218 26 192 C28 166 64 186 56 234 C52 262 45 276 45 300 C45 340 10 362 14 402 C18 442 76 432 72 474 C68 514 45 540 45 600";
-const BOTTOM_TRAIL = "M0 45 C70 -10 150 -5 230 30 C310 66 380 100 470 62 C560 25 620 -5 710 24 C800 52 860 80 930 56 C960 46 985 45 1000 45";
-function BugSvg({ rot = 0 }) {
-  return (
-    <svg viewBox="0 0 64 64" style={{ transform: `rotate(${rot}deg)` }} aria-hidden="true">
-      <path d="M27 13c-1-6-8-7-10-3M37 13c1-6 8-7 10-3" fill="none" stroke="#111" strokeWidth="1.7" strokeLinecap="round" />
-      <ellipse cx="32" cy="38" rx="20" ry="22" fill="var(--accent)" />
-      <path d="M32 16v44" stroke="#111" strokeWidth="1.8" />
-      <path d="M16.5 24C19 13 25 9.5 32 9.5S45 13 47.5 24C42 20 37 19 32 19s-10 1-15.500 5z" fill="#111" />
-      {[[21, 37], [25, 50], [26, 28], [43, 37], [39, 50], [38, 28]].map(([x, y]) => <circle key={x + "" + y} cx={x} cy={y} r="3.3" fill="#111" />)}
-    </svg>
-  );
-}
-function Ladybug({ rot = 0, delay = 0 }) {
-  return (
-    <motion.span className="lbug" initial={{ opacity: 0, scale: 0.3 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: "0px 0px -10% 0px" }} transition={{ duration: 0.6, ease, delay }}>
-      <BugSvg rot={rot} />
-    </motion.span>
-  );
-}
-function Trail({ d, id, vb }) {
-  return (
-    <svg viewBox={vb} preserveAspectRatio="none" aria-hidden="true">
-      <defs><mask id={id} maskUnits="userSpaceOnUse" x="-40" y="-40" width="1200" height="800">
-        <motion.path d={d} fill="none" stroke="#fff" strokeWidth="30" strokeLinecap="round" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true, margin: "0px 0px -15% 0px" }} transition={{ duration: 2.2, ease: "easeInOut" }} />
-      </mask></defs>
-      <path className="dots" d={d} mask={`url(#${id})`} />
-    </svg>
-  );
-}
-function LadyFrame({ children }) {
-  return (
-    <div className="lframe">
-      <div className="lf-left">
-        <Trail d={LEFT_TRAIL} id="lf-m1" vb="0 0 90 600" />
-        <i className="lpos" style={{ top: "0%", left: "50%" }}><Ladybug rot={28} /></i>
-        <i className="lpos" style={{ top: "50%", left: "50%" }}><Ladybug rot={-24} delay={0.5} /></i>
-        <i className="lpos" style={{ top: "100%", left: "50%" }}><Ladybug rot={-12} delay={0.9} /></i>
-      </div>
-      <div className="lf-bottom">
-        <Trail d={BOTTOM_TRAIL} id="lf-m2" vb="0 0 1000 90" />
-        <i className="lpos" style={{ top: "50%", left: "100%" }}><Ladybug rot={-34} delay={1.3} /></i>
-      </div>
-      {children}
-    </div>
-  );
-}
+/* ---------- ABOUT: your paragraphs, one under the other, in the normal text style ---------- */
 function About() {
   return (
     <section className="about" id="about"><div className="wrap">
-      <LadyFrame>
-        <div className="about-grid">
-          <Reveal className="cutout" y={20}>
-            <span className="glow" />
-            <img src="assets/img/about.webp" alt="Illustration of a masked hero with dark blue hair" loading="lazy" />
-          </Reveal>
-          <div>
-            <Reveal as="h2">About <em>me</em></Reveal>
-            {about.map((t, i) => <Reveal key={i} delay={0.12 + i * 0.07} as="p" className="body">{t}</Reveal>)}
-          </div>
-        </div>
-      </LadyFrame>
+      <Reveal as="h2">About <em>me</em></Reveal>
+      <div className="ab">
+        {about.map((t, i) => <Reveal key={i} as="p" delay={0.08 + i * 0.08} className="body">{t}</Reveal>)}
+      </div>
     </div></section>
   );
 }
 
-/* ---------- SKILLS: three ladybug buttons; each one slides in its group of skills ---------- */
+/* ---------- SKILLS: small tabs (each with the ladybug button beside its name); click one and its skills show in the card ---------- */
 const TOOL_LOGOS = { ...logos, ...skillLogos };
-/* ---------- SKILLS: three cards; the ladybug-pattern shows behind each one and the card sways when you point at it ---------- */
 function Skills() {
+  const [tab, setTab] = useState(0);
+  const tabs = useRef([]);
+  const g = stack[tab];
+  // arrow keys, Home and End move between tabs, like any tab list
+  const onKey = (e, i) => {
+    const n = stack.length;
+    const next = { ArrowRight: (i + 1) % n, ArrowDown: (i + 1) % n, ArrowLeft: (i + n - 1) % n, ArrowUp: (i + n - 1) % n, Home: 0, End: n - 1 }[e.key];
+    if (next === undefined) return;
+    e.preventDefault(); setTab(next); tabs.current[next]?.focus();
+  };
   return (
     <section className="skills" id="skills"><div className="wrap">
       <Reveal as="h2">What I <em>work with</em></Reveal>
-      <div className="sboard">
-        {stack.map((g, i) => (
-          <Reveal key={g.title} delay={i * 0.1} y={30} className="sslot">
-            <article className="scard">
-              <h3><img src="assets/img/ladybug-button.webp" alt="" aria-hidden="true" loading="lazy" /><span>{g.title}</span></h3>
-              <ul>
-                {g.items.map(([name]) => <li key={name}>{name}</li>)}
-              </ul>
-            </article>
-          </Reveal>
-        ))}
-      </div>
+      <Reveal as="p" delay={0.1} className="sintro">{skillsIntro}</Reveal>
+      <Reveal y={24} delay={0.15}>
+        <div className="stabs" role="tablist" aria-label="Skill groups">
+          {stack.map((s, i) => (
+            <button key={s.title} ref={el => (tabs.current[i] = el)} role="tab" id={"stab-" + i} aria-selected={i === tab} aria-controls="spanel"
+              tabIndex={i === tab ? 0 : -1} className={"stab" + (i === tab ? " on" : "")} onClick={() => setTab(i)} onKeyDown={e => onKey(e, i)}>
+              <img src="assets/img/ladybug-button.webp" alt="" aria-hidden="true" loading="lazy" /><span>{s.title}</span>
+            </button>
+          ))}
+        </div>
+        <div className="sstage">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div key={tab} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.28, ease }}>
+              <article className="scard" role="tabpanel" id="spanel" aria-labelledby={"stab-" + tab}>
+                <ul>
+                  {g.items.map(name => <li key={name}>{name}</li>)}
+                </ul>
+              </article>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </Reveal>
     </div></section>
   );
 }
@@ -334,33 +350,67 @@ function PBack({ p, flipped, onFlip }) {
   );
 }
 
+/* two cards at a time (one on phones). Use the arrows, the dots, swipe or scroll sideways to see the next ones. */
 function Work() {
   const [open, setOpen] = useState(null);
+  const [pg, setPg] = useState(0);
+  const [per, setPer] = useState(2);
+  const sc = useRef(null);
+  const n = Math.ceil(projects.length / per);
+  const groups = Array.from({ length: n }, (_, g) => projects.slice(g * per, g * per + per));
   useEffect(() => {
     if (!open) return;
     const k = e => e.key === "Escape" && setOpen(null);
     document.addEventListener("keydown", k); return () => document.removeEventListener("keydown", k);
   }, [open]);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 901px)");
+    const set = () => setPer(mq.matches ? 2 : 1);
+    set(); mq.addEventListener("change", set); return () => mq.removeEventListener("change", set);
+  }, []);
+  const check = useCallback(() => {
+    const el = sc.current; if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    setPg(max <= 0 || n < 2 ? 0 : Math.round(el.scrollLeft / max * (n - 1)));
+  }, [n]);
+  useEffect(() => { check(); addEventListener("resize", check); return () => removeEventListener("resize", check); }, [check]);
+  const go = i => {
+    const el = sc.current; if (!el) return;
+    const k = Math.max(0, Math.min(n - 1, i));
+    el.scrollTo({ left: n < 2 ? 0 : k * (el.scrollWidth - el.clientWidth) / (n - 1), behavior: "smooth" });
+  };
   return (
     <section className="work" id="work"><div className="wrap">
       <div className="sec-head">
         <Reveal as="h2">Selected <em>projects</em></Reveal>
+        <div className="parrows">
+          <button className="pbtn" onClick={() => go(pg - 1)} disabled={pg === 0} aria-label="Previous projects"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg></button>
+          <span className="pcount">{pg + 1} / {n}</span>
+          <button className="pbtn" onClick={() => go(pg + 1)} disabled={pg >= n - 1} aria-label="Next projects"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg></button>
+        </div>
       </div>
-      <div className="pgrid">
-        {projects.map((p, i) => {
-          const flipped = open === p.t;
-          return (
-            <Reveal key={p.t} delay={(i % 3) * 0.08} y={36} className="pcell">
-              <div className={"pflip" + (flipped ? " flipped" : "")}>
-                <button type="button" className="pface pcard" onClick={() => setOpen(p.t)} aria-expanded={flipped} aria-label={"Flip to read about " + p.t} inert={flipped ? "" : undefined}>
-                  <div className="pmedia"><Media p={p} /></div>
-                  <div className="pcap"><span><small>{p.k}</small><b>{p.t}</b></span><i className="pgo"><FlipIcon /></i></div>
-                </button>
-                <PBack p={p} flipped={flipped} onFlip={() => setOpen(null)} />
-              </div>
-            </Reveal>
-          );
-        })}
+      <div className="pview" ref={sc} onScroll={check} role="region" aria-label="Projects">
+        {groups.map((grp, g) => (
+          <div className="pgrp" key={g}>
+            {grp.map((p, j) => {
+              const flipped = open === p.t;
+              return (
+                <div key={p.t} className="pcell">
+                  <div className={"pflip" + (flipped ? " flipped" : "")}>
+                    <button type="button" className="pface pcard" onClick={() => setOpen(p.t)} aria-expanded={flipped} aria-label={"Flip to read about " + p.t} inert={flipped ? "" : undefined}>
+                      <div className="pmedia"><Media p={p} /></div>
+                      <div className="pcap"><span><small>{p.k}</small><b>{p.t}</b></span><i className="pgo"><FlipIcon /></i></div>
+                    </button>
+                    <PBack p={p} flipped={flipped} onFlip={() => setOpen(null)} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      <div className="pdotsrow" role="tablist" aria-label="Project pages">
+        {groups.map((_, g) => <button key={g} role="tab" aria-selected={g === pg} aria-label={"Projects page " + (g + 1)} className={g === pg ? "on" : ""} onClick={() => go(g)} />)}
       </div>
     </div></section>
   );
@@ -428,6 +478,114 @@ function CertArt({ c }) {
 function Certs() {
   const [sel, setSel] = useState(null);
   const close = useCallback(() => setSel(null), []);
+  const win = useRef(null);     // the visible window (.cwindow)
+  const track = useRef(null);   // the moving strip (.cmarq)
+  const goRef = useRef(null);   // arrow buttons call this
+  const st = useRef({ x: 0, hover: false, focus: false, drag: false, moved: false, anim: null, sel: false });
+  st.current.sel = !!sel;
+
+  /* The strip still flows on its own, but it is now driven here instead of by a CSS animation,
+     so the arrows, dragging, swiping and the keyboard can move it too, and the loop stays seamless.
+     It pauses while you hover (mouse), use the keyboard, drag, or have a certificate open. */
+  useEffect(() => {
+    const w = win.current, t = track.current;
+    if (!w || !t) return;
+    const s = st.current;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const setWidth = () => t.firstElementChild?.getBoundingClientRect().width || 1; // one full copy of the row = the loop length
+    const step = () => {
+      const c = t.querySelectorAll(".ccard");
+      if (c.length > 1) return c[1].getBoundingClientRect().left - c[0].getBoundingClientRect().left;
+      return c[0]?.getBoundingClientRect().width || 300;
+    };
+    const stopAnim = () => { s.anim?.stop(); s.anim = null; };
+
+    let raf, last = performance.now();
+    const tick = now => {
+      const dt = Math.min(now - last, 64) / 1000; last = now;
+      if (!reduce.matches) {
+        const L = setWidth();
+        if (!s.hover && !s.focus && !s.drag && !s.sel && !s.anim && !document.hidden) s.x += (L / (certs.length * 7)) * dt;
+        s.x = ((s.x % L) + L) % L;
+        t.style.transform = "translate3d(" + (-s.x) + "px,0,0)";
+      } else t.style.transform = "";
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
+    // arrows: slide by one card
+    goRef.current = dir => {
+      if (reduce.matches) { w.scrollBy({ left: dir * step(), behavior: "smooth" }); return; }
+      stopAnim();
+      s.anim = animate(s.x, s.x + dir * step(), { duration: 0.6, ease, onUpdate: v => { s.x = v; }, onComplete: () => { s.anim = null; } });
+    };
+
+    // drag with a mouse or swipe sideways on a phone (vertical swipes still scroll the page)
+    let down = false, sx = 0, x0 = 0, pid = 0;
+    const onDown = e => {
+      if (reduce.matches || (e.pointerType === "mouse" && e.button !== 0)) return;
+      down = true; s.moved = false; sx = e.clientX; x0 = s.x; pid = e.pointerId; stopAnim();
+    };
+    const onMove = e => {
+      if (!down) return;
+      const dx = e.clientX - sx;
+      if (!s.moved && Math.abs(dx) > 6) { s.moved = true; s.drag = true; w.setPointerCapture?.(pid); w.classList.add("grab"); }
+      if (s.moved) s.x = x0 - dx;
+    };
+    const onUp = () => { if (!down) return; down = false; s.drag = false; w.classList.remove("grab"); };
+    // a drag must not open a certificate by accident
+    const onClick = e => { if (s.moved) { e.stopPropagation(); e.preventDefault(); s.moved = false; } };
+
+    // trackpad or shift + wheel sideways
+    const onWheel = e => {
+      if (reduce.matches || !e.deltaX || Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
+      e.preventDefault(); stopAnim(); s.x += e.deltaX;
+    };
+
+    // pause on hover (mouse only) and while a card has keyboard focus; bring a focused card into view
+    const onEnter = e => { if (e.pointerType === "mouse") s.hover = true; };
+    const onLeave = () => { s.hover = false; };
+    const onFocusIn = e => {
+      if (!e.target.matches?.(":focus-visible")) return;
+      s.focus = true;
+      const card = e.target.closest?.(".ccard");
+      if (card && !reduce.matches) {
+        stopAnim();
+        const c = card.getBoundingClientRect(), tr = t.getBoundingClientRect();
+        s.x = (c.left - tr.left) - (w.clientWidth - c.width) / 2;
+      }
+      w.scrollLeft = reduce.matches ? w.scrollLeft : 0;
+    };
+    const onFocusOut = () => { s.focus = false; };
+    const onScroll = () => { if (!reduce.matches && w.scrollLeft) w.scrollLeft = 0; }; // the browser must not scroll the hidden overflow
+
+    w.addEventListener("pointerdown", onDown);
+    w.addEventListener("pointermove", onMove);
+    w.addEventListener("pointerup", onUp);
+    w.addEventListener("pointercancel", onUp);
+    w.addEventListener("click", onClick, true);
+    w.addEventListener("wheel", onWheel, { passive: false });
+    w.addEventListener("pointerenter", onEnter);
+    w.addEventListener("pointerleave", onLeave);
+    w.addEventListener("focusin", onFocusIn);
+    w.addEventListener("focusout", onFocusOut);
+    w.addEventListener("scroll", onScroll);
+    return () => {
+      cancelAnimationFrame(raf); stopAnim();
+      w.removeEventListener("pointerdown", onDown);
+      w.removeEventListener("pointermove", onMove);
+      w.removeEventListener("pointerup", onUp);
+      w.removeEventListener("pointercancel", onUp);
+      w.removeEventListener("click", onClick, true);
+      w.removeEventListener("wheel", onWheel);
+      w.removeEventListener("pointerenter", onEnter);
+      w.removeEventListener("pointerleave", onLeave);
+      w.removeEventListener("focusin", onFocusIn);
+      w.removeEventListener("focusout", onFocusOut);
+      w.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
   // the row is drawn twice so the loop never shows a gap; the copy is hidden from screen readers and the tab key
   const row = copy => (
     <div className="cset" aria-hidden={copy || undefined}>
@@ -447,11 +605,19 @@ function Certs() {
       </div>
     </div>
       <Reveal y={24}>
-        {/* flows on its own; pauses when you point at it or open a certificate. Add certificates in data.js and the speed adjusts by itself */}
-        <div className="cwindow" role="region" aria-label="Certificates">
-          <div className={"cmarq" + (sel ? " paused" : "")} style={{ "--dur": certs.length * 7 + "s" }}>
-            {row(false)}{row(true)}
+        {/* flows on its own; pauses when you point at it or open a certificate. Use the arrows, drag or swipe to go back to one you missed. Add certificates in data.js and the speed adjusts by itself */}
+        <div className="cwrap">
+          <div className="cwindow" ref={win} role="region" aria-label="Certificates">
+            <div className="cmarq" ref={track}>
+              {row(false)}{row(true)}
+            </div>
           </div>
+          <button className="cnav prev" aria-label="Previous certificate" onClick={() => goRef.current?.(-1)}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+          </button>
+          <button className="cnav next" aria-label="Next certificate" onClick={() => goRef.current?.(1)}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+          </button>
         </div>
       </Reveal>
       <AnimatePresence>
@@ -465,7 +631,7 @@ function Certs() {
   );
 }
 
-/* ---------- CONTACT: heading, icons and résumé on one side, the ladybug flying in on the other ---------- */
+/* ---------- CONTACT: heading and icons on one side, the ladybug flying in on the other ---------- */
 function Contact() {
   const links = [
     ["LinkedIn", contact.linkedin, "linkedin", true],
@@ -484,9 +650,6 @@ function Contact() {
               </Reveal>
             ))}
           </div>
-          <Reveal delay={0.3} className="cv-row">
-            <a className="btn" href="assets/Halima_Abdirizak_CV.pdf" download>Download résumé <span>↓</span></a>
-          </Reveal>
         </div>
         <motion.div className="flyer" aria-hidden="true" initial={{ clipPath: "inset(0 100% 0 0)", opacity: 0 }} whileInView={{ clipPath: "inset(0 0% 0 0)", opacity: 1 }}
           viewport={{ once: true, margin: "0px 0px -15% 0px" }} transition={{ duration: 2.6, ease: [0.45, 0, 0.25, 1], opacity: { duration: 0.4 } }}>
