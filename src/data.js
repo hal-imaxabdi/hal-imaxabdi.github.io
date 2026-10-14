@@ -56,8 +56,10 @@ export const certs = [
   { t:"Google Cybersecurity Professional", org:"Google", logo:"google", img:"google-cybersecurity.webp" },
   { t:"Google AI Professional", org:"Google", logo:"google", img:"google-ai.webp" },
   { t:"GitHub Foundations (GH-900)", org:"GitHub", logo:"github", img:"github-foundations.webp" },
-  { t:"TechCrush Cybersecurity Bootcamp", org:"TechCrush", mark:"TechCrush", logo:"techcrush.svg", img:"techcrush.webp" },
-  { t:"Cybersecurity Analyst Simulation", org:"Forage", mark:"Forage", logo:"forage.svg", img:"forage-cyber.webp" },
+  { t:"TechCrush Cybersecurity Bootcamp", org:"TechCrush", mark:"TechCrush", img:"techcrush.webp" },
+  { t:"Cybersecurity Analyst Simulation", org:"Forage", mark:"Forage", img:"forage-cyber.webp" },
+  { t:"Pre Security Learning Path", org:"TryHackMe", mark:"TryHackMe", img:"tryhackme-presecurity.webp" },
+  { t:"Information Security Certification", org:"freeCodeCamp", mark:"freeCodeCamp", img:"freecodecamp-infosec.webp" },
   { t:"AWS Security Fundamentals", org:"Amazon Web Services", mark:"aws", logo:"aws", img:"aws-security.webp" },
 ];
 
