@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { createRoot } from "react-dom/client";
-import { motion, AnimatePresence, MotionConfig, useScroll, useSpring } from "framer-motion";
+import { motion, AnimatePresence, MotionConfig, useScroll, useSpring, useMotionValue, useTransform, useDragControls, animate } from "framer-motion";
 import { logos } from "./logos.js";
 import { skillLogos } from "./skillLogos.js";
 import { G, me, about, projects, jobs, stack, certs, contact } from "./data.js";
@@ -37,38 +37,78 @@ const Moon = () => <svg viewBox="0 0 24 24" width="18" height="18" fill="none" s
 
 /* ---------- NAV ---------- */
 const NAV = [["about", "About"], ["work", "Projects"], ["skills", "Skills"], ["experience", "Experience"], ["certifications", "Certifications"]];
+const NAV_ICON = {
+  about: <><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" /></>,
+  work: <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />,
+  skills: <><polyline points="8 7 3 12 8 17" /><polyline points="16 7 21 12 16 17" /><line x1="14" y1="4" x2="10" y2="20" /></>,
+  experience: <><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18" /></>,
+  certifications: <><circle cx="12" cy="9" r="6" /><path d="M8.5 14.5 7 21l5-3 5 3-1.5-6.5" /></>,
+  contact: <><rect x="3" y="5" width="18" height="14" rx="2" /><polyline points="3 7 12 13 21 7" /></>,
+};
+const DOCK = [...NAV, ["contact", "Contact"]];
+
+/* desktop: a slim vertical dock on the left. Drag the dots at the top to move it anywhere; double-click them to put it back. */
+function Dock({ on, theme, toggle }) {
+  const bounds = useRef(null), el = useRef(null);
+  const controls = useDragControls();
+  const saved = (() => { try { return JSON.parse(localStorage.getItem("dock") || "null"); } catch (e) { return null; } })();
+  const x = useMotionValue(saved?.x || 0), y = useMotionValue(saved?.y || 0);
+  const store = () => { try { localStorage.setItem("dock", JSON.stringify({ x: x.get(), y: y.get() })); } catch (e) {} };
+  const reset = () => { animate(x, 0, { duration: 0.4 }); animate(y, 0, { duration: 0.4 }); try { localStorage.removeItem("dock"); } catch (e) {} };
+  // if a saved position is now off-screen (smaller window), bring the dock home
+  useEffect(() => {
+    const fix = () => {
+      const r = el.current?.getBoundingClientRect(); if (!r || !r.width) return;
+      if (r.right < 40 || r.left > innerWidth - 40 || r.bottom < 40 || r.top > innerHeight - 40) { x.set(0); y.set(0); }
+    };
+    fix(); addEventListener("resize", fix); return () => removeEventListener("resize", fix);
+  }, []);
+  return (
+    <div className="dockwrap" ref={bounds}>
+      <motion.nav ref={el} className="dock" aria-label="Main" style={{ x, y }} drag dragListener={false} dragControls={controls} dragConstraints={bounds} dragElastic={0.06} dragMomentum={false} onDragEnd={store}
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7, ease, delay: 0.3 }}>
+        <button className="dgrip" onPointerDown={e => controls.start(e)} onDoubleClick={reset} aria-label="Drag to move the menu" title="Drag to move · double-click to reset">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">{[7, 12, 17].map(cx => [6, 12, 18].map(cy => <circle key={cx + "-" + cy} cx={cx} cy={cy} r="1.3" />))}</svg>
+        </button>
+        <a href="#top" className="dbrand" aria-label="Home"><span className="mark">H</span></a>
+        {DOCK.map(([id, label]) => (
+          <a key={id} href={"#" + id} className={"dlink" + (on === id ? " on" : "")} aria-label={label} aria-current={on === id ? "true" : undefined}>
+            {on === id && <motion.span layoutId="dockpill" className="pillbg" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{NAV_ICON[id]}</svg>
+            <span className="tip">{label}</span>
+          </a>
+        ))}
+        <span className="dsep" aria-hidden="true" />
+        <button className="dlink" onClick={toggle} aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
+          {theme === "dark" ? <Sun /> : <Moon />}
+          <span className="tip">{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+        </button>
+      </motion.nav>
+    </div>
+  );
+}
+
 function Nav() {
-  const [on, setOn] = useState(""), [open, setOpen] = useState(false);
+  const [on, setOn] = useState(""), [open, setOpen] = useState(false), [hide, setHide] = useState(false);
   const [theme, toggle] = useTheme();
   useEffect(() => {
     const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && setOn(e.target.id)), { rootMargin: "-45% 0px -50% 0px" });
     [...NAV.map(n => n[0]), "contact", "top"].forEach(id => { const el = document.getElementById(id); el && io.observe(el); });
     return () => io.disconnect();
   }, []);
-  const Toggle = (
-    <button className="theme" onClick={toggle} aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"} title={theme === "dark" ? "Light mode" : "Dark mode"}>
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.span key={theme} initial={{ rotate: -80, opacity: 0, scale: .6 }} animate={{ rotate: 0, opacity: 1, scale: 1 }} exit={{ rotate: 80, opacity: 0, scale: .6 }} transition={{ duration: .25 }}>
-          {theme === "dark" ? <Sun /> : <Moon />}
-        </motion.span>
-      </AnimatePresence>
-    </button>
-  );
+  // phones: the top bar slides away while you read down the page and returns when you scroll up
+  useEffect(() => {
+    let last = scrollY;
+    const f = () => { const y = scrollY; if (Math.abs(y - last) < 6) return; setHide(y > 120 && y > last); last = y; };
+    addEventListener("scroll", f, { passive: true }); return () => removeEventListener("scroll", f);
+  }, []);
   return (
     <>
-      <motion.header className="nav" initial={{ y: -30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.8, ease, delay: 0.2 }}>
+      <Dock on={on} theme={theme} toggle={toggle} />
+      <motion.header className="nav" initial={{ y: -30, opacity: 0 }} animate={{ y: hide && !open ? -90 : 0, opacity: 1 }} transition={{ duration: 0.45, ease }}>
         <a href="#top" className="brand" aria-label="Home"><span className="mark">H</span><span className="brand-t">Halima</span></a>
-        <nav className="links" aria-label="Main">
-          {NAV.map(([id, label]) => (
-            <a key={id} href={"#" + id} className={on === id ? "on" : ""}>
-              {on === id && <motion.span layoutId="pill" className="pillbg" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
-              {label}
-            </a>
-          ))}
-        </nav>
         <div className="nav-r">
-          {Toggle}
-          <a className="cta" href="#contact">Contact</a>
+          <button className="theme" onClick={toggle} aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>{theme === "dark" ? <Sun /> : <Moon />}</button>
           <button className="menu-btn" onClick={() => setOpen(!open)} aria-expanded={open}>{open ? "Close" : "Menu"}</button>
         </div>
       </motion.header>
@@ -235,46 +275,89 @@ const hl = l => l.split(/(#.*$|\b(?:def|if|not|return|raise)\b)/).map((s, i) =>
 const Code = ({ lines }) => <div className="code">{lines.map((l, i) => <div key={i}>{hl(l) || " "}</div>)}</div>;
 const Media = ({ p }) => p.code ? <Code lines={p.code} /> : <img src={"assets/img/" + p.img} alt={p.t + " screenshot"} style={p.pos ? { objectPosition: p.pos } : undefined} loading="lazy" />;
 
-function ProjectModal({ p, onClose }) {
+const FlipIcon = () => <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8" /><path d="M4 3v5h5" /><path d="M4 13a8 8 0 0 0 14.5 4.5L20 16" /><path d="M20 21v-5h-5" /></svg>;
+
+/* the back of a project card: its pages sit side by side. Swipe, use the arrow or tap a dot to read on. */
+function PBack({ p, flipped, onFlip }) {
+  const sc = useRef(null);
+  const [page, setPage] = useState(0);
+  const pages = [
+    <>
+      <small className="pk">{p.k}</small>
+      <h3>{p.t}</h3>
+      <p className="pd">{p.d}</p>
+    </>,
+    ...(p.points ? [<>
+      <h4>What I built</h4>
+      <ul className="ppts">{p.points.map(x => <li key={x}>{x}</li>)}</ul>
+    </>] : []),
+    <>
+      <h4>Tech stack</h4>
+      <div className="tags">{p.tags.map(x => <span key={x}>{x}</span>)}</div>
+    </>,
+  ];
+  const last = pages.length - 1;
+  const check = useCallback(() => {
+    const el = sc.current; if (el && el.clientWidth) setPage(Math.round(el.scrollLeft / el.clientWidth));
+  }, []);
+  const go = i => sc.current?.scrollTo({ left: i * sc.current.clientWidth, behavior: "smooth" });
+  useEffect(() => {
+    if (flipped) return;
+    const t = setTimeout(() => { if (sc.current) { sc.current.scrollTo({ left: 0, behavior: "instant" }); setPage(0); } }, 800);
+    return () => clearTimeout(t);
+  }, [flipped]);
   return (
-    <Modal onClose={onClose} label={p.t}>
-      <div className="pm">
-        <div className="pm-media"><Media p={p} /></div>
-        <div className="pm-body">
-          <p className="eyebrow">{p.k}</p>
-          <h3>{p.t}</h3>
-          <p className="pm-d">{p.d}</p>
-          <div className="tags">{p.tags.map(x => <span key={x}>{x}</span>)}</div>
-          <div className="pm-btns">
-            <a className="btn" href={G + p.repo} target="_blank" rel="noopener noreferrer">View on GitHub <Arrow /></a>
-            {p.live && <a className="btn ghost" href={p.live} target="_blank" rel="noopener noreferrer">Live demo <Arrow /></a>}
-          </div>
-        </div>
+    <div className="pface pback" style={{ "--pg": page }} inert={flipped ? undefined : ""} aria-hidden={!flipped}>
+      <img className="pbug" src="assets/img/ladybug-spiral.webp" alt="" aria-hidden="true" draggable="false" />
+      <button className="pflipback" onClick={onFlip} aria-label="Flip the card back"><FlipIcon /></button>
+      <div className="pscroll" ref={sc} onScroll={check} tabIndex={0} role="region" aria-label={p.t + " details"}>
+        {pages.map((c, i) => <div className="ppage" key={i}>{c}</div>)}
       </div>
-    </Modal>
+      {page < last && (
+        <button className="pnext" onClick={() => go(page + 1)} tabIndex={-1} aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+        </button>
+      )}
+      <div className="pbtns">
+        <a className="btn" href={G + p.repo} target="_blank" rel="noopener noreferrer">View on GitHub <Arrow /></a>
+        {p.live && <a className="btn ghost" href={p.live} target="_blank" rel="noopener noreferrer">Live demo <Arrow /></a>}
+        <span className="pdots" role="tablist" aria-label="Card pages">
+          {pages.map((_, i) => <button key={i} role="tab" aria-selected={i === page} aria-label={"Page " + (i + 1)} className={i === page ? "on" : ""} onClick={() => go(i)} />)}
+        </span>
+      </div>
+    </div>
   );
 }
 
 const SPAN = ["s4", "s2", "s2", "s2", "s2", "s3", "s3"];
 function Work() {
-  const [sel, setSel] = useState(null);
-  const close = useCallback(() => setSel(null), []);
+  const [open, setOpen] = useState(null);
+  useEffect(() => {
+    if (!open) return;
+    const k = e => e.key === "Escape" && setOpen(null);
+    document.addEventListener("keydown", k); return () => document.removeEventListener("keydown", k);
+  }, [open]);
   return (
     <section className="work" id="work"><div className="wrap">
       <div className="sec-head">
         <Reveal as="h2">Selected <em>projects</em></Reveal>
       </div>
       <div className="pgrid">
-        {projects.map((p, i) => (
-          <Reveal key={p.t} delay={(i % 3) * 0.08} y={36} className={"pcell " + SPAN[i]}>
-            <button className="pcard" onClick={() => setSel(p)} aria-label={"Open " + p.t}>
-              <div className="pmedia"><Media p={p} /></div>
-              <div className="pcap"><span><small>{p.k}</small><b>{p.t}</b></span><i className="pgo">+</i></div>
-            </button>
-          </Reveal>
-        ))}
+        {projects.map((p, i) => {
+          const flipped = open === p.t;
+          return (
+            <Reveal key={p.t} delay={(i % 3) * 0.08} y={36} className={"pcell " + SPAN[i]}>
+              <div className={"pflip" + (flipped ? " flipped" : "")}>
+                <button type="button" className="pface pcard" onClick={() => setOpen(p.t)} aria-expanded={flipped} aria-label={"Flip to read about " + p.t} inert={flipped ? "" : undefined}>
+                  <div className="pmedia"><Media p={p} /></div>
+                  <div className="pcap"><span><small>{p.k}</small><b>{p.t}</b></span><i className="pgo"><FlipIcon /></i></div>
+                </button>
+                <PBack p={p} flipped={flipped} onFlip={() => setOpen(null)} />
+              </div>
+            </Reveal>
+          );
+        })}
       </div>
-      <AnimatePresence>{sel && <ProjectModal key="pm" p={sel} onClose={close} />}</AnimatePresence>
     </div></section>
   );
 }
@@ -411,13 +494,49 @@ function Contact() {
   );
 }
 
+/* ---------- CURSOR: a ladybug that follows the mouse. It swings as you move, grows over buttons and squishes when you click.
+   Only on devices with a real mouse; phones and tablets are untouched. ---------- */
+const HOT = 'a,button,[role="button"],[role="tab"],summary,label,input,select,textarea';
+function BugCursor() {
+  const x = useMotionValue(-100), y = useMotionValue(-100);
+  const sx = useSpring(x, { stiffness: 650, damping: 38, mass: 0.35 });
+  const sy = useSpring(y, { stiffness: 650, damping: 38, mass: 0.35 });
+  const tilt = useTransform([x, sx], ([a, b]) => Math.max(-24, Math.min(24, (a - b) * 0.9)));
+  const [seen, setSeen] = useState(false), [hot, setHot] = useState(false), [down, setDown] = useState(false);
+  useEffect(() => {
+    if (!matchMedia("(hover:hover) and (pointer:fine)").matches) return;
+    const html = document.documentElement;
+    html.classList.add("has-bug");
+    const move = e => {
+      if (e.pointerType && e.pointerType !== "mouse") return;
+      x.set(e.clientX); y.set(e.clientY); setSeen(true);
+      setHot(!!e.target.closest?.(HOT));
+    };
+    const dn = () => setDown(true), up = () => setDown(false);
+    const out = e => { if (!e.relatedTarget) setSeen(false); };
+    addEventListener("pointermove", move, { passive: true });
+    addEventListener("pointerdown", dn); addEventListener("pointerup", up);
+    document.addEventListener("mouseout", out);
+    return () => {
+      html.classList.remove("has-bug");
+      removeEventListener("pointermove", move); removeEventListener("pointerdown", dn); removeEventListener("pointerup", up);
+      document.removeEventListener("mouseout", out);
+    };
+  }, []);
+  return (
+    <motion.div className="bugcur" aria-hidden="true" style={{ x: sx, y: sy, rotate: tilt, opacity: seen ? 1 : 0 }}>
+      <motion.img src="assets/img/ladybug-cursor.png" alt="" draggable="false" animate={{ scale: down ? 0.8 : hot ? 1.3 : 1 }} transition={{ type: "spring", stiffness: 500, damping: 24 }} />
+    </motion.div>
+  );
+}
+
 function App() {
   const { scrollYProgress } = useScroll();
   const sx = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
   return (
     <MotionConfig reducedMotion="user">
       <motion.div className="progress" style={{ scaleX: sx }} />
-      <Nav /><main><Hero /><About /><Work /><Skills /><Experience /><Certs /></main><Contact />
+      <BugCursor /><Nav /><main><Hero /><About /><Work /><Skills /><Experience /><Certs /></main><Contact />
     </MotionConfig>
   );
 }
