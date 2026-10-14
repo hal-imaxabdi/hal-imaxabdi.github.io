@@ -1,3 +1,2 @@
-# Halima's portfolio
+# portfolio
 
-**Live site:** https://hal-imaxabdi.github.io
