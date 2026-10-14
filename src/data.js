@@ -11,9 +11,9 @@ export const me = {
 
 /* About section: one string per paragraph, shown side by side in the normal text style. Your own words; the last two paragraphs are joined into one. */
 export const about = [
-  "I'm Halima, an Informatics student at President University in Indonesia, originally from Kenya, with an interest in cybersecurity and software development.",
-  "Through internships, projects, and hands-on labs, I've worked on things like web application security, backend systems, security monitoring, and authentication. I enjoy understanding how things work, solving technical problems, and exploring how different parts of technology fit together.",
-  "I'm always looking for opportunities to apply what I learn, strengthen my technical skills, and take on new challenges. I also use AI tools to support my workflow, while making sure I understand the code, decisions, and results behind my work. I'm still growing as a technologist, and I'm interested in opportunities where I can contribute, learn from others, and build things that are useful and reliable.",
+  "I'm Halima, an Informatics student at President University in Indonesia, originally from Kenya, focused on cybersecurity and software development.",
+  "Through internships, projects and hands-on labs, I've worked on web application security, backend systems, security monitoring and authentication. I enjoy understanding how things work and building things that are useful and reliable.",
+  "I use AI tools to support my workflow, but I make sure I understand the code and results behind my work. I'm always looking for opportunities to contribute, learn from others and take on new challenges.",
 ];
 
 /* Each project card: front = screenshot (or code). Back = 3 pages you can swipe:
@@ -79,10 +79,23 @@ export const projects = [
     note:"The password-guessing tool was written by my teammate. I built both versions of the login and we ran the tests together." },
 ];
 
+/* Experience: a sideways row of cards. To add a role, copy one block and put it at the END (the row goes left to right).
+   when, role, org: the heading of the card.   d: one or two sentences about the company and your part.
+   points: optional bullets, each [bold lead, the rest].   tags: optional small pills (tools you used).
+   Delete any line you don't need; the card adjusts. The text below is placeholder text: replace it with your own. */
 export const jobs = [
-  { when:"Sep 2026 — Now", role:"Cybersecurity Intern", org:"ElectraWireless", d:"Built SHA-256 malware detection for an IoT firmware scanner and kept 130+ tests passing." },
-  { when:"Aug — Sep 2026", role:"SOC Analyst Intern", org:"Tech Biz Security", d:"Investigated brute-force and phishing attacks. Built a Splunk SIEM lab with alerting." },
-  { when:"Jul — Sep 2026", role:"Backend AI Engineering Intern", org:"FlyRank AI", d:"Secured payment notifications with HMAC-SHA512 and stopped duplicate charges. 68 automated tests." },
+  { when:"Sep 2026 — Now", role:"Cybersecurity Intern", org:"ElectraWireless",
+    d:"[Placeholder] One or two sentences: what ElectraWireless does and what your role on the team is.",
+    points:[["What I built","[Placeholder] the main thing you made or improved, e.g. the SHA-256 malware detection for the IoT firmware scanner"],
+            ["How I checked it","[Placeholder] tests, reviews or results you can point to"],
+            ["What I learned","[Placeholder] one thing this internship taught you"]],
+    tags:["[Tool]","[Tool]","[Tool]"] },
+  { when:"Jul — Sep 2026", role:"Backend AI Engineering Intern", org:"FlyRank AI",
+    d:"[Placeholder] One or two sentences: what FlyRank AI does and what your role on the team was.",
+    points:[["What I built","[Placeholder] the main thing you made, e.g. the payment notification checks and the duplicate-charge protection"],
+            ["How I checked it","[Placeholder] tests, reviews or results you can point to"],
+            ["What I learned","[Placeholder] one thing this internship taught you"]],
+    tags:["[Tool]","[Tool]","[Tool]"] },
 ];
 
 /* Skills section: the heading's sentence, then one tab per group. Click a tab and its skills appear in the card. */
@@ -95,16 +108,17 @@ export const stack = [
   { title:"Concepts & Frameworks", items:["OWASP Top 10","NIST Cybersecurity Framework","MITRE ATT&CK","Networking","Cryptography","Database Systems"] },
 ];
 
+/* date = when you received it, e.g. "Mar 2026". Leave it empty and nothing is shown. The first 4 appear on the home page, all of them on the "view more" page. */
 export const certs = [
-  { t:"Google Cybersecurity Professional", org:"Google", logo:"google", img:"google-cybersecurity.webp" },
-  { t:"Google AI Professional", org:"Google", logo:"google", img:"google-ai.webp" },
-  { t:"Incident Response and Digital Forensics", org:"IBM", logo:"ibm", img:"ibm-incident-response.webp" },
-  { t:"GitHub Foundations (GH-900)", org:"GitHub", logo:"github", img:"github-foundations.webp" },
-  { t:"AWS Security Fundamentals", org:"Amazon Web Services", logo:"aws", img:"aws-security.webp" },
-  { t:"Cybersecurity Analyst Job Simulation", org:"Forage", logo:"forage", img:"forage-cyber.webp" },
-  { t:"Pre Security Learning Path", org:"TryHackMe", logo:"tryhackme", img:"tryhackme-presecurity.webp" },
-  { t:"Information Security Certification", org:"freeCodeCamp", logo:"freecodecamp", img:"freecodecamp-infosec.webp" },
-  { t:"TechCrush Cybersecurity Bootcamp", org:"TechCrush", logo:"techcrush", img:"techcrush.webp" },
+  { t:"Google Cybersecurity Professional", org:"Google", img:"google-cybersecurity.webp", date:"" },
+  { t:"Google AI Professional", org:"Google", img:"google-ai.webp", date:"" },
+  { t:"Incident Response and Digital Forensics", org:"IBM", img:"ibm-incident-response.webp", date:"" },
+  { t:"GitHub Foundations (GH-900)", org:"GitHub", img:"github-foundations.webp", date:"" },
+  { t:"AWS Security Fundamentals", org:"Amazon Web Services", img:"aws-security.webp", date:"" },
+  { t:"Cybersecurity Analyst Job Simulation", org:"Forage", img:"forage-cyber.webp", date:"" },
+  { t:"Pre Security Learning Path", org:"TryHackMe", img:"tryhackme-presecurity.webp", date:"" },
+  { t:"Information Security Certification", org:"freeCodeCamp", img:"freecodecamp-infosec.webp", date:"" },
+  { t:"TechCrush Cybersecurity Bootcamp", org:"TechCrush", img:"techcrush.webp", date:"" },
 ];
 
 export const contact = {

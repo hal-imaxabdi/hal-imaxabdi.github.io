@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { createRoot } from "react-dom/client";
-import { motion, AnimatePresence, MotionConfig, useScroll, useSpring, useMotionValue, useTransform, useDragControls, useReducedMotion, animate } from "framer-motion";
+import { motion, AnimatePresence, MotionConfig, useScroll, useSpring, useMotionValue, useTransform, useDragControls, useReducedMotion } from "framer-motion";
 import { logos } from "./logos.js";
-import { skillLogos } from "./skillLogos.js";
 import { G, me, heroVisual, about, projects, jobs, stack, skillsIntro, certs, contact } from "./data.js";
 
 const ease = [0.22, 1, 0.36, 1];
@@ -54,7 +53,7 @@ function useWide() {
   return w;
 }
 
-function Nav() {
+function Nav({ route }) {
   const [on, setOn] = useState(""), [open, setOpen] = useState(false), [hide, setHide] = useState(false);
   const [theme, toggle] = useTheme();
   const wide = useWide();
@@ -62,7 +61,8 @@ function Nav() {
     const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && setOn(e.target.id)), { rootMargin: "-45% 0px -50% 0px" });
     [...NAV.map(n => n[0]), "contact", "top"].forEach(id => { const el = document.getElementById(id); el && io.observe(el); });
     return () => io.disconnect();
-  }, []);
+  }, [route]);
+  const cur = route === "certs" ? "certifications" : on;
   // the top bar stays on screen the whole way down on desktop. On phones it slides away while you read down and returns when you scroll up
   useEffect(() => {
     let last = scrollY;
@@ -76,12 +76,12 @@ function Nav() {
   return (
     <>
       <motion.header className="nav" initial={{ y: -30, opacity: 0 }} animate={{ y: !wide && hide && !open ? -90 : 0, opacity: 1 }} transition={{ duration: 0.45, ease }}>
-        <a href="#top" className="brand" aria-label="Home"><span className="mark">H</span><span className="brand-t">Halima</span></a>
+        <a href="#top" className="brand" aria-label="Home"><img className="mark" src="assets/img/ladybug-button.webp" alt="" aria-hidden="true" draggable="false" /><span className="brand-t">Halima</span></a>
         <div className="nav-r">
           <nav className="links" aria-label="Main">
             {DOCK.map(([id, label]) => (
-              <a key={id} href={"#" + id} className={on === id ? "on" : undefined} aria-current={on === id ? "true" : undefined}>
-                {on === id && <motion.span layoutId="toppill" className="pillbg" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
+              <a key={id} href={"#" + id} className={cur === id ? "on" : undefined} aria-current={cur === id ? "true" : undefined}>
+                {cur === id && <motion.span layoutId="toppill" className="pillbg" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
                 {label}
               </a>
             ))}
@@ -183,7 +183,7 @@ function About() {
 }
 
 /* ---------- SKILLS: small tabs (each with the ladybug button beside its name); click one and its skills show in the card ---------- */
-const TOOL_LOGOS = { ...logos, ...skillLogos };
+const TOOL_LOGOS = logos;
 function Skills() {
   const [tab, setTab] = useState(0);
   const tabs = useRef([]);
@@ -378,36 +378,52 @@ function Work() {
   );
 }
 
-/* ---------- EXPERIENCE: the ladybug's dashed trail, one point per role ---------- */
-const TRAIL = "M100 0 C165 40 165 110 100 150 C35 190 30 245 70 280 C108 312 148 282 126 256 C104 232 72 285 90 335 C102 375 100 410 100 450 C165 490 165 545 130 580 C98 612 58 582 78 556 C98 530 130 590 112 640 C100 680 100 710 100 750 C35 790 40 850 100 880";
+/* ---------- EXPERIENCE: a sideways timeline. Add a role in data.js (jobs) and it simply joins the row; arrows appear when there are more cards than fit ---------- */
 function Experience() {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 80%", "end 90%"] });
-  const len = useSpring(scrollYProgress, { stiffness: 90, damping: 24 });
+  const sc = useRef(null);
+  const [edge, setEdge] = useState({ scroll: false, l: false, r: false });
+  const check = useCallback(() => {
+    const el = sc.current; if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    setEdge({ scroll: max > 4, l: el.scrollLeft > 4, r: el.scrollLeft < max - 4 });
+  }, []);
+  useEffect(() => {
+    check(); const t = setTimeout(check, 600);
+    addEventListener("resize", check);
+    return () => { clearTimeout(t); removeEventListener("resize", check); };
+  }, [check]);
+  const step = dir => {
+    const el = sc.current; if (!el) return;
+    const card = el.querySelector(".xitem:not(.xstart)");
+    const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
+    el.scrollBy({ left: dir * ((card ? card.getBoundingClientRect().width : el.clientWidth * 0.8) + gap), behavior: "smooth" });
+  };
+  const chev = d => <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d={d} /></svg>;
   return (
     <section className="xp" id="experience"><div className="wrap">
-      <Reveal as="h2">Where I've <em>worked</em></Reveal>
-      <div className="trail" ref={ref}>
-        <motion.img className="bug" src="assets/img/ladybug-icon.png" alt="" aria-hidden="true" initial={{ opacity: 0, y: -20, rotate: -20 }} whileInView={{ opacity: 1, y: 0, rotate: -8 }} viewport={{ once: true }} transition={{ duration: .9, ease }} />
-        <svg className="path" viewBox="0 0 200 900" aria-hidden="true">
-          <defs><mask id="trailmask" maskUnits="userSpaceOnUse" x="-50" y="-20" width="300" height="940">
-            <motion.path d={TRAIL} fill="none" stroke="#fff" strokeWidth="16" strokeLinecap="round" style={{ pathLength: len }} />
-          </mask></defs>
-          <path d={TRAIL} fill="none" stroke="var(--text)" strokeWidth="2.2" strokeDasharray="7 9" strokeLinecap="round" mask="url(#trailmask)" />
-          {[150, 450, 750].map((y, i) => (
-            <motion.g key={y} initial={{ scale: 0, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true, margin: "0px 0px -25% 0px" }} transition={{ duration: .6, ease }} style={{ transformBox: "fill-box", transformOrigin: "center" }}>
-              <circle cx="100" cy={y} r="17" fill="var(--bg)" stroke="var(--accent)" strokeWidth="2" />
-              <circle cx="100" cy={y} r="8" fill="var(--accent)" />
-            </motion.g>
-          ))}
-        </svg>
-        {jobs.map((j, i) => (
-          <div className={"trow " + (i % 2 ? "L" : "R")} key={j.org}>
-            <Reveal className="tcard" y={24} delay={0.1}>
-              <span className="when">{j.when}</span>
-              <h3>{j.role}</h3>
-              <b className="org">{j.org}</b>
-              <p>{j.d}</p>
+      <div className="sec-head">
+        <Reveal as="h2">Where I've <em>worked</em></Reveal>
+        {edge.scroll && (
+          <div className="parrows">
+            <button className="pbtn" onClick={() => step(-1)} disabled={!edge.l} aria-label="Earlier experience">{chev("M15 6l-6 6 6 6")}</button>
+            <button className="pbtn" onClick={() => step(1)} disabled={!edge.r} aria-label="More experience">{chev("M9 6l6 6-6 6")}</button>
+          </div>
+        )}
+      </div>
+      <div className="xview" ref={sc} onScroll={check} role="region" aria-label="Work experience" tabIndex={0}>
+        <div className="xitem xstart" aria-hidden="true">
+          <motion.img className="xbug" src="assets/img/ladybug-icon.png" alt="" draggable="false" initial={{ opacity: 0, x: -20, rotate: -20 }} whileInView={{ opacity: 1, x: 0, rotate: -8 }} viewport={{ once: true }} transition={{ duration: .9, ease }} />
+        </div>
+        {jobs.map((x, i) => (
+          <div className="xitem" key={x.org + x.when}>
+            <span className="xdot" aria-hidden="true" />
+            <Reveal className="tcard" y={24} delay={0.1 + i * 0.08}>
+              <span className="when">{x.when}</span>
+              <h3>{x.role}</h3>
+              <b className="org">{x.org}</b>
+              {x.d && <p>{x.d}</p>}
+              {x.points && <ul className="xpts">{x.points.map(([a, b]) => <li key={a}><b>{a}</b> {b}</li>)}</ul>}
+              {x.tags && <div className="tags">{x.tags.map(t => <span key={t}>{t}</span>)}</div>}
             </Reveal>
           </div>
         ))}
@@ -416,172 +432,55 @@ function Experience() {
   );
 }
 
-/* ---------- CERTIFICATIONS: the real logos, no plate; a click opens the certificate inside the polka-dot frame ---------- */
+/* ---------- CERTIFICATIONS: framed certificates in a grid (4 on the home page, all of them on their own page) ---------- */
 function Brand({ k, size = 72, className = "", fit = false }) {
   const l = TOOL_LOGOS[k];
   return <svg className={"logo " + className} viewBox={`0 0 ${l.w} ${l.h}`} style={fit ? undefined : { height: size, width: "auto" }} role="img" aria-label={k} dangerouslySetInnerHTML={{ __html: l.body }} />;
-}
-function Logo({ c, size = 56, fit = false }) {
-  if (TOOL_LOGOS[c.logo]) return <Brand k={c.logo} size={size} fit={fit} />;
-  return <span className="wordmark" style={{ fontSize: size * 0.5 }}>{c.mark || c.org}</span>;
 }
 function CertArt({ c }) {
   const [ok, setOk] = useState(true);
   if (ok) return <div className="cframe"><img src={"assets/certs/" + c.img} alt={c.t + " certificate"} onError={() => setOk(false)} /></div>;
   return (
     <div className="cfall big">
-      <Logo c={c} size={56} />
       <small>Certificate</small>
       <b>{c.t}</b>
       <em>{c.org}</em>
     </div>
   );
 }
-function Certs() {
+const FEATURED = 4;                 // how many certificates show on the home page
+const CERT_PAGE = "#/certificates"; // the "view more" page
+
+/* the certificate picture sitting inside the polka-dot frame (falls back to the name if the image is missing) */
+function CertThumb({ c }) {
+  const [ok, setOk] = useState(true);
+  return (
+    <span className="cframe thumb">
+      {ok
+        ? <img src={"assets/certs/" + c.img} alt={c.t + " certificate"} loading="lazy" onError={() => setOk(false)} />
+        : <span className="cmiss"><b>{c.t}</b><em>{c.org}</em></span>}
+    </span>
+  );
+}
+
+/* a grid of framed certificates: name, who issued it and when I received it. A click opens the full certificate. */
+function CertGrid({ list, all = false }) {
   const [sel, setSel] = useState(null);
   const close = useCallback(() => setSel(null), []);
-  const win = useRef(null);     // the visible window (.cwindow)
-  const track = useRef(null);   // the moving strip (.cmarq)
-  const goRef = useRef(null);   // arrow buttons call this
-  const st = useRef({ x: 0, hover: false, focus: false, drag: false, moved: false, anim: null, sel: false });
-  st.current.sel = !!sel;
-
-  /* The strip still flows on its own, but it is now driven here instead of by a CSS animation,
-     so the arrows, dragging, swiping and the keyboard can move it too, and the loop stays seamless.
-     It pauses while you hover (mouse), use the keyboard, drag, or have a certificate open. */
-  useEffect(() => {
-    const w = win.current, t = track.current;
-    if (!w || !t) return;
-    const s = st.current;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const setWidth = () => t.firstElementChild?.getBoundingClientRect().width || 1; // one full copy of the row = the loop length
-    const step = () => {
-      const c = t.querySelectorAll(".ccard");
-      if (c.length > 1) return c[1].getBoundingClientRect().left - c[0].getBoundingClientRect().left;
-      return c[0]?.getBoundingClientRect().width || 300;
-    };
-    const stopAnim = () => { s.anim?.stop(); s.anim = null; };
-
-    let raf, last = performance.now();
-    const tick = now => {
-      const dt = Math.min(now - last, 64) / 1000; last = now;
-      if (!reduce.matches) {
-        const L = setWidth();
-        if (!s.hover && !s.focus && !s.drag && !s.sel && !s.anim && !document.hidden) s.x += (L / (certs.length * 7)) * dt;
-        s.x = ((s.x % L) + L) % L;
-        t.style.transform = "translate3d(" + (-s.x) + "px,0,0)";
-      } else t.style.transform = "";
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-
-    // arrows: slide by one card
-    goRef.current = dir => {
-      if (reduce.matches) { w.scrollBy({ left: dir * step(), behavior: "smooth" }); return; }
-      stopAnim();
-      s.anim = animate(s.x, s.x + dir * step(), { duration: 0.6, ease, onUpdate: v => { s.x = v; }, onComplete: () => { s.anim = null; } });
-    };
-
-    // drag with a mouse or swipe sideways on a phone (vertical swipes still scroll the page)
-    let down = false, sx = 0, x0 = 0, pid = 0;
-    const onDown = e => {
-      if (reduce.matches || (e.pointerType === "mouse" && e.button !== 0)) return;
-      down = true; s.moved = false; sx = e.clientX; x0 = s.x; pid = e.pointerId; stopAnim();
-    };
-    const onMove = e => {
-      if (!down) return;
-      const dx = e.clientX - sx;
-      if (!s.moved && Math.abs(dx) > 6) { s.moved = true; s.drag = true; w.setPointerCapture?.(pid); w.classList.add("grab"); }
-      if (s.moved) s.x = x0 - dx;
-    };
-    const onUp = () => { if (!down) return; down = false; s.drag = false; w.classList.remove("grab"); };
-    // a drag must not open a certificate by accident
-    const onClick = e => { if (s.moved) { e.stopPropagation(); e.preventDefault(); s.moved = false; } };
-
-    // trackpad or shift + wheel sideways
-    const onWheel = e => {
-      if (reduce.matches || !e.deltaX || Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
-      e.preventDefault(); stopAnim(); s.x += e.deltaX;
-    };
-
-    // pause on hover (mouse only) and while a card has keyboard focus; bring a focused card into view
-    const onEnter = e => { if (e.pointerType === "mouse") s.hover = true; };
-    const onLeave = () => { s.hover = false; };
-    const onFocusIn = e => {
-      if (!e.target.matches?.(":focus-visible")) return;
-      s.focus = true;
-      const card = e.target.closest?.(".ccard");
-      if (card && !reduce.matches) {
-        stopAnim();
-        const c = card.getBoundingClientRect(), tr = t.getBoundingClientRect();
-        s.x = (c.left - tr.left) - (w.clientWidth - c.width) / 2;
-      }
-      w.scrollLeft = reduce.matches ? w.scrollLeft : 0;
-    };
-    const onFocusOut = () => { s.focus = false; };
-    const onScroll = () => { if (!reduce.matches && w.scrollLeft) w.scrollLeft = 0; }; // the browser must not scroll the hidden overflow
-
-    w.addEventListener("pointerdown", onDown);
-    w.addEventListener("pointermove", onMove);
-    w.addEventListener("pointerup", onUp);
-    w.addEventListener("pointercancel", onUp);
-    w.addEventListener("click", onClick, true);
-    w.addEventListener("wheel", onWheel, { passive: false });
-    w.addEventListener("pointerenter", onEnter);
-    w.addEventListener("pointerleave", onLeave);
-    w.addEventListener("focusin", onFocusIn);
-    w.addEventListener("focusout", onFocusOut);
-    w.addEventListener("scroll", onScroll);
-    return () => {
-      cancelAnimationFrame(raf); stopAnim();
-      w.removeEventListener("pointerdown", onDown);
-      w.removeEventListener("pointermove", onMove);
-      w.removeEventListener("pointerup", onUp);
-      w.removeEventListener("pointercancel", onUp);
-      w.removeEventListener("click", onClick, true);
-      w.removeEventListener("wheel", onWheel);
-      w.removeEventListener("pointerenter", onEnter);
-      w.removeEventListener("pointerleave", onLeave);
-      w.removeEventListener("focusin", onFocusIn);
-      w.removeEventListener("focusout", onFocusOut);
-      w.removeEventListener("scroll", onScroll);
-    };
-  }, []);
-
-  // the row is drawn twice so the loop never shows a gap; the copy is hidden from screen readers and the tab key
-  const row = copy => (
-    <div className="cset" aria-hidden={copy || undefined}>
-      {certs.map(c => (
-        <button key={c.t} className="ccard" tabIndex={copy ? -1 : 0} onClick={() => setSel(c)} aria-label={"View " + c.t + " certificate"}>
-          <span className="cplate"><Logo c={c} fit /></span>
-          <span className="ccap">{c.t}</span>
-          <span className="cview">View certificate</span>
-        </button>
-      ))}
-    </div>
-  );
   return (
-    <section className="certs" id="certifications"><div className="wrap">
-      <div className="sec-head">
-        <Reveal as="h2">My <em>certifications</em></Reveal>
+    <>
+      <div className={"cgrid" + (all ? " all" : "")}>
+        {list.map((c, i) => (
+          <Reveal key={c.t} y={24} delay={(i % 4) * 0.08}>
+            <button className="ccard" onClick={() => setSel(c)} aria-label={"View " + c.t + " certificate"}>
+              <CertThumb c={c} />
+              <span className="ccap">{c.t}</span>
+              <span className="cmeta">{c.org}{c.date ? " · Received " + c.date : ""}</span>
+              <span className="cview">View certificate</span>
+            </button>
+          </Reveal>
+        ))}
       </div>
-    </div>
-      <Reveal y={24}>
-        {/* flows on its own; pauses when you point at it or open a certificate. Use the arrows, drag or swipe to go back to one you missed. Add certificates in data.js and the speed adjusts by itself */}
-        <div className="cwrap">
-          <div className="cwindow" ref={win} role="region" aria-label="Certificates">
-            <div className="cmarq" ref={track}>
-              {row(false)}{row(true)}
-            </div>
-          </div>
-          <button className="cnav prev" aria-label="Previous certificate" onClick={() => goRef.current?.(-1)}>
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
-          </button>
-          <button className="cnav next" aria-label="Next certificate" onClick={() => goRef.current?.(1)}>
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
-          </button>
-        </div>
-      </Reveal>
       <AnimatePresence>
         {sel && (
           <Modal key="cm" bare onClose={close} label={sel.t}>
@@ -589,7 +488,37 @@ function Certs() {
           </Modal>
         )}
       </AnimatePresence>
-    </section>
+    </>
+  );
+}
+
+/* home page: the first few certificates and a link to the full page */
+function Certs() {
+  return (
+    <section className="certs" id="certifications"><div className="wrap wide">
+      <div className="sec-head">
+        <Reveal as="h2">My <em>certifications</em></Reveal>
+      </div>
+      <CertGrid list={certs.slice(0, FEATURED)} />
+      {certs.length > FEATURED && (
+        <Reveal y={20} className="cmore">
+          <a className="btn" href={CERT_PAGE}>View all certificates <span>→</span></a>
+        </Reveal>
+      )}
+    </div></section>
+  );
+}
+
+/* the "view more" page: every certificate in its frame */
+function CertsPage() {
+  return (
+    <section className="certs certs-page" id="all-certificates"><div className="wrap wide">
+      <Reveal y={16}><a className="back" href="#certifications"><span>←</span> Back to portfolio</a></Reveal>
+      <div className="sec-head">
+        <Reveal as="h2">All my <em>certifications</em></Reveal>
+      </div>
+      <CertGrid list={certs} all />
+    </div></section>
   );
 }
 
@@ -608,7 +537,7 @@ function Contact() {
           <div className="icons">
             {links.map(([n, h, k, ext], i) => (
               <Reveal key={n} delay={0.1 + i * 0.08} y={30}>
-                <a className="ico" href={h} aria-label={n} title={n} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})}><Brand k={k} size={34} className="plain" /></a>
+                <a className="ico" href={h} aria-label={n} title={n} {...(ext ? { target: "_blank", rel: "noopener noreferrer" } : {})}><Brand k={k} size={44} className="plain" /></a>
               </Reveal>
             ))}
           </div>
@@ -659,13 +588,38 @@ function BugCursor() {
   );
 }
 
+/* two "pages": the home page and #/certificates. No library needed; the address bar hash decides. */
+function useRoute() {
+  const get = () => (location.hash === CERT_PAGE ? "certs" : "home");
+  const [r, setR] = useState(get);
+  useEffect(() => {
+    const f = () => setR(get());
+    addEventListener("hashchange", f);
+    return () => removeEventListener("hashchange", f);
+  }, []);
+  return r;
+}
+
 function App() {
+  const route = useRoute();
   const { scrollYProgress } = useScroll();
   const sx = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
+  const first = useRef(true);
+  // after the page swaps: open the certificates page at the top, or jump to the section that was clicked (#about, #certifications...)
+  useEffect(() => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const el = route === "home" && id ? document.getElementById(id) : null;
+    if (el) el.scrollIntoView({ behavior: "instant", block: "start" });
+    else if (route === "certs" || !first.current) window.scrollTo({ top: 0, behavior: "instant" });
+    first.current = false;
+  }, [route]);
   return (
     <MotionConfig reducedMotion="user">
       <motion.div className="progress" style={{ scaleX: sx }} />
-      <BugCursor /><Nav /><main><Hero /><About /><Work /><Skills /><Experience /><Certs /></main><Contact />
+      <BugCursor /><Nav route={route} />
+      {route === "certs"
+        ? <main><CertsPage /></main>
+        : <><main><Hero /><About /><Work /><Skills /><Experience /><Certs /></main><Contact /></>}
     </MotionConfig>
   );
 }
