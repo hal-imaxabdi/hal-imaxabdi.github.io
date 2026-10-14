@@ -47,51 +47,6 @@ const NAV_ICON = {
 };
 const DOCK = [...NAV, ["contact", "Contact"]];
 
-/* desktop: a slim vertical dock on the left. Drag the dots at the top to move it anywhere; double-click them to put it back. */
-function Dock({ on, theme, toggle, show }) {
-  const bounds = useRef(null), el = useRef(null), shown = useRef(show);
-  shown.current = show;
-  const controls = useDragControls();
-  const saved = (() => { try { return JSON.parse(localStorage.getItem("dock") || "null"); } catch (e) { return null; } })();
-  const x = useMotionValue(saved?.x || 0), y = useMotionValue(saved?.y || 0);
-  const store = () => { try { localStorage.setItem("dock", JSON.stringify({ x: x.get(), y: y.get() })); } catch (e) {} };
-  const reset = () => { animate(x, 0, { duration: 0.4 }); animate(y, 0, { duration: 0.4 }); try { localStorage.removeItem("dock"); } catch (e) {} };
-  // if a saved position is now off-screen (smaller window), bring the dock home
-  useEffect(() => {
-    const fix = () => {
-      if (!shown.current) return;   // while the dock is tucked away it is off to the side on purpose
-      const r = el.current?.getBoundingClientRect(); if (!r || !r.width) return;
-      if (r.right < 40 || r.left > innerWidth - 40 || r.bottom < 40 || r.top > innerHeight - 40) { x.set(0); y.set(0); }
-    };
-    fix(); addEventListener("resize", fix); return () => removeEventListener("resize", fix);
-  }, []);
-  return (
-    <motion.div className="dockwrap" ref={bounds} initial={{ opacity: 0, x: -48, visibility: "hidden" }}
-      animate={show ? { opacity: 1, x: 0, visibility: "visible" } : { opacity: 0, x: -48, transitionEnd: { visibility: "hidden" } }}
-      transition={{ duration: 0.5, ease }}>
-      <motion.nav ref={el} className="dock" aria-label="Main" style={{ x, y }} drag dragListener={false} dragControls={controls} dragConstraints={bounds} dragElastic={0.06} dragMomentum={false} onDragEnd={store}
-        >
-        <button className="dgrip" onPointerDown={e => controls.start(e)} onDoubleClick={reset} aria-label="Drag to move the menu" title="Drag to move · double-click to reset">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">{[7, 12, 17].map(cx => [6, 12, 18].map(cy => <circle key={cx + "-" + cy} cx={cx} cy={cy} r="1.3" />))}</svg>
-        </button>
-        <a href="#top" className="dbrand" aria-label="Home"><span className="mark">H</span></a>
-        {DOCK.map(([id, label]) => (
-          <a key={id} href={"#" + id} className={"dlink" + (on === id ? " on" : "")} aria-label={label} aria-current={on === id ? "true" : undefined}>
-            {on === id && <motion.span layoutId="dockpill" className="pillbg" transition={{ type: "spring", stiffness: 400, damping: 34 }} />}
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{NAV_ICON[id]}</svg>
-            <span className="tip">{label}</span>
-          </a>
-        ))}
-        <span className="dsep" aria-hidden="true" />
-        <button className="dlink" onClick={toggle} aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}>
-          {theme === "dark" ? <Sun /> : <Moon />}
-          <span className="tip">{theme === "dark" ? "Light mode" : "Dark mode"}</span>
-        </button>
-      </motion.nav>
-    </motion.div>
-  );
-}
-
 function useWide() {
   const q = "(min-width: 901px)";   // same breakpoint as style.css
   const [w, setW] = useState(() => matchMedia(q).matches);
@@ -100,21 +55,19 @@ function useWide() {
 }
 
 function Nav() {
-  const [on, setOn] = useState(""), [open, setOpen] = useState(false), [hide, setHide] = useState(false), [away, setAway] = useState(false);
+  const [on, setOn] = useState(""), [open, setOpen] = useState(false), [hide, setHide] = useState(false);
   const [theme, toggle] = useTheme();
   const wide = useWide();
-  const side = wide && away;   // desktop and past the homepage: the menu moves to the side
   useEffect(() => {
     const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && setOn(e.target.id)), { rootMargin: "-45% 0px -50% 0px" });
     [...NAV.map(n => n[0]), "contact", "top"].forEach(id => { const el = document.getElementById(id); el && io.observe(el); });
     return () => io.disconnect();
   }, []);
-  // phones: the top bar slides away while you read down the page and returns when you scroll up
+  // the top bar stays on screen the whole way down on desktop. On phones it slides away while you read down and returns when you scroll up
   useEffect(() => {
     let last = scrollY;
     const f = () => {
       const y = scrollY;
-      setAway(y > innerHeight * 0.55);
       if (Math.abs(y - last) < 6) return; setHide(y > 120 && y > last); last = y;
     };
     f();
@@ -122,8 +75,7 @@ function Nav() {
   }, []);
   return (
     <>
-      <Dock on={on} theme={theme} toggle={toggle} show={side} />
-      <motion.header className={"nav" + (side ? " nav-away" : "")} initial={{ y: -30, opacity: 0 }} animate={{ y: side ? -40 : hide && !open ? -90 : 0, opacity: side ? 0 : 1 }} transition={{ duration: 0.45, ease }}>
+      <motion.header className="nav" initial={{ y: -30, opacity: 0 }} animate={{ y: !wide && hide && !open ? -90 : 0, opacity: 1 }} transition={{ duration: 0.45, ease }}>
         <a href="#top" className="brand" aria-label="Home"><span className="mark">H</span><span className="brand-t">Halima</span></a>
         <div className="nav-r">
           <nav className="links" aria-label="Main">
@@ -209,11 +161,22 @@ function Hero() {
 
 /* ---------- ABOUT: your paragraphs, one under the other, in the normal text style ---------- */
 function About() {
+  // the ladybug and its trail are drawn in from the top as you scroll to this section (it is fully drawn by the time the section fills the screen)
+  const art = useRef(null);
+  const calm = useReducedMotion();
+  const { scrollYProgress } = useScroll({ target: art, offset: ["start 95%", "center 55%"] });
+  const p = useSpring(scrollYProgress, { stiffness: 70, damping: 24 });
+  const clip = useTransform(p, [0, 1], ["inset(0% 0% 100% 0%)", "inset(0% 0% 0% 0%)"]);
   return (
     <section className="about" id="about"><div className="wrap">
       <Reveal as="h2">About <em>me</em></Reveal>
-      <div className="ab">
-        {about.map((t, i) => <Reveal key={i} as="p" delay={0.08 + i * 0.08} className="body">{t}</Reveal>)}
+      <div className="ab-grid">
+        <div className="ab">
+          {about.map((t, i) => <Reveal key={i} as="p" delay={0.08 + i * 0.08} className="body">{t}</Reveal>)}
+        </div>
+        <motion.div className="ab-art" ref={art} aria-hidden="true" style={calm ? undefined : { clipPath: clip }}>
+          <img src="assets/img/ladybug-curl.webp" alt="" loading="lazy" />
+        </motion.div>
       </div>
     </div></section>
   );
@@ -385,7 +348,6 @@ function Work() {
         <Reveal as="h2">Selected <em>projects</em></Reveal>
         <div className="parrows">
           <button className="pbtn" onClick={() => go(pg - 1)} disabled={pg === 0} aria-label="Previous projects"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg></button>
-          <span className="pcount">{pg + 1} / {n}</span>
           <button className="pbtn" onClick={() => go(pg + 1)} disabled={pg >= n - 1} aria-label="Next projects"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg></button>
         </div>
       </div>
@@ -420,7 +382,7 @@ function Work() {
 const TRAIL = "M100 0 C165 40 165 110 100 150 C35 190 30 245 70 280 C108 312 148 282 126 256 C104 232 72 285 90 335 C102 375 100 410 100 450 C165 490 165 545 130 580 C98 612 58 582 78 556 C98 530 130 590 112 640 C100 680 100 710 100 750 C35 790 40 850 100 880";
 function Experience() {
   const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 75%", "end 55%"] });
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 80%", "end 90%"] });
   const len = useSpring(scrollYProgress, { stiffness: 90, damping: 24 });
   return (
     <section className="xp" id="experience"><div className="wrap">
