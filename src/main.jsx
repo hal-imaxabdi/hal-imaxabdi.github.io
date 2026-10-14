@@ -2,7 +2,8 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import { motion, AnimatePresence, MotionConfig, useScroll, useSpring } from "framer-motion";
 import { logos } from "./logos.js";
-import { G, me, projects, jobs, stack, certs, contact } from "./data.js";
+import { skillLogos } from "./skillLogos.js";
+import { G, me, about, projects, jobs, stack, certs, contact } from "./data.js";
 
 const ease = [0.22, 1, 0.36, 1];
 const Arrow = () => <i className="arr">↗</i>;
@@ -113,31 +114,69 @@ function Hero() {
   );
 }
 
-/* ---------- ABOUT ---------- */
+/* ---------- ABOUT: framed by the ladybug's dotted trail ---------- */
+const LEFT_TRAIL = "M45 0 C45 40 8 70 12 108 C16 148 72 146 74 188 C76 226 24 218 26 192 C28 166 64 186 56 234 C52 262 45 276 45 300 C45 340 10 362 14 402 C18 442 76 432 72 474 C68 514 45 540 45 600";
+const BOTTOM_TRAIL = "M0 45 C70 -10 150 -5 230 30 C310 66 380 100 470 62 C560 25 620 -5 710 24 C800 52 860 80 930 56 C960 46 985 45 1000 45";
+function Ladybug({ rot = 0, delay = 0 }) {
+  return (
+    <motion.span className="lbug" initial={{ opacity: 0, scale: 0.3 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: "0px 0px -10% 0px" }} transition={{ duration: 0.6, ease, delay }}>
+      <svg viewBox="0 0 64 64" style={{ transform: `rotate(${rot}deg)` }} aria-hidden="true">
+        <path d="M27 13c-1-6-8-7-10-3M37 13c1-6 8-7 10-3" fill="none" stroke="#111" strokeWidth="1.7" strokeLinecap="round" />
+        <ellipse cx="32" cy="38" rx="20" ry="22" fill="var(--accent)" />
+        <path d="M32 16v44" stroke="#111" strokeWidth="1.8" />
+        <path d="M16.5 24C19 13 25 9.5 32 9.5S45 13 47.5 24C42 20 37 19 32 19s-10 1-15.500 5z" fill="#111" />
+        {[[21, 37], [25, 50], [26, 28], [43, 37], [39, 50], [38, 28]].map(([x, y]) => <circle key={x + "" + y} cx={x} cy={y} r="3.3" fill="#111" />)}
+      </svg>
+    </motion.span>
+  );
+}
+function Trail({ d, id, vb }) {
+  return (
+    <svg viewBox={vb} preserveAspectRatio="none" aria-hidden="true">
+      <defs><mask id={id} maskUnits="userSpaceOnUse" x="-40" y="-40" width="1200" height="800">
+        <motion.path d={d} fill="none" stroke="#fff" strokeWidth="30" strokeLinecap="round" initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true, margin: "0px 0px -15% 0px" }} transition={{ duration: 2.2, ease: "easeInOut" }} />
+      </mask></defs>
+      <path className="dots" d={d} mask={`url(#${id})`} />
+    </svg>
+  );
+}
+function LadyFrame({ children }) {
+  return (
+    <div className="lframe">
+      <div className="lf-left">
+        <Trail d={LEFT_TRAIL} id="lf-m1" vb="0 0 90 600" />
+        <i className="lpos" style={{ top: "0%", left: "50%" }}><Ladybug rot={28} /></i>
+        <i className="lpos" style={{ top: "50%", left: "50%" }}><Ladybug rot={-24} delay={0.5} /></i>
+        <i className="lpos" style={{ top: "100%", left: "50%" }}><Ladybug rot={-12} delay={0.9} /></i>
+      </div>
+      <div className="lf-bottom">
+        <Trail d={BOTTOM_TRAIL} id="lf-m2" vb="0 0 1000 90" />
+        <i className="lpos" style={{ top: "50%", left: "100%" }}><Ladybug rot={-34} delay={1.3} /></i>
+      </div>
+      {children}
+    </div>
+  );
+}
 function About() {
   return (
     <section className="about" id="about"><div className="wrap">
-      <div className="about-grid">
-        <Reveal className="cutout" y={20}>
-          <span className="glow" />
-          <img src="assets/img/about.webp" alt="Illustration of a masked hero with dark blue hair" loading="lazy" />
-        </Reveal>
-        <div>
-          <Reveal as="p" className="eyebrow">About</Reveal>
-          <Reveal as="h2" delay={0.08}>About <em>me</em></Reveal>
-          <Reveal delay={0.16} as="p" className="body">
-            I'm Halima, a third-year Informatics student at President University, specializing in cybersecurity, with a CGPA of 3.73.
+      <LadyFrame>
+        <div className="about-grid">
+          <Reveal className="cutout" y={20}>
+            <span className="glow" />
+            <img src="assets/img/about.webp" alt="Illustration of a masked hero with dark blue hair" loading="lazy" />
           </Reveal>
-          <Reveal delay={0.22} as="p" className="body">
-            I enjoy both sides of security: building software, and testing and monitoring it to find where it breaks. My work spans CTF competitions, penetration testing, SOC analysis and full-stack development.
-          </Reveal>
+          <div>
+            <Reveal as="h2">About <em>me</em></Reveal>
+            {about.map((t, i) => <Reveal key={i} delay={0.12 + i * 0.07} as="p" className="body">{t}</Reveal>)}
+          </div>
         </div>
-      </div>
+      </LadyFrame>
     </div></section>
   );
 }
 
-/* ---------- SKILLS: three toolkit panels ---------- */
+/* ---------- SKILLS: Defend / Build / Test, official logos on white plates ---------- */
 const L = {
   activity: <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />,
   search: <><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></>,
@@ -152,24 +191,28 @@ const L = {
   beaker: <><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2" /><line x1="8.5" y1="2" x2="15.5" y2="2" /><line x1="7" y1="16" x2="17" y2="16" /></>,
   ok: <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></>,
 };
+const TOOL_LOGOS = { ...logos, ...skillLogos };
 function ToolIcon({ k }) {
-  const l = logos[k];
+  const l = TOOL_LOGOS[k];
   if (l) return <svg viewBox={`0 0 ${l.w} ${l.h}`} aria-hidden="true" dangerouslySetInnerHTML={{ __html: l.body }} />;
   return <svg className="line" viewBox="0 0 24 24" aria-hidden="true">{L[k]}</svg>;
 }
+const BUG_TILT = [-9, 6, -4];
 function Skills() {
   return (
     <section className="skills" id="skills"><div className="wrap">
       <Reveal as="h2">What I <em>work with</em></Reveal>
       <div className="kits">
         {stack.map((g, gi) => (
-          <Reveal key={g.title} delay={gi * 0.1} y={36} className="kit">
-            <div className="kit-head"><h3>{g.title}</h3><span>0{gi + 1}</span></div>
+          <Reveal key={g.title} delay={gi * 0.1} y={30} className="kit">
+            <motion.img className="kit-bug" src="assets/img/ladybug-button.webp" alt="" aria-hidden="true"
+              style={{ rotate: BUG_TILT[gi] }} whileHover={{ rotate: BUG_TILT[gi] + 12, scale: 1.07 }} transition={{ type: "spring", stiffness: 300, damping: 14 }} />
+            <h3>{g.title}</h3>
             <div className="kit-grid">
               {g.items.map(([name, icon], i) => (
-                <motion.div key={name} className="tool" initial={{ opacity: 0, scale: .85 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: "0px 0px -8% 0px" }} transition={{ duration: .5, ease, delay: 0.15 + i * 0.05 }}>
-                  <span className="ticon"><ToolIcon k={icon} /></span>
-                  <span>{name}</span>
+                <motion.div key={name} className="tool" initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "0px 0px -8% 0px" }} transition={{ duration: 0.5, ease, delay: 0.1 + i * 0.05 }}>
+                  <span className="tplate"><ToolIcon k={icon} /></span>
+                  <span className="tname">{name}</span>
                 </motion.div>
               ))}
             </div>

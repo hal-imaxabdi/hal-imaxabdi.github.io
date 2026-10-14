@@ -4,8 +4,14 @@ export const G = "https://github.com/hal-imaxabdi/";
 export const me = {
   name: "Halima Abdirizak Mohamed",
   short: "Halima", // home page greeting: "Hi, I'm Halima"
-  tagline: "I build secure systems, and I know how to break them.", // line under the greeting
+  tagline: "Informatics student at President University, focused on cybersecurity and backend development.", // one line under the greeting: who you are
 };
+
+/* About section: one string per paragraph. */
+export const about = [
+  "I'm Halima, a third-year Informatics student at President University, specializing in cybersecurity. I enjoy understanding how technology works, building with it, and finding ways to make it safer.",
+  "Cybersecurity and backend development are where I spend most of my time, from SOC labs and security projects to APIs I build and test myself. I'm curious, hands-on, and always happy to learn from the people around me, and I'll stay with a problem until I understand it properly.",
+];
 
 /* Projects appear in this order. SEMIS and Hookline are the two big cards.
    repo = GitHub repo name   live = add a demo URL and a "Live demo" button appears   pos = image crop (CSS object-position) */
@@ -41,12 +47,14 @@ export const jobs = [
   { when:"Jul — Sep 2026", role:"Backend AI Intern", org:"FlyRank AI", d:"Secured payment webhooks with HMAC-SHA512 and blocked duplicate charges. 68 tests." },
 ];
 
-/* Skills panels. Each item: [name, icon]. Icons that match a logo key (python, git, ...) show the real logo;
-   the others use simple line icons (activity, search, mail, alert, globe, check, grid, terminal, wifi, shield, ok). */
+/* Skills panels. Each item: [name, icon].
+   An icon that matches a logo key shows the official logo (python, fastapi, flask, node, php, postgres, docker, git,
+   splunk, elastic, kali, wireshark, pytest, owasp, safeline). The others have no single official logo, so they get a simple line icon
+   (activity, mail, alert, check, grid ...). */
 export const stack = [
-  { title:"Defend", items:[["SOC monitoring","activity"],["Splunk & Elastic SIEM","search"],["Phishing analysis","mail"],["Malware detection","alert"],["Web app security","globe"],["NIST CSF","check"],["MITRE ATT&CK","grid"]] },
-  { title:"Build", items:[["Python","python"],["FastAPI","fastapi"],["Flask","beaker"],["Node.js","node"],["PHP","php"],["PostgreSQL","postgres"],["Docker","docker"],["Git","git"]] },
-  { title:"Test", items:[["Kali Linux","terminal"],["Wireshark","wifi"],["SafeLine WAF","shield"],["pytest","ok"]] },
+  { title:"Defend", items:[["SOC monitoring","activity"],["Splunk","splunk"],["Elastic SIEM","elastic"],["Phishing analysis","mail"],["Malware detection","alert"],["MITRE ATT&CK","grid"],["NIST CSF","check"]] },
+  { title:"Build", items:[["Python","python"],["FastAPI","fastapi"],["Flask","flask"],["Node.js","node"],["PHP","php"],["PostgreSQL","postgres"],["Docker","docker"],["Git","git"]] },
+  { title:"Test", items:[["Kali Linux","kali"],["Wireshark","wireshark"],["SafeLine WAF","safeline"],["Web app security","owasp"],["pytest","pytest"]] },
 ];
 
 /* Certificates: logo = brand logo shown on the tile. "google", "github" and "aws" are built in.
