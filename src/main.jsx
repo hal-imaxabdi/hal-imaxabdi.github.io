@@ -273,7 +273,11 @@ function Modal({ onClose, label, children, bare = false }) {
 const hl = l => l.split(/(#.*$|\b(?:def|if|not|return|raise)\b)/).map((s, i) =>
   !s ? null : s[0] === "#" ? <span key={i} className="c">{s}</span> : /^(def|if|not|return|raise)$/.test(s) ? <span key={i} className="k">{s}</span> : s);
 const Code = ({ lines }) => <div className="code">{lines.map((l, i) => <div key={i}>{hl(l) || " "}</div>)}</div>;
-const Media = ({ p }) => p.code ? <Code lines={p.code} /> : <img src={"assets/img/" + p.img} alt={p.t + " screenshot"} style={p.pos ? { objectPosition: p.pos } : undefined} loading="lazy" />;
+/* the whole screenshot is always visible (never cropped or stretched) on a softly blurred copy of itself. Add fit:"cover" in data.js to fill the card instead. */
+const Media = ({ p }) => p.img
+  ? (<><span className="pbg" style={{ backgroundImage: `url(assets/img/${p.img})` }} />
+      <img className={p.fit === "cover" ? "cover" : "contain"} src={"assets/img/" + p.img} alt={p.t + " screenshot"} style={p.pos ? { objectPosition: p.pos } : undefined} loading="lazy" /></>)
+  : p.code ? <Code lines={p.code} /> : null;
 
 const FlipIcon = () => <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8" /><path d="M4 3v5h5" /><path d="M4 13a8 8 0 0 0 14.5 4.5L20 16" /><path d="M20 21v-5h-5" /></svg>;
 
@@ -281,20 +285,21 @@ const FlipIcon = () => <svg viewBox="0 0 24 24" width="18" height="18" fill="non
 function PBack({ p, flipped, onFlip }) {
   const sc = useRef(null);
   const [page, setPage] = useState(0);
+  // page 1: what it is + the tech stack right after the sentence. page 2: what I built. page 3: the results. No headings, so it reads as one flow.
   const pages = [
     <>
       <small className="pk">{p.k}</small>
       <h3>{p.t}</h3>
       <p className="pd">{p.d}</p>
-    </>,
-    ...(p.points ? [<>
-      <h4>What I built</h4>
-      <ul className="ppts">{p.points.map(x => <li key={x}>{x}</li>)}</ul>
-    </>] : []),
-    <>
-      <h4>Tech stack</h4>
       <div className="tags">{p.tags.map(x => <span key={x}>{x}</span>)}</div>
     </>,
+    ...(p.points ? [
+      <ul className="ppts">{p.points.map(([a, b]) => <li key={a}><b>{a}</b> {b}</li>)}</ul>
+    ] : []),
+    ...(p.stats ? [<>
+      <div className="pstats">{p.stats.map(([v, l]) => <div key={l}><strong>{v}</strong><span>{l}</span></div>)}</div>
+      {p.note && <p className="pnote">{p.note}</p>}
+    </>] : []),
   ];
   const last = pages.length - 1;
   const check = useCallback(() => {
@@ -329,7 +334,6 @@ function PBack({ p, flipped, onFlip }) {
   );
 }
 
-const SPAN = ["s4", "s2", "s2", "s2", "s2", "s3", "s3"];
 function Work() {
   const [open, setOpen] = useState(null);
   useEffect(() => {
@@ -346,7 +350,7 @@ function Work() {
         {projects.map((p, i) => {
           const flipped = open === p.t;
           return (
-            <Reveal key={p.t} delay={(i % 3) * 0.08} y={36} className={"pcell " + SPAN[i]}>
+            <Reveal key={p.t} delay={(i % 3) * 0.08} y={36} className="pcell">
               <div className={"pflip" + (flipped ? " flipped" : "")}>
                 <button type="button" className="pface pcard" onClick={() => setOpen(p.t)} aria-expanded={flipped} aria-label={"Flip to read about " + p.t} inert={flipped ? "" : undefined}>
                   <div className="pmedia"><Media p={p} /></div>
