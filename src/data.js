@@ -5,7 +5,7 @@ export const heroVisual = "image";
 export const me = {
   name: "Halima Abdirizak Mohamed",
   short: "Halima",
-  rotator: ["Cybersecurity practitioner", "Backend developer", "Security lab builder"]
+  rotator: ["Cybersecurity practitioner", "Backend developer", "Security lab builder"],
   tagline: "I work across software development and cybersecurity.", 
 };
 
