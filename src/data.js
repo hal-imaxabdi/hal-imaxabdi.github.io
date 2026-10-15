@@ -1,12 +1,12 @@
 export const G = "https://github.com/hal-imaxabdi/";
 
-export const heroVisual = "image"; // "image" = the masked hero on the right, "video" = the old illustrated video
+export const heroVisual = "image"; 
 
 export const me = {
   name: "Halima Abdirizak Mohamed",
   short: "Halima",
-  rotator: ["Cybersecurity student", "Backend developer", "Security lab builder", "Problem solver"], // the big line that swaps under your name
-  tagline: "I build software, explore security, and solve technical problems.", // one line under the greeting
+  rotator: ["Cybersecurity practitioner", "Backend developer", "Security lab builder"]
+  tagline: "I work across software development and cybersecurity.", 
 };
 
 /* About section: one string per paragraph, shown side by side in the normal text style. Your own words; the last two paragraphs are joined into one. */
@@ -99,7 +99,6 @@ export const stack = [
 export const certs = [
   { t:"Google Cybersecurity Professional", org:"Google", img:"google-cybersecurity.webp", date:"" },
   { t:"Google AI Professional", org:"Google", img:"google-ai.webp", date:"" },
-  { t:"Incident Response and Digital Forensics", org:"IBM", img:"ibm-incident-response.webp", date:"" },
   { t:"GitHub Foundations (GH-900)", org:"GitHub", img:"github-foundations.webp", date:"" },
   { t:"AWS Security Fundamentals", org:"Amazon Web Services", img:"aws-security.webp", date:"" },
   { t:"Cybersecurity Analyst Job Simulation", org:"Forage", img:"forage-cyber.webp", date:"" },
