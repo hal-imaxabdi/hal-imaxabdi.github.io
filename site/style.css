@@ -65,8 +65,8 @@ html.theming,html.theming *,html.theming *::before,html.theming *::after{transit
 /* every section gets the same space above and below, and anything decorative is clipped at its own edge */
 .about,.work,.skills,.xp,.certs{position:relative;overflow:clip}
 .about{padding:var(--sec) 0}
-/* every section from About to Certifications is the same height (90% of the screen) with its content centred, so each one fills the
-   screen on its own and its neighbours stay out of view. The hero and Contact take the full screen. */
+/* every section from About to Certifications is at least one full screen tall (see the SECTION HEIGHT block at the very bottom of this file),
+   so each one fills the screen on its own and its neighbours stay out of view. The hero and Contact take the full screen. */
 .hero{min-height:100svh}
 .contact{display:flex;flex-direction:column}
 .contact .wrap{flex:1;display:flex;flex-direction:column}
@@ -337,25 +337,39 @@ html[data-theme="dark"] .bugcur{filter:drop-shadow(0 0 1px #fff) drop-shadow(0 1
 
 /* ---- certifications line up with every other section (same width, so the heading starts at the same left edge) ---- */
 .certs .wrap.wide{width:min(72rem,100% - 3rem)}
-/* ---- every section fills one screen, content centred, so neighbours never peek in ---- */
+
+
+/* =====================================================================
+   NEW FIXES (keep this block at the very bottom of the file)
+   ===================================================================== */
+
+/* ---- SECTION HEIGHT: every section from About to Certifications is at least one full screen tall.
+   This is what stops Experience from peeking in under Skills (e.g. on "Tools & Platforms",
+   which has only a few skills). Content starts at the top, so it never jumps when you switch tabs. ---- */
 .about,.work,.skills,.xp,.certs{
   min-height:100svh;
   display:flex;
   flex-direction:column;
-  justify-content:center;
+  justify-content:flex-start;
 }
-.certs-page{justify-content:flex-start} /* the "view more" page should start at the top */
 
-/* ---- projects: a little more room for the cards ---- */
-.work{padding-top:calc(var(--sec) + 1.5rem)}   /* was +2.5rem */
+/* ---- PROJECTS: a little more room so the cards are more visible ---- */
+.work{padding-top:calc(var(--sec) + 1.5rem)}      /* was + 2.5rem */
 .work .sec-head{margin-bottom:.8rem}
-.pcell{max-height:calc(100svh - 9rem)}          /* was 11rem */
+.pcell{max-height:calc(100svh - 9rem)}             /* was 11rem; lower number = taller cards */
 @media(min-width:901px) and (max-height:760px){
   .work{padding-top:calc(var(--sec) + 2.25rem)}
-  .pcell{max-height:calc(100svh - 8rem)}        /* was 9.75rem */
+  .pcell{max-height:calc(100svh - 8rem)}           /* was 9.75rem */
 }
 
-/* ---- certifications: bring the "view more" button up ---- */
-.cgrid{margin-top:1.4rem;gap:1.6rem 1.6rem}
-.cmore{margin-top:.8rem}
-.certs{padding-bottom:calc(var(--sec) * .5)}
+/* ---- CERTIFICATIONS: tighter spacing so "View more" comes up and is fully visible ---- */
+.certs{padding-top:calc(var(--sec) + 1.5rem);padding-bottom:calc(var(--sec) * .5)}
+.certs-page{padding-top:7.5rem;padding-bottom:6rem}
+.cgrid{margin-top:1rem;gap:1.4rem 1.6rem}
+.cgrid.all{gap:3.4rem 2.6rem}
+.cframe.thumb{margin-bottom:.2rem}
+.cframe.thumb img{aspect-ratio:1.55/1}             /* slightly shorter thumbnails; use 1.4/1 to go back */
+.ccard{gap:.35rem}
+.certs .ccap{font-size:1rem;max-width:none;line-height:1.3}
+.cmore{margin-top:.6rem}
+@media(max-width:560px){.cgrid{gap:2rem}}
