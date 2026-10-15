@@ -11,9 +11,9 @@ export const me = {
 
 /* About section: one string per paragraph, shown side by side in the normal text style. Your own words; the last two paragraphs are joined into one. */
 export const about = [
-  "I'm Halima, an Informatics student at President University in Indonesia, originally from Kenya, focused on cybersecurity and software development.",
+  "I'm Halima, an Informatics final year student at President University in Indonesia, focused on cybersecurity and software development.",
   "Through internships, projects and hands-on labs, I've worked on web application security, backend systems, security monitoring and authentication. I enjoy understanding how things work and building things that are useful and reliable.",
-  "I use AI tools to support my workflow, but I make sure I understand the code and results behind my work. I'm always looking for opportunities to contribute, learn from others and take on new challenges.",
+  "I'm always looking for opportunities to contribute, learn from others and take on new challenges.",
 ];
 
 export const projects = [
@@ -90,10 +90,10 @@ export const jobs = [
 export const skillsIntro = "A selection of technologies and concepts I've used across projects, internships, and hands-on practice.";
 
 export const stack = [
-  { title:"Programming & Development", items:["Python","SQL","JavaScript","TypeScript","React","Node.js","Flask","FastAPI","REST APIs","Git","GitHub","Docker"] },
-  { title:"Cybersecurity", items:["Web application security","Authentication & authorization","Vulnerability analysis","Phishing analysis","Security monitoring","Log analysis"] },
+  { title:"Programming & Development", items:["Python","SQL","JavaScript","TypeScript","Node.js","Flask","FastAPI","Git","GitHub","Docker"] },
+  { title:"Cybersecurity", items:["Web application security","Authentication & authorization","Vulnerability analysis","Phishing analysis","Security monitoring"] },
   { title:"Tools & Platforms", items:["Linux","Wireshark","Elastic SIEM","Splunk","SafeLine WAF"] },
-  { title:"Concepts & Frameworks", items:["OWASP Top 10","NIST Cybersecurity Framework","MITRE ATT&CK","Networking","Cryptography","Database Systems"] },
+  { title:"Concepts & Frameworks", items:["OWASP Top 10","NIST Cybersecurity Framework","MITRE ATT&CK","Networking","Database Systems"] },
 ];
 
 export const certs = [
