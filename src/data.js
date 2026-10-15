@@ -42,14 +42,6 @@ export const projects = [
             ["Progress tracking","the 51 NIST CSF controls work as a checklist"],
             ["Plain-language findings","a local AI model (llama3.2 through Ollama) explains each result"]],
     stats:[["Start to finish","from listing assets to a finished report, in one tool"],["Runs locally","the AI explanations run on your own computer, not on an outside service"]] },
-  { t:"SOC Homelab", k:"Monitoring and detection", img:"soc-homelab.webp", repo:"Soc-Homelab", live:"",
-    d:"Two virtual machines set up like a small security operations centre. Logs from a Windows machine and a Kali machine flow into Elastic Cloud, where I wrote my own detection rules and tested them with real attacks.",
-    tags:["Elastic","Sysmon","KQL","Kali"],
-    points:[["Collecting logs","Winlogbeat and Filebeat send Sysmon and auditd logs to Elastic"],
-            ["My own rules","written in KQL against the fields I actually collect"],
-            ["Tested","each rule was tried with attack traffic from Kali"],
-            ["Isolated","the lab runs on separate virtual networks in VirtualBox"]],
-    stats:[["~60 s","from launching a reverse shell to getting an alert"],["Own rules","I wrote them and checked each one against a real attack"]] },
   { t:"WAF Homelab", k:"Web application firewall", img:"waf-homelab.jpg", repo:"WAF-HomeLab-SafeLine", live:"",
     d:"I wanted to know whether a web application firewall really stops common attacks. I put SafeLine in front of a deliberately vulnerable app (DVWA), attacked it from Kali, and recorded what was blocked, logged or missed.",
     tags:["SafeLine","Docker","Apache","DVWA"],
@@ -91,8 +83,8 @@ export const skillsIntro = "A selection of technologies and concepts I've used a
 
 export const stack = [
   { title:"Programming & Development", items:["Python","SQL","JavaScript","TypeScript","Node.js","Flask","FastAPI","Git","GitHub","Docker"] },
-  { title:"Cybersecurity", items:["Web application security","Authentication & authorization","Vulnerability analysis","Phishing analysis","Security monitoring"] },
-  { title:"Tools & Platforms", items:["Linux","Wireshark","Elastic SIEM","Splunk","SafeLine WAF"] },
+  { title:"Cybersecurity", items:["Web application security","Authentication & authorization","Vulnerability analysis","Phishing analysis"] },
+  { title:"Tools & Platforms", items:["Linux","Wireshark","SafeLine WAF","VirtualBox","Nmap"] },
   { title:"Concepts & Frameworks", items:["OWASP Top 10","NIST Cybersecurity Framework","MITRE ATT&CK","Networking","Database Systems"] },
 ];
 
