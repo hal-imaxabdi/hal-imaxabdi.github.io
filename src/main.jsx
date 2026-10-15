@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { createRoot } from "react-dom/client";
-import { motion, AnimatePresence, MotionConfig, useScroll, useSpring, useMotionValue, useTransform, useDragControls, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, MotionConfig, useScroll, useSpring, useMotionValue, useTransform, useReducedMotion } from "framer-motion";
 import { logos } from "./logos.js";
 import { G, me, heroVisual, about, projects, jobs, stack, skillsIntro, certs, contact } from "./data.js";
 
@@ -34,6 +34,27 @@ function useTheme() {
 const Sun = () => <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>;
 const Moon = () => <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"/></svg>;
 
+/* ---------- SMOOTH SCROLL: slides to a section from wherever you are. It re-measures the target every frame, so late-loading images can't make it stop short or jump. ---------- */
+let glideRaf = 0;
+function glideTo(el) {
+  cancelAnimationFrame(glideRaf);
+  const html = document.documentElement;
+  const dest = () => Math.max(0, Math.min(el.getBoundingClientRect().top + scrollY, html.scrollHeight - innerHeight));
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { window.scrollTo(0, dest()); return; }
+  const from = scrollY, t0 = performance.now();
+  const dur = Math.min(1300, Math.max(550, Math.abs(dest() - from) * 0.3));
+  const end = () => { removeEventListener("wheel", stop); removeEventListener("touchstart", stop); removeEventListener("keydown", stop); };
+  const stop = () => { cancelAnimationFrame(glideRaf); end(); };   // the visitor grabs the scroll: let go at once
+  addEventListener("wheel", stop, { passive: true }); addEventListener("touchstart", stop, { passive: true }); addEventListener("keydown", stop);
+  const step = now => {
+    const k = Math.min(1, (now - t0) / dur);
+    const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;   // ease in-out
+    window.scrollTo(0, from + (dest() - from) * e);
+    if (k < 1) glideRaf = requestAnimationFrame(step); else end();
+  };
+  glideRaf = requestAnimationFrame(step);
+}
+
 /* ---------- NAV ---------- */
 const NAV = [["about", "About"], ["work", "Projects"], ["skills", "Skills"], ["experience", "Experience"], ["certifications", "Certifications"]];
 const NAV_ICON = {
@@ -57,10 +78,22 @@ function Nav({ route }) {
   const [on, setOn] = useState(""), [open, setOpen] = useState(false), [hide, setHide] = useState(false);
   const [theme, toggle] = useTheme();
   const wide = useWide();
+  // which link is highlighted: the last section whose top has passed 40% of the screen. At the very bottom of the page it is always Contact
+  // (Contact is shorter than a screen, so the old observer kept highlighting Certifications and the bar looked like it jumped there).
   useEffect(() => {
-    const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && setOn(e.target.id)), { rootMargin: "-45% 0px -50% 0px" });
-    [...NAV.map(n => n[0]), "contact", "top"].forEach(id => { const el = document.getElementById(id); el && io.observe(el); });
-    return () => io.disconnect();
+    if (route !== "home") return;
+    const ids = [...NAV.map(n => n[0]), "contact"];
+    let raf = 0;
+    const f = () => {
+      raf = 0;
+      const atEnd = innerHeight + scrollY >= document.documentElement.scrollHeight - 4;
+      let c = "";
+      for (const id of ids) { const el = document.getElementById(id); if (el && el.getBoundingClientRect().top <= innerHeight * 0.4) c = id; }
+      setOn(atEnd ? "contact" : c);
+    };
+    const q = () => { if (!raf) raf = requestAnimationFrame(f); };
+    f(); addEventListener("scroll", q, { passive: true }); addEventListener("resize", q);
+    return () => { cancelAnimationFrame(raf); removeEventListener("scroll", q); removeEventListener("resize", q); };
   }, [route]);
   const cur = route === "certs" ? "certifications" : on;
   // the top bar stays on screen the whole way down on desktop. On phones it slides away while you read down and returns when you scroll up
@@ -161,12 +194,8 @@ function Hero() {
 
 /* ---------- ABOUT: your paragraphs, one under the other, in the normal text style ---------- */
 function About() {
-  // the ladybug and its trail are drawn in from the top as you scroll to this section (it is fully drawn by the time the section fills the screen)
-  const art = useRef(null);
+  // the ladybug and its trail are drawn in from the top the moment this part comes into view (a timed reveal, so a reload mid-page can't leave it hidden)
   const calm = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target: art, offset: ["start 95%", "center 55%"] });
-  const p = useSpring(scrollYProgress, { stiffness: 70, damping: 24 });
-  const clip = useTransform(p, [0, 1], ["inset(0% 0% 100% 0%)", "inset(0% 0% 0% 0%)"]);
   return (
     <section className="about" id="about"><div className="wrap">
       <Reveal as="h2">About <em>me</em></Reveal>
@@ -174,8 +203,12 @@ function About() {
         <div className="ab">
           {about.map((t, i) => <Reveal key={i} as="p" delay={0.08 + i * 0.08} className="body">{t}</Reveal>)}
         </div>
-        <motion.div className="ab-art" ref={art} aria-hidden="true" style={calm ? undefined : { clipPath: clip }}>
-          <img src="assets/img/ladybug-curl.webp" alt="" loading="lazy" />
+        <motion.div className="ab-art" aria-hidden="true"
+          initial={calm ? false : { clipPath: "inset(0% 0% 100% 0%)" }}
+          whileInView={{ clipPath: "inset(0% 0% 0% 0%)" }}
+          viewport={{ once: true, margin: "0px 0px -20% 0px" }}
+          transition={{ duration: 2.4, ease: [0.45, 0, 0.25, 1] }}>
+          <img src="assets/img/ladybug-curl.webp" alt="" decoding="async" />
         </motion.div>
       </div>
     </div></section>
@@ -211,11 +244,9 @@ function Skills() {
         <div className="sstage">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div key={tab} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.28, ease }}>
-              <article className="scard" role="tabpanel" id="spanel" aria-labelledby={"stab-" + tab}>
-                <ul>
-                  {g.items.map(name => <li key={name}>{name}</li>)}
-                </ul>
-              </article>
+              <ul className="sgrid" role="tabpanel" id="spanel" aria-labelledby={"stab-" + tab}>
+                {g.items.map(name => <li className="schip" key={name}><i aria-hidden="true" />{name}</li>)}
+              </ul>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -378,7 +409,7 @@ function Work() {
   );
 }
 
-/* ---------- EXPERIENCE: a sideways timeline. Add a role in data.js (jobs) and it simply joins the row; arrows appear when there are more cards than fit ---------- */
+/* ---------- EXPERIENCE: one Skills-style card per role. Add a role in data.js (jobs) and it joins the row; arrows appear only when the cards don't fit ---------- */
 function Experience() {
   const sc = useRef(null);
   const [edge, setEdge] = useState({ scroll: false, l: false, r: false });
@@ -394,7 +425,7 @@ function Experience() {
   }, [check]);
   const step = dir => {
     const el = sc.current; if (!el) return;
-    const card = el.querySelector(".xitem:not(.xstart)");
+    const card = el.querySelector(".xcard");
     const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
     el.scrollBy({ left: dir * ((card ? card.getBoundingClientRect().width : el.clientWidth * 0.8) + gap), behavior: "smooth" });
   };
@@ -411,21 +442,13 @@ function Experience() {
         )}
       </div>
       <div className="xview" ref={sc} onScroll={check} role="region" aria-label="Work experience" tabIndex={0}>
-        <div className="xitem xstart" aria-hidden="true">
-          <motion.img className="xbug" src="assets/img/ladybug-icon.png" alt="" draggable="false" initial={{ opacity: 0, x: -20, rotate: -20 }} whileInView={{ opacity: 1, x: 0, rotate: -8 }} viewport={{ once: true }} transition={{ duration: .9, ease }} />
-        </div>
         {jobs.map((x, i) => (
-          <div className="xitem" key={x.org + x.when}>
-            <span className="xdot" aria-hidden="true" />
-            <Reveal className="tcard" y={24} delay={0.1 + i * 0.08}>
-              <span className="when">{x.when}</span>
-              <h3>{x.role}</h3>
-              <b className="org">{x.org}</b>
-              {x.d && <p>{x.d}</p>}
-              {x.points && <ul className="xpts">{x.points.map(([a, b]) => <li key={a}><b>{a}</b> {b}</li>)}</ul>}
-              {x.tags && <div className="tags">{x.tags.map(t => <span key={t}>{t}</span>)}</div>}
-            </Reveal>
-          </div>
+          <Reveal className="xcard" y={24} delay={0.08 + i * 0.08} key={x.org + x.when}>
+            <span className="when">{x.when}</span>
+            <h3><img src="assets/img/ladybug-button.webp" alt="" aria-hidden="true" loading="lazy" /><span>{x.role}</span></h3>
+            <b className="org">{x.org}</b>
+            {x.points && <ul className="xpts">{x.points.map(([a, b]) => <li key={a}><b>{a}</b> {b}</li>)}</ul>}
+          </Reveal>
         ))}
       </div>
     </div></section>
@@ -612,6 +635,22 @@ function App() {
     if (el) el.scrollIntoView({ behavior: "instant", block: "start" });
     else if (route === "certs" || !first.current) window.scrollTo({ top: 0, behavior: "instant" });
     first.current = false;
+  }, [route]);
+  // every link that points at a section (#about, #contact, #top...) slides there smoothly. "#/certificates" is a page, so it is left alone.
+  useEffect(() => {
+    if (route !== "home") return;
+    const onClick = e => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = e.target.closest?.('a[href^="#"]'); if (!a) return;
+      const id = decodeURIComponent(a.getAttribute("href").slice(1));
+      const el = id && !id.startsWith("/") ? document.getElementById(id) : null;
+      if (!el) return;
+      e.preventDefault();
+      history.pushState(null, "", "#" + id);
+      glideTo(el);
+    };
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
   }, [route]);
   return (
     <MotionConfig reducedMotion="user">

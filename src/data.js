@@ -16,9 +16,6 @@ export const about = [
   "I use AI tools to support my workflow, but I make sure I understand the code and results behind my work. I'm always looking for opportunities to contribute, learn from others and take on new challenges.",
 ];
 
-/* Each project card: front = screenshot (or code). Back = 3 pages you can swipe:
-   1) k / t / d + tags   2) points: [bold lead, rest]   3) stats: [big value, label] + optional note.
-   Add live:"https://..." to show a Live demo button. fit:"cover" crops the screenshot to fill the card (pos:"right top" picks the part); the default shows the whole screenshot. Only real, checkable numbers here. */
 export const projects = [
   { t:"SEMIS", k:"Secure employee management system", img:"semis.webp", repo:"SEMIS-Secure-Employee-Management-Information-System", live:"",
     d:"I wanted to see how the OWASP Top 10 web risks apply to real employee data, so I built an HR system for a fictional 150-person company and protected it against each one.",
@@ -74,28 +71,19 @@ export const projects = [
     points:[["Weak version (mine)","plaintext passwords and no limit on login attempts"],
             ["Hardened version (mine)","passwords hashed with bcrypt, limits on attempts, account lockout and single-use CSRF tokens"],
             ["Sessions","signed JWT tokens that can be revoked"],
-            ["Testing","my teammate's Python command-line and GUI password guesser, run only against a local copy"]],
-    stats:[["9 of 10","accounts guessed on the weak login, in 74 seconds"],["0 of 10","accounts guessed on the hardened login, after 570 attempts"]],
-    note:"The password-guessing tool was written by my teammate. I built both versions of the login and we ran the tests together." },
+            ["Testing","my teammate's Python command-line Brute-force tool, run only against a local copy"]],
+    stats:[["9 of 10","accounts guessed on the weak login, in 74 seconds"],["0 of 10","accounts guessed on the hardened login, after 570 attempts"]],},
 ];
 
-/* Experience: a sideways row of cards. To add a role, copy one block and put it at the END (the row goes left to right).
-   when, role, org: the heading of the card.   d: one or two sentences about the company and your part.
-   points: optional bullets, each [bold lead, the rest].   tags: optional small pills (tools you used).
-   Delete any line you don't need; the card adjusts. The text below is placeholder text: replace it with your own. */
 export const jobs = [
-  { when:"Sep 2026 — Now", role:"Cybersecurity Intern", org:"ElectraWireless",
-    d:"[Placeholder] One or two sentences: what ElectraWireless does and what your role on the team is.",
-    points:[["What I built","[Placeholder] the main thing you made or improved, e.g. the SHA-256 malware detection for the IoT firmware scanner"],
-            ["How I checked it","[Placeholder] tests, reviews or results you can point to"],
-            ["What I learned","[Placeholder] one thing this internship taught you"]],
-    tags:["[Tool]","[Tool]","[Tool]"] },
+  { when:"Sep 2026 — Now", role:"Cybersecurity Intern", org:"ElectraWireless · Elly Defense",
+    points:[["Malware detection.","Built a SHA-256 hash-matching module for an IoT firmware vulnerability scanner, tested end to end with an EICAR-style file."],
+            ["Network scanning.","Added active scanning with banner grabbing (HTTP, Telnet, FTP) and a default-credential probe."],
+            ["Testing.","Wrote pytest tests and ran end-to-end cases on real IoTGoat firmware in a five-person team using strict Git branching."]] },
   { when:"Jul — Sep 2026", role:"Backend AI Engineering Intern", org:"FlyRank AI",
-    d:"[Placeholder] One or two sentences: what FlyRank AI does and what your role on the team was.",
-    points:[["What I built","[Placeholder] the main thing you made, e.g. the payment notification checks and the duplicate-charge protection"],
-            ["How I checked it","[Placeholder] tests, reviews or results you can point to"],
-            ["What I learned","[Placeholder] one thing this internship taught you"]],
-    tags:["[Tool]","[Tool]","[Tool]"] },
+    points:[["Billing backend.","Built a usage-metering and billing service with FastAPI and PostgreSQL that tracks each account's usage, enforces plan quotas and calculates costs in whole cents."],
+            ["Safe payments.","Added idempotency keys and HMAC-SHA512 signed webhooks with Midtrans (sandbox), so a repeated request or notification is never charged twice."],
+            ["Tested.","Covered the billing flows with 68 automated tests."]] },
 ];
 
 /* Skills section: the heading's sentence, then one tab per group. Click a tab and its skills appear in the card. */
@@ -108,7 +96,6 @@ export const stack = [
   { title:"Concepts & Frameworks", items:["OWASP Top 10","NIST Cybersecurity Framework","MITRE ATT&CK","Networking","Cryptography","Database Systems"] },
 ];
 
-/* date = when you received it, e.g. "Mar 2026". Leave it empty and nothing is shown. The first 4 appear on the home page, all of them on the "view more" page. */
 export const certs = [
   { t:"Google Cybersecurity Professional", org:"Google", img:"google-cybersecurity.webp", date:"" },
   { t:"Google AI Professional", org:"Google", img:"google-ai.webp", date:"" },
@@ -119,6 +106,7 @@ export const certs = [
   { t:"Pre Security Learning Path", org:"TryHackMe", img:"tryhackme-presecurity.webp", date:"" },
   { t:"Information Security Certification", org:"freeCodeCamp", img:"freecodecamp-infosec.webp", date:"" },
   { t:"TechCrush Cybersecurity Bootcamp", org:"TechCrush", img:"techcrush.webp", date:"" },
+  { t:"Backend AI Engineering Internship", org:"FlyRank AI", img:"flyrank-backend-ai.png", date:"Sep 2026" },
 ];
 
 export const contact = {
