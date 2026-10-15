@@ -337,3 +337,25 @@ html[data-theme="dark"] .bugcur{filter:drop-shadow(0 0 1px #fff) drop-shadow(0 1
 
 /* ---- certifications line up with every other section (same width, so the heading starts at the same left edge) ---- */
 .certs .wrap.wide{width:min(72rem,100% - 3rem)}
+/* ---- every section fills one screen, content centred, so neighbours never peek in ---- */
+.about,.work,.skills,.xp,.certs{
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.certs-page{justify-content:flex-start} /* the "view more" page should start at the top */
+
+/* ---- projects: a little more room for the cards ---- */
+.work{padding-top:calc(var(--sec) + 1.5rem)}   /* was +2.5rem */
+.work .sec-head{margin-bottom:.8rem}
+.pcell{max-height:calc(100svh - 9rem)}          /* was 11rem */
+@media(min-width:901px) and (max-height:760px){
+  .work{padding-top:calc(var(--sec) + 2.25rem)}
+  .pcell{max-height:calc(100svh - 8rem)}        /* was 9.75rem */
+}
+
+/* ---- certifications: bring the "view more" button up ---- */
+.cgrid{margin-top:1.4rem;gap:1.6rem 1.6rem}
+.cmore{margin-top:.8rem}
+.certs{padding-bottom:calc(var(--sec) * .5)}
