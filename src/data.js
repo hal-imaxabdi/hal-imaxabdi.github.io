@@ -147,7 +147,7 @@ export const stack = [
 export const certCats = ["Security", "Development", "Other"];
 export const certs = [
   { t:"Google Cybersecurity Professional", org:"Google", img:"google-cybersecurity.webp", cat:"Security", status:"earned" },
-  { t:"Google AI Professional", org:"Google", img:"google-ai.webp", cat:"Development", status:"in progress" },
+  { t:"Google AI Professional", org:"Google", img:"google-ai.webp", cat:"Development", status:"earned", date:"Jun 2026" },
   { t:"GitHub Foundations (GH-900)", org:"GitHub", img:"github-foundations.webp", cat:"Development", status:"earned" },
   { t:"AWS Security Fundamentals", org:"Amazon Web Services", img:"aws-security.webp", cat:"Security", status:"earned" },
   { t:"Cybersecurity Analyst Job Simulation", org:"Forage", img:"forage-cyber.webp", cat:"Security", status:"earned" },

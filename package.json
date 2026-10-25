@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "esbuild src/main.jsx --bundle --minify --format=iife --jsx=automatic --target=es2020 --define:process.env.NODE_ENV=\\\"production\\\" --outfile=site/app.js"
+    "build": "esbuild src/main.jsx --bundle --minify --format=iife --jsx=automatic --target=es2020 --define:process.env.NODE_ENV=\\\"production\\\" --outfile=site/app.js && node stamp.js"
   },
   "keywords": [],
   "author": "",
