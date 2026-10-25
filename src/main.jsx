@@ -16,9 +16,8 @@ const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 /* ---------- SMALL PARTS ---------- */
 const Dot = ({ cls = "" }) => <i className={"dot " + cls} aria-hidden="true" />;
 const Tags = ({ list }) => <ul className="tags">{list.map(t => <li key={t}>{t}</li>)}</ul>;
-const Head = ({ no, label, title, children }) => (
+const Head = ({ title, children }) => (
   <header className="phead">
-    <p className="label">{no}. {label}</p>
     <h1 data-focus tabIndex={-1}>{title}</h1>
     {children}
   </header>
@@ -69,59 +68,19 @@ const Facts = () => (
   </dl>
 );
 function Home() {
-  const track = useRef(null);
-  const [idx, setIdx] = useState(0);
-  const N = 2;
-  const go = i => {
-    const t = track.current, k = Math.max(0, Math.min(N - 1, i));
-    t.scrollTo({ left: k * t.clientWidth, behavior: reduced() ? "auto" : "smooth" });
-  };
-  const onScroll = e => { const t = e.currentTarget; setIdx(Math.round(t.scrollLeft / t.clientWidth)); };
-  useEffect(() => {                         // the home page slides sideways: mouse wheel / trackpad / arrow keys step to the next panel
-    const t = track.current; let lock = false;
-    const step = d => { if (lock) return; lock = true; go(Math.round(t.scrollLeft / t.clientWidth) + d); setTimeout(() => (lock = false), 700); };
-    const wheel = e => {
-      if (Math.abs(e.deltaY) < Math.abs(e.deltaX) || Math.abs(e.deltaY) < 8) return;
-      const pn = e.target.closest(".hpanel"), c = pn && pn.querySelector(".hero-copy,.home-about-in");
-      if (c && c.offsetHeight > pn.clientHeight - 40) return;   // a tall panel on a small screen scrolls normally
-      e.preventDefault(); step(e.deltaY > 0 ? 1 : -1);
-    };
-    const key = e => { if (e.key === "ArrowRight") step(1); else if (e.key === "ArrowLeft") step(-1); };
-    t.addEventListener("wheel", wheel, { passive: false }); addEventListener("keydown", key);
-    return () => { t.removeEventListener("wheel", wheel); removeEventListener("keydown", key); };
-  }, []);
   return (
-    <div className="hslide" ref={track} onScroll={onScroll}>
-      <section className="hpanel hero" aria-labelledby="hero-name" aria-hidden={idx !== 0 ? "true" : undefined}>
-        <Dot cls="h1" /><Dot cls="h2" /><Dot cls="h3" /><Dot cls="h4" /><Dot cls="h5 ring" />
-        <div className="hero-copy">
-          <h1 id="hero-name" data-focus tabIndex={-1} aria-label={"Hi, I'm " + me.first + " " + me.last}>
-            <span className="ln" aria-hidden="true"><span className="hi" style={{ "--i": 0 }}>Hi, I&rsquo;m</span></span>
-            <span className="ln" aria-hidden="true"><span style={{ "--i": 1 }}>{me.first}</span></span>
-            <span className="ln" aria-hidden="true"><span style={{ "--i": 2 }}>{me.last}</span></span>
-          </h1>
-          <p className="lede">{me.tagline}</p>
-          <a className="btn" href="#/projects">Explore my work <span aria-hidden="true">→</span></a>
-        </div>
-        <button type="button" className="hnext" onClick={() => go(1)}><span>Scroll</span><i aria-hidden="true" /></button>
-      </section>
-      <section className="hpanel home-about" aria-labelledby="about-h" aria-hidden={idx !== 1 ? "true" : undefined}>
-        <Dot cls="ha1" /><Dot cls="ha2 ring" /><Dot cls="ha3" />
-        <div className="home-about-in">
-          <p className="label">About me</p>
-          <h2 id="about-h">A bit about me.</h2>
-          <div className="about-grid">
-            <div className="prose">
-              {about.slice(0, 2).map((p, i) => <p key={i}>{p}</p>)}
-              <a className="btn" href="#/about">More about me <span aria-hidden="true">→</span></a>
-            </div>
-            <Facts />
-          </div>
-        </div>
-        <button type="button" className="hnext back" onClick={() => go(0)}><i aria-hidden="true" /><span>Back</span></button>
-      </section>
-      <p className="hcount mono" aria-hidden="true">{pad(idx + 1)} / {pad(N)}</p>
-    </div>
+    <section className="hero" aria-labelledby="hero-name">
+      <Dot cls="h1" /><Dot cls="h2" /><Dot cls="h3" /><Dot cls="h4" /><Dot cls="h5 ring" />
+      <div className="hero-copy">
+        <h1 id="hero-name" data-focus tabIndex={-1} aria-label={"Hi, I'm " + me.first + " " + me.last}>
+          <span className="ln" aria-hidden="true"><span className="hi" style={{ "--i": 0 }}>Hi, I&rsquo;m</span></span>
+          <span className="ln" aria-hidden="true"><span style={{ "--i": 1 }}>{me.first}</span></span>
+          <span className="ln" aria-hidden="true"><span style={{ "--i": 2 }}>{me.last}</span></span>
+        </h1>
+        <p className="lede">{me.tagline}</p>
+        <a className="btn" href="#/projects">Explore my work <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
   );
 }
 
@@ -130,7 +89,7 @@ function About() {
   return (
     <div className="page about">
       <Dot cls="a1" /><Dot cls="a2" /><Dot cls="a3" />
-      <Head no="01" label="About" title={<>About<br />Me.</>} />
+      <Head title={<>About<br />Me.</>} />
       <div className="about-grid">
         <div className="prose">{about.map((p, i) => <p key={i}>{p}</p>)}</div>
         <Facts />
@@ -193,7 +152,7 @@ function Projects() {
   return (
     <div className="page projects">
       <Dot cls="p1" /><Dot cls="p2" /><Dot cls="p3" />
-      <Head no="03" label="Projects" title={<>Selected<br />Projects.</>}>
+      <Head title={<>Selected<br />Projects.</>}>
         <p className="intro">A collection of projects that showcase my skills in full-stack development, backend engineering and cybersecurity.</p>
       </Head>
       <Filters items={cats} value={cat} onChange={setCat} label="Filter projects" />
@@ -229,7 +188,6 @@ function Project({ slug }) {
       <div className="case-bar"><a className="link" href="#/projects">← Back to projects</a><span className="mute mono">{pad(i + 1)} / {pad(projects.length)}</span></div>
       <div className="case-top">
         <div>
-          <p className="label">{pad(i + 1)}. Project{p.status ? " · " + p.status : ""}</p>
           <h1 data-focus tabIndex={-1}>{p.t}</h1>
           <p className="kicker">{p.k}</p>
           <Tags list={p.tags} />
@@ -267,7 +225,7 @@ function Skills() {
   return (
     <div className="page skills">
       <Dot cls="s1" /><Dot cls="s2" />
-      <Head no="04" label="Skills" title="Skills."><p className="intro">{skillsIntro}</p></Head>
+      <Head title="Skills."><p className="intro">{skillsIntro}</p></Head>
       <div className="groups">
         {stack.map(g => (
           <section key={g.title} className="group"><h2>{g.title}</h2><ul className="dots cols">{g.items.map(x => <li key={x}>{x}</li>)}</ul></section>
@@ -282,7 +240,7 @@ function Experience() {
   return (
     <div className="page exp">
       <Dot cls="e1" /><Dot cls="e2" />
-      <Head no="05" label="Experience" title={<>Experience<br />&amp; Learning.</>} />
+      <Head title={<>Experience<br />&amp; Learning.</>} />
       <ol className="line">
         {jobs.map(j => (
           <li key={j.role + j.when}>
@@ -302,18 +260,17 @@ function Experience() {
 
 /* ---------- CERTIFICATES ---------- */
 function Certificates() {
-  const earned = certs.filter(c => (c.status || "earned") === "earned");
-  const dev = certs.filter(c => c.status === "in progress");
-  const cats = ["All", ...certCats.filter(c => earned.some(x => x.cat === c)), ...(dev.length ? ["In development"] : [])];
+  const shown = certs.filter(c => ["earned", "in progress"].includes(c.status || "earned"));   // in-progress ones appear as an "In development" card
+  const cats = ["All", ...certCats.filter(c => shown.some(x => x.cat === c))];
   const [cat, setCat] = useState("All");
   const [view, setView] = useState(null);
   const dlg = useRef(null);
   useEffect(() => { const d = dlg.current; if (view && d && !d.open) d.showModal(); }, [view]);
-  const list = cat === "In development" ? dev : earned.filter(c => cat === "All" || c.cat === cat);
+  const list = shown.filter(c => cat === "All" || c.cat === cat);
   return (
     <div className="page certs">
       <Dot cls="k1" /><Dot cls="k2 ring" />
-      <Head no="06" label="Certificates" title="Certificates."><p className="intro">Verified credentials and continuous learning.</p></Head>
+      <Head title="Certificates."><p className="intro">Verified credentials and continuous learning.</p></Head>
       {cats.length > 2 && <Filters items={cats} value={cat} onChange={setCat} label="Filter certificates" />}
       <ul className="cgrid">
         {list.map(c => c.status === "in progress" ? (
@@ -356,7 +313,7 @@ function Contact() {
   return (
     <div className="page contact">
       <Dot cls="x1" /><Dot cls="x2" /><Dot cls="x3" />
-      <Head no="07" label="Connect" title={<>Let&rsquo;s<br />Connect.</>}>
+      <Head title={<>Let&rsquo;s<br />Connect.</>}>
         <p className="intro">Feel free to reach out if you'd like to collaborate, have a question, or just say hi. I'd love to hear from you.</p>
       </Head>
       <ul className="links">
@@ -368,7 +325,7 @@ function Contact() {
 }
 
 const NotFound = () => (
-  <div className="page"><Head no="404" label="Not found" title="Page not found." /><p className="intro">That page doesn't exist. <a className="link" href="#/">Go home →</a></p></div>
+  <div className="page"><Head title="Page not found." /><p className="intro">That page doesn't exist. <a className="link" href="#/">Go home →</a></p></div>
 );
 
 /* ---------- APP ---------- */
@@ -381,7 +338,6 @@ function App() {
     e.currentTarget.style.setProperty("--px", (e.clientX / innerWidth - 0.5).toFixed(3));
     e.currentTarget.style.setProperty("--py", (e.clientY / innerHeight - 0.5).toFixed(3));
   };
-  useEffect(() => { document.body.classList.toggle("home", route === "/"); }, [route]);
   useEffect(() => {
     const proj = m && projects.find(p => p.slug === m[1]);
     document.title = route === "/" ? "Halima Abdirizak Mohamed · Software Engineering & Cybersecurity" : (proj ? proj.t : TITLES[route] || "Not found") + " · Halima";

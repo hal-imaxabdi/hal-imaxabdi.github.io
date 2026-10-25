@@ -143,11 +143,11 @@ export const stack = [
   { title:"Concepts & Frameworks", items:["OWASP Top 10","NIST Cybersecurity Framework","Networking","Database Systems"] },
 ];
 
-/* Add new certificates here. Optional per entry: date, id, verify (URL), skills, expires. status: "earned" | "in progress" (earned ones show under the category tabs, in-progress ones only under the "In development" tab). */
+/* Add new certificates here. Optional per entry: date, id, verify (URL), skills, expires. status: "earned" | "in progress" (in-progress ones show as an "In development" card under All and their category tab). */
 export const certCats = ["Security", "Development", "Other"];
 export const certs = [
   { t:"Google Cybersecurity Professional", org:"Google", img:"google-cybersecurity.webp", cat:"Security", status:"earned" },
-  { t:"Google AI Professional", org:"Google", img:"google-ai.webp", cat:"Other", status:"in progress" },
+  { t:"Google AI Professional", org:"Google", img:"google-ai.webp", cat:"Development", status:"in progress" },
   { t:"GitHub Foundations (GH-900)", org:"GitHub", img:"github-foundations.webp", cat:"Development", status:"earned" },
   { t:"AWS Security Fundamentals", org:"Amazon Web Services", img:"aws-security.webp", cat:"Security", status:"earned" },
   { t:"Cybersecurity Analyst Job Simulation", org:"Forage", img:"forage-cyber.webp", cat:"Security", status:"earned" },

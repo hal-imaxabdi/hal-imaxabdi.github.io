@@ -81,23 +81,7 @@ h1,h2,h3{font-family:var(--sans);color:var(--black);font-weight:800;letter-spaci
 .dot:nth-child(3n){animation:none}
 
 /* ===== HOME ===== */
-.hslide{position:relative;display:flex;height:calc(100svh - 4.5rem - 3.2rem);overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
-.hslide::-webkit-scrollbar{display:none}
-.hpanel{position:relative;isolation:isolate;flex:0 0 100%;min-width:0;height:100%;overflow:hidden auto;scroll-snap-align:start;scroll-snap-stop:always;display:flex;align-items:center;padding:clamp(1.5rem,4vw,3rem) var(--gut) clamp(4.5rem,8vw,6rem);scrollbar-width:none}
-.hpanel::-webkit-scrollbar{display:none}
-.hcount{position:absolute;left:var(--gut);bottom:1.4rem;z-index:3;font-size:var(--fs-cap);letter-spacing:.1em;pointer-events:none}
-.hnext{position:absolute;right:var(--gut);bottom:1.2rem;z-index:3;display:flex;align-items:center;gap:.9rem;padding:.7rem 1.1rem;border:var(--bw) solid var(--black);border-radius:var(--r-pill);background:var(--white);color:var(--black);font:500 var(--fs-small)/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background var(--t),color var(--t)}
-.hnext i{position:relative;width:3rem;height:var(--bw);background:currentColor;transform-origin:left;animation:nudge 1.8s var(--ease) infinite}
-.hnext i::after{content:"";position:absolute;right:0;top:50%;width:.55rem;height:.55rem;border:solid currentColor;border-width:var(--bw) var(--bw) 0 0;transform:translateY(-50%) rotate(45deg)}
-.hnext:hover{background:var(--black);color:var(--white)}
-.hnext.back{right:auto;left:50%;transform:translateX(-50%);bottom:1.2rem}
-.hnext.back i{transform-origin:right;animation-name:nudgeL}
-.hnext.back i::after{right:auto;left:0;transform:translateY(-50%) rotate(-135deg)}
-.hnext.back{flex-direction:row}
-@keyframes nudge{0%,100%{transform:scaleX(.55)}50%{transform:scaleX(1)}}
-@keyframes nudgeL{0%,100%{transform:scaleX(.55)}50%{transform:scaleX(1)}}
-body.home .foot{padding:.9rem var(--gut);flex-wrap:nowrap;border-top:1px solid var(--line);height:3.2rem;align-items:center}
-body.home main{min-height:0}
+.hero{position:relative;isolation:isolate;overflow:hidden;background:var(--white);min-height:calc(100svh - 4.5rem);display:flex;align-items:center;padding:clamp(2rem,5vw,4rem) var(--gut) clamp(3rem,6vw,5rem);max-width:none}
 .hero-copy{margin:0 auto;width:100%;max-width:var(--max);margin:0 auto;display:grid;justify-items:start;gap:1.4rem}
 .hero-copy>*{position:relative;z-index:1}
 .hero h1{font-size:clamp(3rem,9.5vw,8.5rem);line-height:.92;letter-spacing:-.055em;color:var(--black);margin:0 0 .6rem}
@@ -111,12 +95,6 @@ body.home main{min-height:0}
 .h3{--s:clamp(4.5rem,12vw,11rem);left:56%;bottom:6%;--d:50}
 .h4{--s:clamp(.9rem,2.2vw,2rem);left:61%;top:24%;--d:70}
 .h5{--s:clamp(3rem,9vw,8rem);right:14%;bottom:7%;--d:-46}
-.home-about-in{position:relative;z-index:1;width:100%;max-width:var(--max);margin:0 auto;display:grid;gap:1rem}
-.home-about h2{font-size:clamp(2.4rem,5.6vw,5rem);margin-bottom:clamp(.6rem,2vw,1.6rem)}
-.home-about .prose .btn{justify-self:start;margin-top:.6rem}
-.ha1{--s:clamp(6rem,17vw,16rem);right:calc(var(--s)*-.3);top:calc(var(--s)*-.3);--d:30}
-.ha2{--s:clamp(3rem,7vw,6rem);left:46%;bottom:9%;--d:-40}
-.ha3{--s:clamp(1.2rem,2.4vw,2rem);left:56%;top:16%;--d:60}
 /* ===== ABOUT ===== */
 .a1{--s:clamp(9rem,30vw,26rem);right:calc(var(--s)*-.3);top:-4%}
 .a2{--s:clamp(2.2rem,5vw,4.5rem);right:12%;top:46%}
@@ -294,12 +272,6 @@ body.home main{min-height:0}
 }
 @media (max-width:720px){
   .hero{align-items:flex-start;padding-top:2.5rem}
-  .hnext{padding:.6rem .9rem}
-  body.home .foot span:nth-child(2){display:none}
-  .home-about{align-items:flex-start}
-  .ha2,.ha3{display:none}
-  .home-about{flex-direction:column;align-items:flex-start;justify-content:flex-start;padding-bottom:2rem}
-  .home-about .hnext.back{position:static;transform:none;margin-top:2rem;flex:none}
   .h1{--s:46vw;right:-14vw;top:auto;bottom:18%}
   .h2{--s:20vw;right:-6vw;top:auto;bottom:8%}
   .h3{--s:16vw;left:8%;bottom:5%}
