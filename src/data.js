@@ -6,7 +6,9 @@ export const me = {
   first: "Halima",
   last: "A. Mohamed.",
   tagline: "I build software, explore how systems work, and look for ways to make applications more secure.",
-  origin: "Kenyan · Currently based in Indonesia",
+  line: ["Informatics student", "Cybersecurity focus"],
+  where: "President University · Indonesia",
+  origin: "Based in Indonesia",
 };
 
 /* About page: one string per paragraph. The first two also appear in the "About me" section on the home page. */
@@ -21,6 +23,7 @@ export const interests = ["Full-stack development", "Backend systems", "Applicat
 /* Add a project by copying an entry. Required: t, slug, k, d, tags, cats.
    Optional (a missing field simply doesn't render its section):
      img, fit, pos          screenshot file, "contain" to avoid cropping, image focus point
+     shots [files]          extra screenshots for the detail page (files in assets/img/). Until supplied, two placeholders show.
      repo, live, status     links and badge
      problem                "The problem" section
      points [[title,text]]  "Key features" cards
@@ -68,7 +71,7 @@ export const projects = [
     note:"12.7% of safe links were wrongly flagged. The README explains the limits and how to repeat the test.",
     skills:["Browser extension development","Detection logic","Explainable security","Model evaluation","Domain and network analysis","Full-stack integration"] },
 
-  { t:"AuditShield", slug:"auditshield", cats:["Web & Full Stack", "Security"], status:"Complete", k:"Risk & audit platform", img:"audit-shield.png", repo:"AI-Assisted-Risk-Assessment-Security-Audit-Platform", live:"",
+  { t:"AuditShield", slug:"auditshield", cats:["Web & Full Stack", "Security"], status:"Complete", k:"Risk & audit platform", img:"audit-shield.png", fit:"contain", repo:"AI-Assisted-Risk-Assessment-Security-Audit-Platform", live:"",
     d:"A tool that guides someone through a security audit using the 51 controls in the NIST Cybersecurity Framework, keeps the evidence and exports a report. A local AI model explains each finding in plain language.",
     tags:["Flask","SQLite","Ollama","NIST CSF"],
     problem:"Security audits often end up scattered across spreadsheets, checklists and documents, so it is hard to see what has been assessed, what evidence exists and where the risk is. AuditShield puts the whole audit in one guided workflow.",
@@ -121,10 +124,6 @@ export const projects = [
 
 /* Add new entries at the TOP. type: "work" | "education". Optional: mode ("Remote" | "Hybrid" | "On-site"), tags. */
 export const jobs = [
-  { when:"Sep 2026 — Now", type:"work", role:"Cybersecurity Intern", org:"ElectraWireless · Elly Defense", tags:["Python","Pytest","Git"],
-    points:[["Malware detection.","Built a SHA-256 hash-matching module for an IoT firmware vulnerability scanner, tested end to end with an EICAR-style file."],
-            ["Network scanning.","Added active scanning with banner grabbing (HTTP, Telnet, FTP) and a default-credential probe."],
-            ["Testing.","Wrote pytest tests and ran end-to-end cases on real IoTGoat firmware in a five-person team using strict Git branching."]] },
   { when:"Jul — Sep 2026", type:"work", role:"Backend AI Engineering Intern", org:"FlyRank AI", tags:["FastAPI","PostgreSQL","Midtrans"],
     points:[["Billing backend.","Built a usage-metering and billing service with FastAPI and PostgreSQL that tracks each account's usage, enforces plan quotas and calculates costs in whole cents."],
             ["Safe payments.","Added idempotency keys and HMAC-SHA512 signed webhooks with Midtrans (sandbox), so a repeated request or notification is never charged twice."],
@@ -157,9 +156,12 @@ export const certs = [
   { t:"Backend AI Engineering Internship", org:"FlyRank AI", img:"flyrank-backend-ai.png", cat:"Development", status:"earned", date:"Sep 2026" },
 ];
 
+/* Optional "Next goals" row on the Certificates page. It only renders when this list has entries, e.g. ["ISC2 CC", "AWS Security Specialty"]. */
+export const goals = [];
+
 export const contact = {
   email:"halimamohamedabdirizak@gmail.com",
   linkedin:"https://www.linkedin.com/in/halima-abdirizak-mohamed/",
   github:"https://github.com/hal-imaxabdi",
-  cv:"assets/Halima_Abdirizak_CV.pdf",
+  cv:"assets/Halima_Abdirizak_CV.pdf"
 };
