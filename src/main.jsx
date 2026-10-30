@@ -277,16 +277,17 @@ function Skills() {
 
 /* ---------- PROJECTS ---------- */
 /* Every project is shown in the big staggered layout. Click one to open its page. */
-function Shot({ p, big }) {
+function Shot({ p, big, fit }) {
   if (!p.img) return <div className="shot ph" aria-hidden="true"><span>{p.t}</span></div>;
   return (
-    <div className={"shot" + (p.fit === "contain" ? " contain" : "")}>
+    <div className={"shot" + ((fit || p.fit) === "contain" ? " contain" : "")}>
       <img src={"assets/img/" + p.img} alt={`${p.t} screenshot`} loading={big ? "eager" : "lazy"} style={p.pos ? { objectPosition: p.pos } : undefined} />
     </div>
   );
 }
-const SHAPES = ["wide", "m7", "m5", "rev"];    // repeating rhythm; works for any number of projects
-function Card({ p, i, n }) {
+/* First project is the wide featured card; the rest are equal tiles in two columns. If one tile would be left alone on the last row it becomes a wide card too (image on the left). */
+function Card({ p, i, n, total }) {
+  const shape = i === 0 ? "wide" : (i === total - 1 && i % 2 === 1 ? "wide rev" : "tile");
   const stat = p.stats && p.stats[0];
   // The screenshot tilts a few degrees toward the pointer and its image slides the other way (depth). Skipped for touch / reduced motion.
   const tilt = e => {
@@ -297,7 +298,7 @@ function Card({ p, i, n }) {
   };
   const flat = e => { e.currentTarget.style.setProperty("--rx", 0); e.currentTarget.style.setProperty("--ry", 0); };
   return (
-    <li className={"card rv " + SHAPES[i % SHAPES.length]}>
+    <li className={"card rv " + shape}>
       <a href={"#/projects/" + p.slug}>
         <span className="num" aria-hidden="true">{pad(n)}</span>
         <div className="meta">
@@ -308,7 +309,7 @@ function Card({ p, i, n }) {
           <span className="more">View details <i aria-hidden="true">→</i></span>
         </div>
         <div className="fig" onPointerMove={tilt} onPointerLeave={flat}>
-          <Shot p={p} big />
+          <Shot p={p} big fit={p.cardFit} />
           <i className="orb" aria-hidden="true">↗</i>
           {stat && <p className="peek"><b>{stat[0]}</b> {stat[1]}</p>}
         </div>
@@ -334,7 +335,7 @@ function Projects() {
         <p className="intro">A collection of projects that showcase my skills in full-stack development, backend engineering and cybersecurity.</p>
       </Head>
       <Filters items={cats} value={cat} onChange={setCat} label="Filter projects" />
-      <ol className="grid">{list.map(({ p, n }, i) => <Card key={p.slug} p={p} i={i} n={n} />)}</ol>
+      <ol className="grid">{list.map(({ p, n }, i) => <Card key={p.slug} p={p} i={i} n={n} total={list.length} />)}</ol>
       {!list.length && <p className="intro">No projects in this category yet.</p>}
       <Pager at="/projects" />
     </section>
@@ -356,11 +357,12 @@ function Project({ slug }) {
     p.problem && ["The problem", <p key="pr">{p.problem}</p>],
     p.approach && ["My approach", <p key="ap">{p.approach}</p>],
     p.points && ["Key features", <ul className="fgrid" key="k">{p.points.map(([a, b]) => <li key={a}><h3>{a}</h3><p>{b}</p></li>)}</ul>],
-    p.flow && ["How it works", <Flow key="f" steps={p.flow} />],
+    p.flow && ["How it works", <div key="f"><Flow steps={p.flow} />{p.how && <ol className="hows">{p.how.map(([a, b]) => <li key={a}><b>{a}</b><span>{b}</span></li>)}</ol>}</div>],
     p.stack && ["Tech stack", <dl className="stk" key="st">{p.stack.map(([g, items]) => <div key={g}><dt>{g}</dt><dd><Tags list={items} /></dd></div>)}</dl>],
     p.stats && ["Results", <div key="r"><ul className="stats">{p.stats.map(([a, b]) => <li key={a}><b>{a}</b><span>{b}</span></li>)}</ul>{p.note && <p className="note">{p.note}</p>}</div>],
     p.skills && ["Skills demonstrated", <Tags key="sk" list={p.skills} />],
   ].filter(Boolean);
+  const glance = [["Role", p.role], ["What I built", p.built], ["Who it's for", p.users], ["Status", p.status]].filter(([, v]) => v);
   return (
     <div className="sect case">
       <Mesh cls="m-case" />
@@ -372,12 +374,17 @@ function Project({ slug }) {
           <Tags list={p.tags} />
           <p className="lead">{p.d}</p>
           <div className="actions">
-            {p.repo && <a className="btn" href={G + p.repo} target="_blank" rel="noopener noreferrer">View repository <span aria-hidden="true">↗</span></a>}
-            {p.live && <a className="btn ghost" href={p.live} target="_blank" rel="noopener noreferrer">Live demo <span aria-hidden="true">↗</span></a>}
+            {p.live && <a className="btn" href={p.live} target="_blank" rel="noopener noreferrer">Live Demo <span aria-hidden="true">↗</span></a>}
+            {p.repo && <a className={"btn" + (p.live ? " ghost" : "")} href={G + p.repo} target="_blank" rel="noopener noreferrer">View Repository <span aria-hidden="true">↗</span></a>}
           </div>
         </div>
         <Shot p={p} big />
       </div>
+      {glance.length > 0 && (
+        <dl className="glance">
+          {glance.map(([a, b]) => <div key={a}><dt>{a}</dt><dd>{b}</dd></div>)}
+        </dl>
+      )}
       <div className="case-body">
         <div className="secs">
           {secs.map(([h, body], k) => (

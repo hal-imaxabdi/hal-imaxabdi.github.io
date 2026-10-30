@@ -23,7 +23,9 @@ export const interests = ["Full-stack development", "Backend systems", "Applicat
 /* Add a project by copying an entry. Required: t, slug, k, d, tags, cats.
    Optional (a missing field simply doesn't render its section):
      img, fit, pos          screenshot file, "contain" to avoid cropping, image focus point
-     shots [files]          extra screenshots for the detail page (files in assets/img/). Until supplied, two placeholders show.
+     cardFit                optional: overrides fit on the Projects list only ("cover" crops to fill the card)
+     role, built, users     small "at a glance" facts under the project header (all optional)
+     how [[title,text]]     numbered notes under the "How it works" diagram
      repo, live, status     links and badge
      problem                "The problem" section
      points [[title,text]]  "Key features" cards
@@ -33,8 +35,36 @@ export const interests = ["Full-stack development", "Backend systems", "Applicat
      skills [..]            "Skills demonstrated" tags */
 export const projectCats = ["Web & Full Stack", "Security", "Tools"];
 export const projects = [
+  { t:"Slotwise", slug:"slotwise", cats:["Web & Full Stack"], status:"Complete",
+    k:"Full-stack appointment booking platform", img:"customer-dashboard.webp", pos:"left top",
+    repo:"slotwise", live:"https://slotwise-mocha.vercel.app/login",
+    role:"Full-stack developer", built:"React app, REST API, PostgreSQL schema and tests", users:"Customers, staff and admins",
+    d:"A full-stack appointment booking platform designed to help small businesses manage their services, availability and customer appointments through one system.",
+    tags:["React","TypeScript","FastAPI","PostgreSQL","SQLAlchemy","Alembic","Pytest","Vite","Python"],
+    problem:"Many small businesses still schedule by message, phone call or notebook. That makes it easy to double-book a slot, forget a closure or lose track of who is coming and when. Slotwise puts services, opening hours and appointments in one system, so customers see only the times that are really free and the business always sees the same schedule.",
+    points:[["Booking for customers","browse active services, see the free 30-minute slots for a chosen day and book one"],
+            ["Manage appointments","customers can view, cancel or reschedule their bookings up to 24 hours before the start time"],
+            ["Staff dashboard","search customers, list appointments, book on a customer's behalf and mark visits as completed or no-show"],
+            ["Service management","admins create, edit, activate and deactivate services, each with a duration and a price in rupiah"],
+            ["Opening hours and closures","admins set weekly opening hours, and staff block out unavailable periods that disappear from the slots customers see"],
+            ["Accounts","registration, login, sign out on all devices and password change, with three roles: customer, staff and admin"],
+            ["Built-in protection","CSRF tokens on every write, origin checks and login throttling that locks an account after repeated failures"]],
+    flow:[["React + TypeScript", "Customer, staff and admin screens"], ["FastAPI", "Sessions, roles, booking rules"], ["PostgreSQL", "Overlap constraint, migrations"]],
+    how:[["One origin for the browser","The React app calls /api and Vercel forwards those requests to the FastAPI server, so the browser talks to a single address."],
+         ["Checked before any logic runs","Every request needs a valid session. Writes also need a CSRF token, and each route checks the user's role (customer, staff or admin)."],
+         ["Time handled in one place","Appointments are stored in UTC and shown in Asia/Jakarta. Free slots are calculated in 30-minute steps from the opening hours, closures and existing bookings."],
+         ["The database has the last word","A PostgreSQL exclusion constraint rejects overlapping appointments, so two people cannot take the same slot even if their requests arrive together. Schema changes go through Alembic migrations."]],
+    stack:[["Frontend",["React","TypeScript","Vite","React Router"]],
+           ["Backend",["Python","FastAPI","Pydantic","Argon2 password hashing"]],
+           ["Database",["PostgreSQL","SQLAlchemy","Alembic","Docker Compose"]],
+           ["Testing",["Pytest","Vitest","Testing Library"]]],
+    stats:[["3 roles","customer, staff and admin each get their own screens and API permissions"],
+           ["400+","backend tests, plus 280+ frontend tests across 40+ files"],
+           ["No double bookings","enforced by a PostgreSQL constraint, not only by application code"]],
+    skills:["Full-stack development","REST API development","Backend engineering","Database design","Authentication and session management","Automated testing","Application architecture","Date and time handling"] },
+
   { t:"SEMIS", slug:"semis", cats:["Web & Full Stack", "Security"], status:"Complete",
-    k:"Secure employee management system", img:"semis.webp", repo:"SEMIS-Secure-Employee-Management-Information-System", live:"",
+    k:"Secure employee management system", img:"semis.webp", pos:"25% center", repo:"SEMIS-Secure-Employee-Management-Information-System", live:"",
     d:"I wanted to see how the OWASP Top 10 web risks apply to real employee data, so I built an HR system for a fictional 150-person company and protected it against each one.",
     tags:["React","Node.js","Express","MongoDB","JWT","AES-256"],
     problem:"Most internal business systems are built for convenience, not security. Yet an HR system holds some of the most sensitive data a company has: salaries, national IDs, attendance and payroll. SEMIS asks how the OWASP Top 10 risks apply to that kind of data, and what it takes to defend against each one.",
@@ -71,7 +101,7 @@ export const projects = [
     note:"12.7% of safe links were wrongly flagged. The README explains the limits and how to repeat the test.",
     skills:["Browser extension development","Detection logic","Explainable security","Model evaluation","Domain and network analysis","Full-stack integration"] },
 
-  { t:"AuditShield", slug:"auditshield", cats:["Web & Full Stack", "Security"], status:"Complete", k:"Risk & audit platform", img:"audit-shield.png", fit:"contain", repo:"AI-Assisted-Risk-Assessment-Security-Audit-Platform", live:"",
+  { t:"AuditShield", slug:"auditshield", cats:["Web & Full Stack", "Security"], status:"Complete", k:"Risk & audit platform", img:"audit-shield.png", fit:"contain", cardFit:"cover", pos:"left center", repo:"AI-Assisted-Risk-Assessment-Security-Audit-Platform", live:"",
     d:"A tool that guides someone through a security audit using the 51 controls in the NIST Cybersecurity Framework, keeps the evidence and exports a report. A local AI model explains each finding in plain language.",
     tags:["Flask","SQLite","Ollama","NIST CSF"],
     problem:"Security audits often end up scattered across spreadsheets, checklists and documents, so it is hard to see what has been assessed, what evidence exists and where the risk is. AuditShield puts the whole audit in one guided workflow.",
@@ -107,7 +137,7 @@ export const projects = [
 
   { t:"FlyRank Billing Engine", slug:"flyrank-billing", cats:["Web & Full Stack"], status:"Complete",
     problem:"Pay-per-use platforms must count each customer's usage exactly once, enforce plan limits and only trust genuine payment notifications. Systems fail here when requests are retried, notifications arrive twice or limits are checked loosely.",
-    flow:[["API", "Requests and validation"], ["Business logic", "Plans, quotas, costs"], ["Database", "PostgreSQL, per-customer data"]], k:"Backend · Payments", img:"fly-rankbilling.png", fit:"contain", repo:"flyrank-billing-engine", live:"",
+    flow:[["API", "Requests and validation"], ["Business logic", "Plans, quotas, costs"], ["Database", "PostgreSQL, per-customer data"]], k:"Backend · Payments", img:"fly-rankbilling.png", fit:"contain", cardFit:"cover", pos:"center top", repo:"flyrank-billing-engine", live:"",
     d:"A billing backend for a pay-per-use service. A repeated request or a duplicate payment notification is never counted twice, and every payment notification is checked to be genuine before it is processed.",
     tags:["FastAPI","PostgreSQL","Pytest","Midtrans"],
     points:[["No double counting","each request carries a unique key and the database rejects repeats"],
