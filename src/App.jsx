@@ -6,8 +6,8 @@ import Home from "./pages/Home.jsx";
 import ProjectsPage from "./pages/ProjectsPage.jsx";
 import ProjectPage from "./pages/ProjectPage.jsx";
 import CertificatesPage from "./pages/CertificatesPage.jsx";
-import { me, projects } from "./data.js";
 import { scrollToSection, useRoute } from "./router.js";
+import { applyMeta, pageMeta } from "./seo.js";
 
 function initialTheme() {
   const saved = document.documentElement.dataset.theme;
@@ -16,13 +16,6 @@ function initialTheme() {
 }
 
 const pageKey = (r) => (r.page === "project" ? `project/${r.slug}` : r.page);
-
-function titleFor(r) {
-  if (r.page === "projects") return `Projects · ${me.first}`;
-  if (r.page === "certificates") return `Certificates · ${me.first}`;
-  if (r.page === "project") return `${projects.find((p) => p.slug === r.slug)?.t ?? "Project"} · ${me.first}`;
-  return `${me.name} · Software & Security`;
-}
 
 export default function App() {
   const [theme, setTheme] = useState(initialTheme);
@@ -38,7 +31,7 @@ export default function App() {
 
   // Same page: scroll to the requested section (or the top). New page: handled once the old one has left.
   useEffect(() => {
-    document.title = titleFor(route);
+    applyMeta(pageMeta(route));
     const key = pageKey(route);
     if (key !== lastKey.current) {
       lastKey.current = key;

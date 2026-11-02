@@ -36,7 +36,7 @@ function ListView({ items }) {
               transition={{ duration: 0.55, ease, delay: i * 0.04 }}
               className={active === i ? "is-active" : ""}
               onPointerEnter={(e) => e.pointerType !== "touch" && setActive(i)}>
-              <a href={`#/projects/${p.slug}`}>
+              <a href={`/projects/${p.slug}`}>
                 <span className="plist-num mono">{pad(projects.indexOf(p) + 1)}</span>
                 <span className="plist-title">{p.t}</span>
                 <span className="plist-kicker">{p.k}</span>
@@ -61,7 +61,7 @@ function GridView({ items }) {
           <motion.li key={p.slug} layout
             initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.6, ease, delay: i * 0.05 }}>
-            <a href={`#/projects/${p.slug}`} className="pcard">
+            <a href={`/projects/${p.slug}`} className="pcard">
               <div className="pcard-media"><Shot p={p} card /></div>
               <div className="pcard-body">
                 <span className="mono pcard-num">{pad(projects.indexOf(p) + 1)}</span>
@@ -95,7 +95,7 @@ export default function ProjectsPage() {
   return (
     <section className="section page-top">
       <div className="wrap">
-        <a className="back-link" href="#/"><ArrowLeft size={15} /> Home</a>
+        <a className="back-link" href="/"><ArrowLeft size={15} /> Home</a>
         <SectionTitle as="h1" title="Projects" count={projects.length}
           intro="Everything I’ve built, from full-stack apps to security labs. Pick one to see how it works." />
 

@@ -17,7 +17,7 @@ export default function CertificatesPage() {
   return (
     <section className="section page-top">
       <div className="wrap">
-        <a className="back-link" href="#/"><ArrowLeft size={15} /> Home</a>
+        <a className="back-link" href="/"><ArrowLeft size={15} /> Home</a>
         <SectionTitle as="h1" title="Certificates" count={earned.length}
           intro="Courses, programs and credentials I’ve completed. Open any certificate to see the original and verify it." />
 

@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { Menu, Moon, Sun, X } from "lucide-react";
-import { homeSections, scrollToSection } from "../router.js";
+import { homeSections } from "../router.js";
 import { ease } from "./ui.jsx";
 
 // `match` lists the pages and home sections that light up each link.
 const links = [
-  { href: "#/projects", label: "Projects", match: ["projects", "project", "work"] },
-  { href: "#/experience", label: "Experience", match: ["experience"] },
-  { href: "#/about", label: "About", match: ["about", "skills"] },
-  { href: "#/certificates", label: "Certificates", match: ["certificates", "certs"] },
-  { href: "#/contact", label: "Contact", match: ["contact"] },
+  { href: "/projects", label: "Projects", match: ["projects", "project", "work"] },
+  { href: "/#experience", label: "Experience", match: ["experience"] },
+  { href: "/#about", label: "About", match: ["about", "skills"] },
+  { href: "/certificates", label: "Certificates", match: ["certificates", "certs"] },
+  { href: "/#contact", label: "Contact", match: ["contact"] },
 ];
 
 // Which home section is in the middle of the screen right now.
@@ -47,24 +47,15 @@ export default function Nav({ theme, onToggleTheme, route }) {
     document.body.style.overflow = open ? "hidden" : "";
   }, [open]);
 
-  // Clicking the link you're already on would not fire a hashchange, so scroll by hand.
-  function onLink(e, href) {
-    setOpen(false);
-    if (window.location.hash === href) {
-      const id = href.replace("#/", "");
-      if (homeSections.includes(id)) {
-        e.preventDefault();
-        scrollToSection(id);
-      }
-    }
-  }
+  // The router handles the navigation itself; links only need to close the mobile menu.
+  const onLink = () => setOpen(false);
 
   return (
     <>
       <motion.header className={`nav ${scrolled ? "is-scrolled" : ""}`}
         initial={{ y: -40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.8, ease, delay: 0.2 }}>
         <div className="wrap nav-inner">
-          <a className="logo" href="#/" aria-label="Halima, home">H<span>.</span></a>
+          <a className="logo" href="/" aria-label="Halima, home">H<span>.</span></a>
 
           <nav className="nav-links" aria-label="Main">
             {links.map((l) => {
@@ -104,7 +95,7 @@ export default function Nav({ theme, onToggleTheme, route }) {
             transition={{ duration: 0.6, ease }} role="dialog" aria-modal="true" aria-label="Menu">
             <button className="icon-btn mobile-close" onClick={() => setOpen(false)} aria-label="Close menu"><X size={20} /></button>
             <nav>
-              {[{ href: "#/", label: "Home" }, ...links].map((l, i) => (
+              {[{ href: "/", label: "Home" }, ...links].map((l, i) => (
                 <motion.a key={l.href} href={l.href} onClick={(e) => onLink(e, l.href)}
                   initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 + i * 0.06, duration: 0.5, ease }}>
                   <span className="mono">0{i + 1}</span>{l.label}

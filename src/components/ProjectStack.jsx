@@ -23,7 +23,7 @@ function StackCard({ p, i, n, progress }) {
             <span>{pad(i + 1)} / {pad(n)}</span>
             <span>{p.cats.join(" · ")}</span>
           </p>
-          <h3><a href={`#/projects/${p.slug}`}>{p.t}</a></h3>
+          <h3><a href={`/projects/${p.slug}`}>{p.t}</a></h3>
           <p className="stack-kicker">{p.k}</p>
           <p className="stack-desc">{p.d}</p>
           {lead && (
@@ -32,13 +32,13 @@ function StackCard({ p, i, n, progress }) {
           <ul className="tags">{p.tags.slice(0, 5).map((t) => <li key={t}>{t}</li>)}</ul>
           <div className="stack-actions">
             <Magnetic>
-              <a className="btn btn-primary" href={`#/projects/${p.slug}`}>Read the case study <ArrowRight size={15} /></a>
+              <a className="btn btn-primary" href={`/projects/${p.slug}`}>Read the case study <ArrowRight size={15} /></a>
             </Magnetic>
             {p.live && <a className="icon-btn" href={p.live} target="_blank" rel="noopener" aria-label={`${p.t} live demo`}><ArrowUpRight size={16} /></a>}
             {p.repo && <a className="icon-btn" href={G + p.repo} target="_blank" rel="noopener" aria-label={`${p.t} source code`}><GitHubIcon width={15} height={15} /></a>}
           </div>
         </div>
-        <a className="stack-media" href={`#/projects/${p.slug}`} tabIndex={-1} aria-hidden="true">
+        <a className="stack-media" href={`/projects/${p.slug}`} tabIndex={-1} aria-hidden="true">
           <Shot p={p} card style={{ scale: imgScale }} />
         </a>
       </motion.article>
@@ -58,7 +58,7 @@ export default function ProjectStack() {
           title="Selected work"
           count={projects.length}
           intro="Projects where I had to get security or correctness right. Each one opens into a full case study."
-          action={<a className="link-arrow" href="#/projects">All projects <ArrowRight size={15} /></a>}
+          action={<a className="link-arrow" href="/projects">All projects <ArrowRight size={15} /></a>}
         />
         <div className="stack" ref={container}>
           {featured.map((p, i) => (
@@ -67,7 +67,7 @@ export default function ProjectStack() {
         </div>
         {projects.length > FEATURED && (
           <div className="stack-more">
-            <a className="more-link" href="#/projects">
+            <a className="more-link" href="/projects">
               <span>See all {projects.length} projects</span>
               <ArrowRight size={22} />
             </a>

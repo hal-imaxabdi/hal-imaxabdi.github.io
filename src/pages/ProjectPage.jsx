@@ -76,7 +76,7 @@ export default function ProjectPage({ slug }) {
     return (
       <section className="section page-top"><div className="wrap">
         <h1 className="case-title">Project not found.</h1>
-        <a className="link-arrow" href="#/projects">All projects <ArrowRight size={15} /></a>
+        <a className="link-arrow" href="/projects">All projects <ArrowRight size={15} /></a>
       </div></section>
     );
   }
@@ -134,7 +134,7 @@ export default function ProjectPage({ slug }) {
     <article className="case page-top">
       <div className="wrap">
         <div className="case-bar">
-          <a className="back-link" href="#/projects"><ArrowLeft size={15} /> All projects</a>
+          <a className="back-link" href="/projects"><ArrowLeft size={15} /> All projects</a>
           <span className="mono muted">{pad(index + 1)} / {pad(projects.length)}</span>
         </div>
 
@@ -167,7 +167,7 @@ export default function ProjectPage({ slug }) {
         </div>
       </div>
 
-      <a className="next-project" href={`#/projects/${next.slug}`}>
+      <a className="next-project" href={`/projects/${next.slug}`}>
         <div className="wrap next-inner">
           <span className="mono">Next project</span>
           <span className="next-title">{next.t} <ArrowRight className="next-arrow" /></span>

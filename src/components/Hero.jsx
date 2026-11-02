@@ -79,7 +79,7 @@ export default function Hero({ theme }) {
 
         <motion.div className="hero-actions" {...fadeUp(1)}>
           <Magnetic>
-            <a className="btn btn-primary" href="#/work">
+            <a className="btn btn-primary" href="/#work">
               View my projects <ArrowRight size={16} />
             </a>
           </Magnetic>
@@ -90,7 +90,7 @@ export default function Hero({ theme }) {
       </motion.div>
 
       <motion.div className="wrap hero-foot" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 1.3 }}>
-        <a className="scroll-cue" href="#/work" aria-label="Scroll to projects">
+        <a className="scroll-cue" href="/#work" aria-label="Scroll to projects">
           <span className="scroll-track"><span className="scroll-thumb" /></span>
           <span className="mono">Scroll to explore</span>
         </a>

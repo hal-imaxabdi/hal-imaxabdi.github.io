@@ -146,7 +146,7 @@ export function CertsPreview() {
       <div className="wrap">
         <SectionTitle title="Certificates" count={earned.length}
           intro="Proof of the learning behind the projects. Tap any certificate to see it full size."
-          action={<a className="link-arrow" href="#/certificates">All certificates <ArrowRight size={15} /></a>} />
+          action={<a className="link-arrow" href="/certificates">All certificates <ArrowRight size={15} /></a>} />
       </div>
       <div className="marquee">
         {rows.map((row, r) => (
