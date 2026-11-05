@@ -40,7 +40,7 @@ export const projectCats = ["Web & Full Stack", "Security", "Tools"];
 export const projects = [
   { t:"Slotwise", slug:"slotwise", cats:["Web & Full Stack"],
     k:"Full-stack appointment booking platform", img:"slotwise-landing.jpg", pos:"left top",
-    gallery:["slotwise-admin.webp", "slotwise-booking.webp"],
+    gallery:["slotwise-services.jpg", "slotwise-booking.jpg", "slotwise-staff.jpg"],
     repo:"slotwise", live:"https://slotwise-mocha.vercel.app/login",
     role:"Full-stack developer", built:"React app, REST API, PostgreSQL schema and tests", users:"Customers, staff and admins",
     d:"A full-stack appointment booking platform designed to help small businesses manage their services, availability and customer appointments through one system.",
