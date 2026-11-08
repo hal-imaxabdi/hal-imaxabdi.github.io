@@ -1,0 +1,63 @@
+/* =========================================================
+   HERO: name and motto on the left, the pitch on the right.
+   ========================================================= */
+.hero {
+  position: relative; isolation: isolate; overflow: hidden;
+  min-height: 100vh; min-height: 100svh;
+  display: flex; align-items: center;
+  padding: var(--nav-h) 0 clamp(8px, 2svh, 24px);
+}
+
+.hero-bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+
+/* telemetry dial, top right */
+.hud {
+  position: absolute; right: clamp(8px, 4vw, 90px); top: calc(var(--nav-h) + 4svh);
+  width: clamp(130px, 13vw, 230px); height: auto; overflow: visible; opacity: .5;
+}
+.hud * { fill: none; stroke: #5aa2ff; stroke-width: 1; }
+.hud .hud-faint { stroke-opacity: .45; }
+.hud text { fill: #5aa2ff; stroke: none; font-family: var(--f-hud); font-size: 8px; letter-spacing: .2em; opacity: .7; }
+.hud-spin { transform-origin: 120px 120px; animation: hud-spin 40s linear infinite; }
+@keyframes hud-spin { to { transform: rotate(360deg); } }
+
+/* layout */
+.hero-inner {
+  width: 100%; max-width: 1480px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 80px);
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: center; gap: clamp(8px, 2vw, 40px);
+}
+
+/* copy */
+.hero-name { font-family: var(--f-display); font-weight: 900; font-style: italic; text-transform: uppercase; line-height: .82; display: flex; flex-direction: column; letter-spacing: -.005em; }
+.hero-name .line { display: block; transform-origin: left bottom; }
+.hero-name .line-1 { font-size: clamp(64px, min(10vw, 21svh), 200px); color: #eef4ff; text-shadow: 0 0 40px rgba(90,162,255,.2); }
+.hero-name .line-2 {
+  margin-top: .14em; font-size: clamp(30px, min(4.7vw, 9.8svh), 94px); color: transparent;
+  -webkit-text-stroke: clamp(1px, .12vw, 2px) #bcd6f5; letter-spacing: .005em;
+}
+.hero-motto {
+  margin-top: clamp(16px, 4svh, 40px);
+  display: flex; flex-wrap: wrap; align-items: baseline; column-gap: .7em;
+  font-family: var(--f-hud); font-style: italic; font-weight: 600; text-transform: uppercase; letter-spacing: .14em;
+  font-size: clamp(13px, min(1.5vw, 3.3svh), 24px); color: #eef4ff;
+}
+.hero-motto i { color: var(--blue-hi); font-style: normal; }
+.hero-hint {
+  margin-top: clamp(6px, 1.4svh, 14px); display: flex; align-items: center; gap: .7em;
+  font-family: var(--f-hud); font-weight: 600; text-transform: uppercase; letter-spacing: .2em;
+  font-size: clamp(11px, min(1vw, 2.3svh), 16px); color: var(--blue-hi);
+}
+.hint-arrow { display: inline-block; font-size: .8em; animation: hint-nudge 1.4s var(--ease) infinite; }
+@keyframes hint-nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-spin, .hint-arrow { animation: none; }
+}
+
+/* narrow screens: copy on top, pitch underneath (fine-tuned in the mobile phase) */
+@media (max-width: 860px) {
+  .hero { align-items: flex-start; padding-top: calc(var(--nav-h) + 16px); }
+  .hero-inner { grid-template-columns: 1fr; gap: 20px; }
+  .hero-inner .pitch-stage { --pw: min(62vw, 340px); }
+  .hud { display: none; }
+}

@@ -1,0 +1,75 @@
+/* =========================================================
+   02 INTEL: radial speed-line burst, character left, 2×2 neon cut-corner panels
+   ========================================================= */
+.sec-intel {
+  position: relative; overflow: hidden; isolation: isolate;
+  padding-top: calc(var(--nav-h) + clamp(12px, 3svh, 32px)); padding-bottom: clamp(24px, 5svh, 56px);
+  min-height: 100svh; display: flex; align-items: center;
+}
+.sec-intel .intel-wrap {
+  position: relative; z-index: 1; max-width: 1400px;
+  display: grid; grid-template-columns: clamp(200px, 29vw, 470px) minmax(0, 1fr); align-items: center;
+}
+/* the character stands left and overlaps the panels' left edge a little */
+/* the image is positioned from the column's bottom, so it can be tall without stretching the section */
+.intel-art-wrap { position: relative; z-index: 2; margin-right: 0; pointer-events: none; align-self: stretch; min-height: 0; }
+.intel-art {
+  position: absolute; left: clamp(-60px, -3vw, -10px); bottom: calc(-1 * clamp(24px, 5svh, 56px)); display: block; max-width: none;
+  /* tall, but never wider than its column + a slight overlap into the panels (image is 1047×1120) */
+  height: min(calc(100svh - var(--nav-h) - 24px), calc((clamp(200px, 29vw, 470px) + 100px) * 1.07)); width: auto;
+  filter: drop-shadow(0 0 18px rgba(90,162,255,.55)) drop-shadow(0 0 40px rgba(31,107,255,.3));
+}
+.intel-main { position: relative; z-index: 1; min-width: 0; }
+.intel-main .sec-head { margin-bottom: clamp(6px, 1.4svh, 14px); }
+.intel-intro { font-size: clamp(14px, 1.15vw, 17px); color: var(--text-2); margin-bottom: clamp(14px, 3svh, 28px); max-width: 60ch; }
+
+/* ---------- neon cut-corner panels ---------- */
+.intel-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 22px); }
+.intel-card {
+  filter: drop-shadow(0 0 5px rgba(90,162,255,1)) drop-shadow(0 0 18px rgba(31,107,255,.7));
+  transition: filter .3s var(--ease);
+}
+.intel-card:hover { filter: drop-shadow(0 0 6px rgba(214,236,255,.95)) drop-shadow(0 0 22px rgba(31,107,255,.75)); }
+.intel-panel {
+  --c: clamp(18px, 2vw, 30px);
+  --shape: polygon(var(--c) 0, calc(100% - var(--c) * 1.4) 0, 100% calc(var(--c) * 1.4), 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, calc(var(--c) * 1.4) 100%, 0 calc(100% - var(--c) * 1.4), 0 var(--c));
+  position: relative; height: 100%; padding: clamp(14px, 2.2svh, 22px) clamp(18px, 2vw, 30px) clamp(16px, 2.6svh, 26px);
+  clip-path: var(--shape);
+  background: linear-gradient(135deg, #d6ecff, #5aa2ff 25%, #1f6bff 60%, #8fc1ff);
+}
+.intel-panel::before {
+  content: ""; position: absolute; inset: 3px; clip-path: var(--shape);
+  background: radial-gradient(80% 90% at 85% 100%, rgba(31,107,255,.28), transparent 70%), linear-gradient(160deg, #0c2050, #071029 70%);
+}
+.intel-panel > * { position: relative; }
+.intel-panel header { display: flex; align-items: baseline; gap: 12px; margin-bottom: clamp(8px, 1.5svh, 16px); }
+.intel-idx {
+  font-family: var(--f-display); font-weight: 900; font-style: italic; line-height: .9;
+  font-size: clamp(28px, 2.6vw, 40px); color: #5aa2ff; text-shadow: 0 0 14px rgba(31,107,255,.8);
+}
+.intel-panel h3 { font-family: var(--f-hud); font-weight: 600; font-size: clamp(13px, 1.1vw, 16px); letter-spacing: .1em; text-transform: uppercase; color: #eef4ff; }
+
+/* glowing pill chips */
+.chips { display: flex; flex-wrap: wrap; gap: clamp(6px, .7vw, 10px); }
+.chips li {
+  font-family: var(--f-body); font-weight: 600; font-size: clamp(12px, .95vw, 14px); line-height: 1.2;
+  padding: .42em .95em; border-radius: 999px; color: #eef4ff;
+  background: rgba(10,23,51,.85); border: 1.5px solid rgba(90,162,255,.85);
+  box-shadow: 0 0 8px rgba(31,107,255,.55), inset 0 0 8px rgba(31,107,255,.3);
+  transition: background-color .2s, box-shadow .2s, border-color .2s;
+}
+.chips li:hover { background: rgba(31,107,255,.3); border-color: #d6ecff; box-shadow: 0 0 14px rgba(90,162,255,.9), inset 0 0 10px rgba(90,162,255,.4); }
+
+/* back-to-pitch sits in the header row (top right) so the section fits one laptop screen */
+.sec-intel .back-pitch { position: absolute; right: 0; top: clamp(8px, 2svh, 20px); margin: 0; }
+@media (max-width: 760px) { .sec-intel .back-pitch { position: static; margin-top: 18px; } }
+
+/* below laptop width the character fades behind the panels */
+@media (max-width: 1000px) {
+  .sec-intel .intel-wrap { grid-template-columns: 1fr; }
+  .intel-art-wrap { position: absolute; left: -6%; bottom: 0; top: 0; width: min(60%, 360px); margin: 0; opacity: .22; z-index: 0; }
+  .intel-art { height: min(90%, 520px); bottom: 0; }
+}
+@media (max-width: 760px) {
+  .intel-grid { grid-template-columns: 1fr; }
+}

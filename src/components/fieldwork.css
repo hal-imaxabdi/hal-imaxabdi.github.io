@@ -1,0 +1,77 @@
+/* =========================================================
+   03 FIELD WORK: tabs and a grid of angled glowing project cards.
+   All projects show at once; the character stands in the spare grid cell.
+   Class names start with fw- on purpose: the old .fcard rules in styles.css never touch these.
+   ========================================================= */
+.sec-fieldwork {
+  position: relative; overflow: hidden; isolation: isolate;
+  min-height: 100svh; display: flex; align-items: center;
+  padding-top: clamp(20px, 4svh, 48px); padding-bottom: clamp(20px, 4svh, 48px);
+}
+.sec-fieldwork .fw-wrap { position: relative; z-index: 1; max-width: 1360px; padding-left: clamp(20px, 5vw, 80px); padding-right: clamp(20px, 5vw, 80px); }
+.sec-fieldwork .sec-head { margin-bottom: clamp(6px, 1.6svh, 16px); }
+
+.fw-pent { position: absolute; z-index: 0; right: clamp(24px, 5vw, 90px); top: clamp(16px, 3svh, 40px); width: clamp(60px, 7vw, 110px); height: auto; pointer-events: none; filter: drop-shadow(0 0 14px rgba(31,107,255,.6)); }
+.fw-pent .o { fill: rgba(31,107,255,.55); stroke: #5aa2ff; stroke-width: 2; }
+.fw-pent .i { fill: rgba(5,11,28,.55); stroke: rgba(214,236,255,.5); stroke-width: 1.5; }
+.fw-pent path { fill: none; stroke: rgba(214,236,255,.4); stroke-width: 1.5; }
+
+.fw-bar { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: clamp(10px, 2svh, 18px); }
+.fw-bar .tabs { margin: 0; }
+.fw-bar .tab { clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); border: 0; background: rgba(10,23,51,.9); box-shadow: inset 0 0 0 1px var(--line-hi); padding: 9px 20px; }
+.fw-bar .tab[aria-pressed="true"] { background: #2a8bff; box-shadow: 0 0 18px rgba(31,107,255,.7); }
+
+/* the grid: three across, the character takes whatever cells are left over */
+.fw-grid {
+  position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(14px, 1.8vw, 26px); padding: 12px 0 8px;
+}
+.fw-card { filter: drop-shadow(0 0 4px rgba(90,162,255,.95)) drop-shadow(0 0 16px rgba(31,107,255,.5)); }
+.fw-panel {
+  --c: 20px;
+  --shape: polygon(var(--c) 0, calc(100% - var(--c)) 0, 100% var(--c), 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, var(--c) 100%, 0 calc(100% - var(--c)), 0 var(--c));
+  position: relative; height: 100%; display: grid; grid-template-rows: auto 1fr; gap: 10px;
+  padding: 10px 10px 16px; clip-path: var(--shape);
+  background: linear-gradient(135deg, #d6ecff, #5aa2ff 25%, #1f6bff 60%, #8fc1ff);
+}
+.fw-panel::before { content: ""; position: absolute; inset: 2px; clip-path: var(--shape); background: linear-gradient(160deg, #0c2050, #071029 75%); }
+.fw-panel > * { position: relative; }
+
+.fw-shot { display: block; position: relative; overflow: hidden; height: clamp(96px, 15svh, 170px); background: #0d1a3a; }
+.fw-shot img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+.fw-card:hover .fw-shot img { transform: scale(1.05); }
+.fw-shot::after { content: ""; position: absolute; inset: 0; background: linear-gradient(200deg, transparent 45%, rgba(5,11,28,.85)); }
+.fw-no {
+  position: absolute; z-index: 1; left: 12px; bottom: 0; font-family: var(--f-display); font-weight: 900; font-style: italic; line-height: 1;
+  font-size: clamp(44px, 6svh, 68px); color: transparent; -webkit-text-stroke: 1.5px #d6ecff; text-shadow: 0 0 18px rgba(90,162,255,.6);
+}
+
+.fw-body { display: grid; gap: 5px; align-content: start; padding: 0 8px; }
+.fw-cats { font-family: var(--f-hud); font-weight: 600; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--blue-hi); }
+.fw-title { font-family: var(--f-display); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: clamp(26px, 3.4svh, 36px); line-height: .95; }
+.fw-title a { color: #eef4ff; text-decoration: none; }
+.fw-title a:hover { color: var(--blue-hi); }
+.fw-k { font-family: var(--f-body); font-weight: 700; font-size: 13px; color: var(--ice); }
+.fw-d { font-size: 13px; line-height: 1.5; color: var(--text-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.fw-card .tags li { font-family: var(--f-hud); font-size: 11px; font-weight: 600; background: rgba(31,107,255,.12); border: 1px solid rgba(90,162,255,.4); color: var(--ice); }
+.fw-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+
+/* the character in the spare cell(s) */
+.fw-art-cell { position: relative; display: flex; align-items: flex-end; justify-content: center; min-height: 240px; pointer-events: none; }
+.fw-art-float { height: 100%; display: flex; align-items: flex-end; }
+.fw-art {
+  display: block; max-width: 100%; max-height: min(52svh, 460px); height: 100%; width: auto; object-fit: contain; object-position: bottom;
+  filter: drop-shadow(0 0 18px rgba(90,162,255,.55)) drop-shadow(0 0 40px rgba(31,107,255,.3));
+}
+
+.sec-fieldwork .back-pitch { position: relative; z-index: 2; margin-top: clamp(8px, 1.6svh, 16px); }
+
+@media (max-width: 1000px) {
+  .fw-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fw-art-cell { display: none; }
+  .fw-pent { display: none; }
+}
+@media (max-width: 640px) {
+  .sec-fieldwork { align-items: flex-start; }
+  .fw-grid { grid-template-columns: 1fr; }
+}
