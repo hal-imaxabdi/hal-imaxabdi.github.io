@@ -1,59 +1,35 @@
-/* =========================================================
-   05 CONTACT: blue streaks, gradient headline, angled buttons, the character with a flickering electric glow
-   ========================================================= */
-.sec-contact {
-  position: relative; overflow: hidden; isolation: isolate;
-  min-height: 100svh; display: flex; flex-direction: column; padding-bottom: 0;
-  padding-top: calc(var(--nav-h) + clamp(12px, 3svh, 32px));
-}
+/* 05 CONTACT. Colours are the two variables below: swap them to #ff4d6d / #ff9aa8 for the red version of the mockup. */
+.sec-contact { --ct-a: #8fc1ff; --ct-b: #1f6bff; position: relative; overflow: hidden; isolation: isolate; display: flex; flex-direction: column; justify-content: center; }
 .ct-streaks { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; }
-.sec-contact .ct-wrap { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; justify-content: center; max-width: 1240px; }
-.sec-contact .sec-head { margin-bottom: clamp(10px, 3svh, 28px); }
-.ct-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 48px); align-items: end; }
-
+.ct-grid { width: 100%; max-width: 1360px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 80px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: clamp(8px, 2vw, 40px); }
+.sec-contact .sec-title { background: linear-gradient(90deg, #fff 35%, var(--ct-a)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .ct-big {
-  font-family: var(--f-display); font-weight: 900; font-style: italic; text-transform: uppercase; line-height: .86;
-  font-size: clamp(42px, min(6vw, 13svh), 100px); padding-right: .1em;
-  background: linear-gradient(95deg, #ffffff 0%, #d6ecff 35%, #5aa2ff 80%, #1f6bff 100%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+  margin-top: clamp(16px, 4svh, 44px); font-family: var(--f-display); font-weight: 900; font-style: italic; text-transform: uppercase; line-height: .86;
+  font-size: clamp(34px, min(5.4vw, 11svh), 86px); max-width: 7em;
+  background: linear-gradient(90deg, #fff 30%, var(--ct-a) 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-
-.ct-links { display: grid; gap: 14px; align-self: end; position: relative; z-index: 2; }
-.ct-email {
-  display: flex; align-items: center; gap: 12px; padding: 14px 12px 14px 18px; color: var(--blue-hi);
-  background: rgba(8, 18, 44, .94); border: 1px solid rgba(90,162,255,.5); box-shadow: 0 0 18px rgba(31,107,255,.25);
-}
-.ct-email a { flex: 1; min-width: 0; font-weight: 700; font-size: clamp(13px, 1.25vw, 18px); color: #eef4ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration-color: var(--blue); }
-.ct-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.ct-right { position: relative; min-height: clamp(380px, 70svh, 640px); }
+.ct-art-box { position: absolute; right: 0; bottom: 0; height: 100%; }
+.ct-art { height: 100%; width: auto; max-width: none; filter: drop-shadow(0 0 18px rgba(90,162,255,.45)); }
+.ct-bolts { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.ct-bolts polyline { fill: none; stroke: #eaf4ff; stroke-width: 2; filter: drop-shadow(0 0 6px var(--ct-a)); }
+.ct-links { position: absolute; z-index: 2; left: -4%; bottom: 12%; display: grid; gap: 14px; }
+.ct-email { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(6,14,36,.92); border: 1px solid var(--line-hi); font-size: 14px; }
+.ct-email a { color: #fff; text-underline-offset: 4px; }
+.ct-row { display: flex; flex-wrap: wrap; gap: 10px; }
 .ct-btn {
-  display: inline-flex; align-items: center; gap: 10px; padding: 13px 24px; text-decoration: none; color: #04122e;
-  font-family: var(--f-hud); font-weight: 600; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; line-height: 1;
-  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
-  background: linear-gradient(100deg, #bfeaff, #5aa2ff 60%, #3a7fff); box-shadow: 0 0 18px rgba(90,162,255,.6);
-  transition: transform .25s var(--ease), filter .25s;
+  display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; text-decoration: none; color: #04102a;
+  font-family: var(--f-hud); font-weight: 600; font-size: 13px; letter-spacing: .08em; text-transform: uppercase;
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); background: linear-gradient(110deg, #8fe9ff, var(--ct-b));
+  transition: filter .2s, transform .2s;
 }
-.ct-btn:hover { transform: translateX(3px); filter: brightness(1.12); }
-.ct-btn svg { flex: none; }
+.ct-btn:hover { filter: brightness(1.15); transform: translateX(3px); }
+.ct-foot { margin: clamp(12px, 3svh, 28px) 0 0; padding: 0 clamp(20px, 5vw, 80px); font-family: var(--f-hud); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 
-/* character on the right, with lightning */
-.ct-art-wrap { position: absolute; z-index: 1; right: max(0px, calc(50% - 720px)); bottom: 0; pointer-events: none; }
-.ct-art-box { position: relative; height: min(88svh, 640px); aspect-ratio: 1204 / 1100; }
-.ct-art { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; filter: drop-shadow(0 0 16px rgba(90,162,255,.7)) drop-shadow(0 0 40px rgba(31,107,255,.4)); }
-.ct-bolts { position: absolute; z-index: 2; inset: 0; width: 100%; height: 100%; overflow: visible; animation: ct-flicker 3.2s steps(1, end) infinite; }
-.ct-bolts polyline { fill: none; stroke: #e6f4ff; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 4px #5aa2ff) drop-shadow(0 0 10px #1f6bff); }
-@keyframes ct-flicker {
-  0% { opacity: 1; } 6% { opacity: .35; } 9% { opacity: 1; } 34% { opacity: .9; } 36% { opacity: .3; } 38% { opacity: 1; }
-  62% { opacity: .8; } 64% { opacity: .25; } 67% { opacity: 1; } 88% { opacity: .55; } 91% { opacity: 1; } 100% { opacity: 1; }
-}
-@media (prefers-reduced-motion: reduce) { .ct-bolts { animation: none; } }
-
-.sec-contact .back-pitch { position: absolute; right: 24px; top: calc(clamp(8px, 2svh, 20px) + 4px); margin: 0; }
-.sec-contact .foot { position: relative; z-index: 2; margin-top: clamp(12px, 3svh, 28px); background: rgba(5,11,28,.6); }
-
-@media (max-width: 1000px) {
-  .ct-art-wrap { opacity: .22; }
+@media (max-width: 860px) {
   .ct-grid { grid-template-columns: 1fr; }
-}
-@media (max-width: 760px) {
-  .sec-contact .back-pitch { position: static; margin-top: 14px; }
+  .ct-right { min-height: 0; display: flex; flex-direction: column; gap: 16px; }
+  .ct-art-box { position: relative; height: clamp(240px, 42svh, 380px); align-self: flex-end; }
+  .ct-links { position: static; }
+  .ct-big { font-size: clamp(34px, 11vw, 60px); }
 }

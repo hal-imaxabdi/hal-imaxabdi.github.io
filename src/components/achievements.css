@@ -10,19 +10,19 @@
 .sec-achievements .sec-head { margin-bottom: clamp(8px, 2svh, 18px); }
 
 /* banner */
-.ach-banner { filter: drop-shadow(0 0 6px rgba(46,230,255,.55)) drop-shadow(0 0 22px rgba(20,160,200,.35)); }
+.ach-banner { filter: drop-shadow(0 0 6px rgba(90,162,255,.55)) drop-shadow(0 0 22px rgba(31,107,255,.35)); }
 .ach-banner-in {
   position: relative; overflow: hidden; height: clamp(140px, 31svh, 320px);
   clip-path: polygon(2.5% 0, 100% 0, 100% 84%, 97.5% 100%, 0 100%, 0 16%);
-  background: linear-gradient(105deg, #042a3a 0%, #06475a 45%, #0a6f86 70%, #0a3a55 100%);
+  background: linear-gradient(105deg, #071a4a 0%, #0c2f7a 45%, #1546b8 70%, #0a2a66 100%);
 }
 .ach-banner-in::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(5,11,28,.55)); }
 .ach-shards { position: absolute; inset: 0; width: 100%; height: 100%; }
-.ach-shards polygon { fill: rgba(80,235,255,.55); stroke: rgba(214,250,255,.7); stroke-width: 1; }
-.ach-shards polygon:nth-child(3n) { fill: rgba(31,150,255,.5); }
+.ach-shards polygon { fill: rgba(90,162,255,.55); stroke: rgba(214,236,255,.7); stroke-width: 1; }
+.ach-shards polygon:nth-child(3n) { fill: rgba(31,107,255,.5); }
 .ach-art {
   position: absolute; z-index: 1; right: 20%; top: 0; height: 100%; width: auto; max-width: none;
-  filter: drop-shadow(0 0 16px rgba(46,230,255,.35));
+  filter: drop-shadow(0 0 16px rgba(90,162,255,.35));
 }
 
 /* certificate cards: cyan neon cut-corner frames, overlapping the banner's bottom edge */
@@ -30,23 +30,23 @@
   position: relative; z-index: 2; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(10px, 1.4vw, 20px);
   margin-top: calc(-1 * clamp(24px, 5svh, 48px)); padding: 0 clamp(8px, 2vw, 28px);
 }
-.ach-card { display: block; width: 100%; height: 100%; text-align: left; filter: drop-shadow(0 0 4px rgba(46,230,255,.9)) drop-shadow(0 0 14px rgba(20,180,230,.45)); transition: filter .3s var(--ease), transform .3s var(--ease); }
-.ach-card:hover, .ach-card:focus-visible { transform: translateY(-4px); filter: drop-shadow(0 0 6px rgba(190,250,255,.95)) drop-shadow(0 0 22px rgba(46,230,255,.65)); }
+.ach-card { display: block; width: 100%; height: 100%; text-align: left; filter: drop-shadow(0 0 4px rgba(90,162,255,.9)) drop-shadow(0 0 14px rgba(31,107,255,.45)); transition: filter .3s var(--ease), transform .3s var(--ease); }
+.ach-card:hover, .ach-card:focus-visible { transform: translateY(-4px); filter: drop-shadow(0 0 6px rgba(214,236,255,.95)) drop-shadow(0 0 22px rgba(90,162,255,.65)); }
 .ach-panel {
   --c: clamp(14px, 1.6vw, 22px);
   --shape: polygon(var(--c) 0, calc(100% - var(--c)) 0, 100% var(--c), 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, var(--c) 100%, 0 calc(100% - var(--c)), 0 var(--c));
   position: relative; display: grid; grid-template-rows: auto 1fr; height: 100%; padding: 10px 10px 12px; clip-path: var(--shape);
-  background: linear-gradient(135deg, #d6faff, #2ee6ff 30%, #0f9fd0 65%, #7fe9ff);
+  background: linear-gradient(135deg, #d6ecff, #5aa2ff 30%, #1f6bff 65%, #8fc1ff);
 }
-.ach-panel::before { content: ""; position: absolute; inset: 2px; clip-path: var(--shape); background: linear-gradient(165deg, #0a2540, #071029 80%); }
+.ach-panel::before { content: ""; position: absolute; inset: 2px; clip-path: var(--shape); background: linear-gradient(165deg, #0c2050, #071029 80%); }
 .ach-panel > * { position: relative; }
 .ach-img { display: grid; place-items: center; aspect-ratio: 16 / 9; max-height: clamp(70px, 17svh, 170px); width: 100%; background: #0d1a3a; overflow: hidden; }
 .ach-img img { width: 100%; height: 100%; object-fit: contain; }
 .ach-cap { display: grid; gap: 2px; padding: 8px 4px 0; }
 .ach-cap strong { font-family: var(--f-body); font-weight: 700; font-size: clamp(12px, 1.05vw, 15px); line-height: 1.25; color: #eef4ff; }
-.ach-cap span { font-size: clamp(11px, .85vw, 13px); color: #7fd8ee; }
+.ach-cap span { font-size: clamp(11px, .85vw, 13px); color: #8fc1ff; }
 .ach-card:focus-visible { outline: none; }
-.ach-card:focus-visible .ach-panel::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 2px #d6faff; }
+.ach-card:focus-visible .ach-panel::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 2px #d6ecff; }
 
 /* "see all" button: an angled slab with chevrons */
 .ach-foot { display: flex; justify-content: flex-end; margin-top: clamp(10px, 2.2svh, 22px); padding-right: clamp(8px, 2vw, 28px); position: relative; z-index: 2; }
@@ -58,7 +58,7 @@
   transition: transform .25s var(--ease), filter .25s;
 }
 .ach-all:hover { transform: translateX(4px); filter: brightness(1.2); }
-.ach-all svg { width: 34px; height: 17px; fill: none; stroke: #5ad1ff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.ach-all svg { width: 34px; height: 17px; fill: none; stroke: #8fc1ff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 
 .sec-achievements .back-pitch { position: absolute; right: 24px; top: calc(clamp(8px, 2svh, 20px) + 4px); margin: 0; }
 
@@ -69,3 +69,12 @@
   .ach-art { right: 4%; }
 }
 @media (max-width: 480px) { .ach-cards { grid-template-columns: 1fr; } }
+
+/* every certificate on this page */
+.ach-banner-in { height: clamp(110px, 24svh, 240px); }
+.ach-cards { row-gap: clamp(12px, 2vw, 22px); }
+.ach-cards li { list-style: none; }
+.sec-achievements { align-items: flex-start; padding-bottom: 48px; }
+@media (max-width: 1000px) { .ach-cards { margin-top: -20px; } }
+.ach-art { right: 0; width: 100%; height: 100%; object-fit: cover; object-position: 72% 22%; }
+@media (max-width: 480px) { .ach-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 0 4px; } .ach-cap strong { font-size: 11px; } .ach-cap span { font-size: 10px; } }

@@ -1,15 +1,17 @@
-import { useRef } from "react";
-import Nav from "./Nav.jsx";
-import { useReveal } from "./useReveal.js";
+import { art } from "../art.js";
+import Art from "./Art.jsx";
+import { ArrowLeft } from "./Icons.jsx";
+import "./pageshell.css";
 
-// Sub-pages (all projects, one project, certificates): the same top bar and a calm navy page.
+// Sub-pages (all projects, one project): no top bar, just a back button and the Blue Lock look
+// (Isagi in the corner, blue streaks, glowing panels).
 export default function PageShell({ crumb, children }) {
-  const ref = useRef(null);
-  useReveal(ref);
   return (
-    <div className="page" ref={ref}>
-      <Nav home={false} />
-      <div className="wrap page-inner">
+    <div className="page ps">
+      <div className="ps-bg" aria-hidden="true" />
+      <Art src={art.homeProfile} className="ps-art" eager />
+      <a className="home-back" href="/#fieldwork"><ArrowLeft size={16} /> Back</a>
+      <div className="wrap page-inner ps-inner">
         {crumb && <p className="crumb">{crumb}</p>}
         {children}
       </div>

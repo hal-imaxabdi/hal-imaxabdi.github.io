@@ -1,77 +1,58 @@
-/* =========================================================
-   03 FIELD WORK: tabs and a grid of angled glowing project cards.
-   All projects show at once; the character stands in the spare grid cell.
-   Class names start with fw- on purpose: the old .fcard rules in styles.css never touch these.
-   ========================================================= */
-.sec-fieldwork {
-  position: relative; overflow: hidden; isolation: isolate;
-  min-height: 100svh; display: flex; align-items: center;
-  padding-top: clamp(20px, 4svh, 48px); padding-bottom: clamp(20px, 4svh, 48px);
-}
-.sec-fieldwork .fw-wrap { position: relative; z-index: 1; max-width: 1360px; padding-left: clamp(20px, 5vw, 80px); padding-right: clamp(20px, 5vw, 80px); }
+/* 03 FIELD WORK: tabs, a big project frame, the next one peeking in, the character between them */
+.sec-fieldwork { position: relative; overflow: hidden; isolation: isolate; display: flex; align-items: center; padding-bottom: clamp(24px, 5svh, 56px); }
+.sec-fieldwork .fw-wrap { position: relative; z-index: 1; max-width: 1240px; }
 .sec-fieldwork .sec-head { margin-bottom: clamp(6px, 1.6svh, 16px); }
+.fw-pent { position: absolute; z-index: 0; right: clamp(20px, 7vw, 120px); top: 22%; width: clamp(80px, 11vw, 170px); fill: rgba(31,107,255,.55); stroke: #5aa2ff; stroke-width: 2; filter: drop-shadow(0 0 16px rgba(31,107,255,.6)); pointer-events: none; }
+.fw-pent .i { fill: rgba(5,11,28,.55); stroke: rgba(214,236,255,.5); }
+.fw-tabs { margin-bottom: clamp(10px, 2svh, 20px); }
+.fw-tabs .tab { clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); border: 0; background: rgba(10,23,51,.9); box-shadow: inset 0 0 0 1px var(--line-hi); padding: 9px 20px; }
+.fw-tabs .tab[aria-pressed="true"] { background: #2a8bff; box-shadow: 0 0 18px rgba(31,107,255,.7); }
 
-.fw-pent { position: absolute; z-index: 0; right: clamp(24px, 5vw, 90px); top: clamp(16px, 3svh, 40px); width: clamp(60px, 7vw, 110px); height: auto; pointer-events: none; filter: drop-shadow(0 0 14px rgba(31,107,255,.6)); }
-.fw-pent .o { fill: rgba(31,107,255,.55); stroke: #5aa2ff; stroke-width: 2; }
-.fw-pent .i { fill: rgba(5,11,28,.55); stroke: rgba(214,236,255,.5); stroke-width: 1.5; }
-.fw-pent path { fill: none; stroke: rgba(214,236,255,.4); stroke-width: 1.5; }
-
-.fw-bar { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: clamp(10px, 2svh, 18px); }
-.fw-bar .tabs { margin: 0; }
-.fw-bar .tab { clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); border: 0; background: rgba(10,23,51,.9); box-shadow: inset 0 0 0 1px var(--line-hi); padding: 9px 20px; }
-.fw-bar .tab[aria-pressed="true"] { background: #2a8bff; box-shadow: 0 0 18px rgba(31,107,255,.7); }
-
-/* the grid: three across, the character takes whatever cells are left over */
-.fw-grid {
-  position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(14px, 1.8vw, 26px); padding: 12px 0 8px;
+.fw-stage { position: relative; height: clamp(200px, 36svh, 340px); }
+.fw-frame {
+  --c: 18px; display: block; padding: 3px; border: 0; text-decoration: none; cursor: pointer;
+  clip-path: polygon(var(--c) 0, 100% 0, 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, 0 100%, 0 var(--c));
+  background: linear-gradient(135deg, #d6ecff, #5aa2ff 30%, #1f6bff 65%, #8fc1ff);
+  filter: drop-shadow(0 0 10px rgba(90,162,255,.7));
 }
-.fw-card { filter: drop-shadow(0 0 4px rgba(90,162,255,.95)) drop-shadow(0 0 16px rgba(31,107,255,.5)); }
-.fw-panel {
-  --c: 20px;
-  --shape: polygon(var(--c) 0, calc(100% - var(--c)) 0, 100% var(--c), 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, var(--c) 100%, 0 calc(100% - var(--c)), 0 var(--c));
-  position: relative; height: 100%; display: grid; grid-template-rows: auto 1fr; gap: 10px;
-  padding: 10px 10px 16px; clip-path: var(--shape);
-  background: linear-gradient(135deg, #d6ecff, #5aa2ff 25%, #1f6bff 60%, #8fc1ff);
-}
-.fw-panel::before { content: ""; position: absolute; inset: 2px; clip-path: var(--shape); background: linear-gradient(160deg, #0c2050, #071029 75%); }
-.fw-panel > * { position: relative; }
+.fw-frame-in { position: relative; display: block; height: 100%; overflow: hidden; background: #0d1a3a; clip-path: inherit; }
+.fw-frame-in img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+.fw-frame:hover img { transform: scale(1.04); }
+.fw-frame-in::after { content: ""; position: absolute; inset: 0; background: linear-gradient(200deg, transparent 50%, rgba(5,11,28,.8)); }
+.fw-no { position: absolute; z-index: 1; left: 14px; bottom: 0; font-family: var(--f-display); font-weight: 900; font-style: italic; line-height: 1; font-size: clamp(48px, 8svh, 96px); color: transparent; -webkit-text-stroke: 1.5px #d6ecff; text-shadow: 0 0 18px rgba(90,162,255,.6); }
+.fw-main { position: absolute; left: 0; top: 0; width: 58%; height: 100%; z-index: 1; }
+.fw-frame-main { height: 100%; }
+.fw-next { position: absolute; z-index: 3; right: 0; bottom: 0; width: 38%; height: 62%; }
+.fw-frame-next { width: 100%; height: 100%; }
+.fw-art-wrap { position: absolute; z-index: 2; left: 40%; bottom: 0; height: 118%; pointer-events: none; }
+.fw-art { height: 100%; width: auto; max-width: none; filter: drop-shadow(0 0 18px rgba(90,162,255,.5)); }
 
-.fw-shot { display: block; position: relative; overflow: hidden; height: clamp(96px, 15svh, 170px); background: #0d1a3a; }
-.fw-shot img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
-.fw-card:hover .fw-shot img { transform: scale(1.05); }
-.fw-shot::after { content: ""; position: absolute; inset: 0; background: linear-gradient(200deg, transparent 45%, rgba(5,11,28,.85)); }
-.fw-no {
-  position: absolute; z-index: 1; left: 12px; bottom: 0; font-family: var(--f-display); font-weight: 900; font-style: italic; line-height: 1;
-  font-size: clamp(44px, 6svh, 68px); color: transparent; -webkit-text-stroke: 1.5px #d6ecff; text-shadow: 0 0 18px rgba(90,162,255,.6);
-}
-
-.fw-body { display: grid; gap: 5px; align-content: start; padding: 0 8px; }
-.fw-cats { font-family: var(--f-hud); font-weight: 600; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--blue-hi); }
-.fw-title { font-family: var(--f-display); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: clamp(26px, 3.4svh, 36px); line-height: .95; }
+.fw-info { display: grid; gap: 6px; margin-top: clamp(10px, 2svh, 18px); max-width: 640px; }
+.fw-cats { font-family: var(--f-hud); font-weight: 600; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--blue-hi); }
+.fw-title { font-family: var(--f-display); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: clamp(28px, 4.4svh, 44px); line-height: .95; }
 .fw-title a { color: #eef4ff; text-decoration: none; }
 .fw-title a:hover { color: var(--blue-hi); }
-.fw-k { font-family: var(--f-body); font-weight: 700; font-size: 13px; color: var(--ice); }
-.fw-d { font-size: 13px; line-height: 1.5; color: var(--text-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.fw-card .tags li { font-family: var(--f-hud); font-size: 11px; font-weight: 600; background: rgba(31,107,255,.12); border: 1px solid rgba(90,162,255,.4); color: var(--ice); }
-.fw-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.fw-k { font-weight: 700; color: var(--ice); }
+.fw-d { color: var(--text-2); line-height: 1.55; }
+.fw-links { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 6px; }
+.fw-nav { display: inline-flex; align-items: center; gap: 6px; margin-left: 6px; }
+.fw-arrow { border: 1px solid var(--line-hi); background: rgba(10,23,51,.9); color: var(--text); }
+.fw-arrow:hover { background: var(--blue); }
+.fw-count { font-family: var(--f-mono); font-size: 13px; color: var(--text-2); }
 
-/* the character in the spare cell(s) */
-.fw-art-cell { position: relative; display: flex; align-items: flex-end; justify-content: center; min-height: 240px; pointer-events: none; }
-.fw-art-float { height: 100%; display: flex; align-items: flex-end; }
-.fw-art {
-  display: block; max-width: 100%; max-height: min(52svh, 460px); height: 100%; width: auto; object-fit: contain; object-position: bottom;
-  filter: drop-shadow(0 0 18px rgba(90,162,255,.55)) drop-shadow(0 0 40px rgba(31,107,255,.3));
-}
-
-.sec-fieldwork .back-pitch { position: relative; z-index: 2; margin-top: clamp(8px, 1.6svh, 16px); }
-
-@media (max-width: 1000px) {
-  .fw-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .fw-art-cell { display: none; }
-  .fw-pent { display: none; }
-}
-@media (max-width: 640px) {
+@media (max-width: 760px) {
   .sec-fieldwork { align-items: flex-start; }
-  .fw-grid { grid-template-columns: 1fr; }
+  .fw-pent { display: none; }
+  .fw-stage { height: auto; }
+  .fw-main { position: relative; width: 100%; height: clamp(180px, 30svh, 260px); }
+  .fw-next { display: none; }
+  .fw-art-wrap { left: auto; right: -6%; height: 60%; opacity: .25; }
 }
+
+.fw-strip { display: flex; gap: 10px; margin-top: clamp(12px, 2svh, 20px); overflow-x: auto; padding: 6px 4px 8px; scrollbar-width: none; }
+.fw-strip::-webkit-scrollbar { display: none; }
+.fw-thumb { position: relative; flex: none; width: clamp(92px, 12vw, 140px); aspect-ratio: 16 / 10; overflow: hidden; background: #0d1a3a; opacity: .6; transition: opacity .25s; clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); }
+.fw-thumb:hover, .fw-thumb[aria-current="true"] { opacity: 1; }
+.fw-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.fw-thumb span { position: absolute; left: 6px; bottom: 2px; font-family: var(--f-display); font-weight: 900; font-style: italic; font-size: 22px; line-height: 1; color: #fff; text-shadow: 0 0 8px #000; }
+.fw-ring { position: absolute; inset: 0; border: 2px solid #8fc1ff; box-shadow: inset 0 0 12px rgba(90,162,255,.7); pointer-events: none; }

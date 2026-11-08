@@ -3,7 +3,7 @@ import Home from "./pages/Home.jsx";
 import ProjectsPage from "./pages/ProjectsPage.jsx";
 import ProjectPage from "./pages/ProjectPage.jsx";
 import CertificatesPage from "./pages/CertificatesPage.jsx";
-import { scrollToSection, useRoute } from "./router.js";
+import { useRoute } from "./router.js";
 import { applyMeta, pageMeta } from "./seo.js";
 
 export default function App() {
@@ -11,15 +11,14 @@ export default function App() {
 
   useEffect(() => {
     applyMeta(pageMeta(route));
-    if (route.section) setTimeout(() => scrollToSection(route.section, false), 80);
-    else window.scrollTo({ top: 0, behavior: "instant" });
+    window.scrollTo({ top: 0, behavior: "instant" });
   }, [route]);
 
   let page;
   if (route.page === "projects") page = <ProjectsPage />;
   else if (route.page === "project") page = <ProjectPage slug={route.slug} />;
   else if (route.page === "certificates") page = <CertificatesPage />;
-  else page = <Home />;
+  else page = <Home section={route.section} />;
 
   return (
     <>

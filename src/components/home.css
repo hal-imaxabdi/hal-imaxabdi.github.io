@@ -1,0 +1,11 @@
+/* one view at a time: a fixed "Pitch" button replaces the per-section back links */
+.home-view .back-pitch { display: none; }
+.home-back {
+  position: fixed; z-index: 40; left: clamp(12px, 2vw, 28px); top: clamp(12px, 2vw, 24px);
+  display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px 10px 14px;
+  font-family: var(--f-hud); font-weight: 600; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: #fff;
+  background: rgba(8, 20, 52, .92); clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  box-shadow: inset 0 0 0 1px var(--line-hi); transition: background-color .2s;
+}
+.home-back:hover { background: var(--blue); }
+.home-view .sec { min-height: 100svh; padding-top: clamp(56px, 9svh, 88px); }

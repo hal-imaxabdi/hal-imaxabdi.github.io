@@ -9,7 +9,7 @@ import "./achievements.css";
 
 const EASE = [0.22, 1, 0.36, 1];
 // The front page shows a few highlights (the first ones in data.js); the full list is on /certificates/.
-const FEATURED = 4;
+const FEATURED = earned.length;
 
 // Cyan glass shards that drift slowly behind his head (decoration only).
 const SHARDS = [
@@ -55,7 +55,7 @@ export default function Achievements() {
         <motion.ul className="ach-cards"
           initial={reduce ? false : "off"} whileInView="on" viewport={inView} transition={{ staggerChildren: 0.12, delayChildren: 0.25 }}>
           {featured.map((c, i) => (
-            <motion.li key={c.t} variants={{ off: { opacity: 0, y: 36 }, on: { opacity: 1, y: 0 } }} transition={{ duration: 0.6, ease: EASE }}>
+            <motion.li key={c.t} whileHover={reduce ? undefined : { y: -6 }} variants={{ off: { opacity: 0, y: 36 }, on: { opacity: 1, y: 0 } }} transition={{ duration: 0.6, ease: EASE }}>
               <button className="ach-card" onClick={() => setOpen(i)} aria-label={`View ${c.t} certificate`}>
                 <span className="ach-panel">
                   <span className="ach-img"><CertImage c={c} /></span>
@@ -69,14 +69,6 @@ export default function Achievements() {
           ))}
         </motion.ul>
 
-        {earned.length > FEATURED && (
-          <div className="ach-foot">
-            <a className="ach-all" href="/certificates/">
-              <span>See all {earned.length} certificates</span>
-              <svg viewBox="0 0 40 20" aria-hidden="true"><path d="M2 2 12 10 2 18M16 2 26 10 16 18M30 2 40 10 30 18" /></svg>
-            </a>
-          </div>
-        )}
         <CertLightbox list={featured} index={open} onChange={setOpen} onClose={close} />
         <BackToPitch />
       </div>

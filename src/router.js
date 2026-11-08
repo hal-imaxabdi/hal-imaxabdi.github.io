@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { lenis } from "./gsap.js";
-import { warpTo } from "./warp.js";
 
 // Real paths, so every page has its own URL that search engines and link previews can read.
 //   /                      home: the arena opening + Profile, Intel, Field Work, Achievements, Contact
@@ -18,7 +16,7 @@ export function parse(pathname, hash = "") {
   const section = hash.replace(/^#/, "");
   if (parts[0] === "projects" && parts[1]) return { page: "project", slug: parts[1] };
   if (parts[0] === "projects") return { page: "projects" };
-  if (parts[0] === "certificates") return { page: "certificates" };
+  if (parts[0] === "certificates") return { page: "home", section: "achievements" };
   const known = homeSections.includes(section) ? section : oldSections[section];
   return { page: "home", section: known };
 }
@@ -76,17 +74,9 @@ export function useRoute() {
 export const img = (file) => `/projects/${file}`;
 export const certImg = (file) => `/certs/${file}`;
 
-// Move to a home-page section. smooth = true plays the speed-wipe transition (warp.js) and jumps
-// behind it; smooth = false (e.g. opening /#intel directly) just jumps.
-export function scrollToSection(id, smooth = true) {
-  const el = document.getElementById(id);
-  if (!el) return false;
-  const jump = () => {
-    const top = el.getBoundingClientRect().top + window.scrollY;
-    if (lenis) lenis.scrollTo(top, { immediate: true, force: true });
-    else window.scrollTo({ top, behavior: "instant" });
-  };
-  if (smooth) warpTo(id, jump);
-  else jump();
+// The home page shows one view at a time: the pitch, or one section opened from it.
+// "top" goes back to the pitch; any other id opens that section.
+export function scrollToSection(id) {
+  navigate(id === "top" ? "/" : `/#${id}`);
   return true;
 }
