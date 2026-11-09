@@ -2,11 +2,10 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useCallback, useRef, useState } from "react";
 import { writeups } from "../data.js";
 import { CertImage, CertLightbox, earned } from "./Certs.jsx";
-import { ArrowUpRight } from "./Icons.jsx";
+import { ShardNumber } from "./SectionHead.jsx";
 import "./achievements.css";
 
 const EASE = [0.22, 1, 0.36, 1];
-const pad = (n) => String(n).padStart(2, "0");
 
 /* Rin Itoshi-inspired details (all blue, no character art): his curved shot as a bending trail
    with a ball riding it, faint crosshairs for his precision, frames that "lock on" with a
@@ -23,8 +22,8 @@ const Reticle = ({ className = "" }) => (
 const Stripes = () => <span className="rn-stripes" aria-hidden="true"><i /><i /><i /></span>;
 
 const TABS = [
-  { id: "certs", label: "Certificates", count: earned.length },
-  { id: "writeups", label: "CTF write-ups", count: writeups.length },
+  { id: "certs", label: "Certificates" },
+  { id: "writeups", label: "CTF write-ups" },
 ];
 
 function Tabs({ tab, setTab }) {
@@ -42,7 +41,7 @@ function Tabs({ tab, setTab }) {
         <button key={t.id} ref={(el) => (refs.current[i] = el)} role="tab" id={`rn-tab-${t.id}`} aria-controls="rn-panel"
           aria-selected={tab === t.id} tabIndex={tab === t.id ? 0 : -1} className="rn-tab"
           onClick={() => setTab(t.id)} onKeyDown={(e) => onKey(e, i)}>
-          {t.label}{t.count != null && <span className="rn-tab-n">{pad(t.count)}</span>}
+          {t.label}
         </button>
       ))}
     </div>
@@ -88,20 +87,45 @@ function Certificates({ reduce, onOpen }) {
   );
 }
 
-// CTF write-ups as a calm list: number, title, one line, arrow. The write-up itself has the detail.
+/* Background: shattered glass breaking in from two corners (drawn for the top-right corner,
+   flipped for the bottom-left), plus faint pitch lines behind everything. */
+const GLASS = [
+  "300,0 196,0 236,58", "300,0 236,58 300,96", "236,58 196,0 150,34 204,104", "236,58 300,96 262,156 204,104",
+  "204,104 150,34 112,92 160,150", "262,156 204,104 160,150 214,206", "300,96 300,190 262,156",
+];
+const FLOAT = ["124,170 146,154 140,186", "84,58 102,48 96,76", "178,226 200,214 190,244", "250,240 266,232 262,256", "60,128 72,118 70,140"];
+const Glass = ({ className }) => (
+  <svg className={`rn-glass ${className}`} viewBox="0 0 300 300" aria-hidden="true">
+    {GLASS.map((p) => <polygon key={p} points={p} />)}
+    <g className="float">{FLOAT.map((p) => <polygon key={p} points={p} />)}</g>
+    <path className="crack" d="M300 0 L120 150 M300 0 L170 260 M300 0 L70 50 M236 58 L40 100" />
+  </svg>
+);
+const Pitch = () => (
+  <svg className="rn-pitch" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <rect x="40" y="40" width="1120" height="620" /><path d="M600 40v620" /><circle cx="600" cy="350" r="92" />
+    <rect x="40" y="190" width="170" height="320" /><rect x="40" y="275" width="62" height="150" />
+    <rect x="990" y="190" width="170" height="320" /><rect x="1098" y="275" width="62" height="150" />
+    <path d="M210 290a70 70 0 0 1 0 120M990 290a70 70 0 0 0 0 120" />
+  </svg>
+);
+
+// CTF write-ups as glowing HUD cards: a crystal-shard number on the left, title, when/where, one line.
 function Writeups({ reduce }) {
   return (
     <List reduce={reduce} className="rn-wus">
       {writeups.map((w, i) => (
-        <motion.li key={w.t} variants={item} transition={{ duration: 0.45, ease: EASE }}>
+        <motion.li key={w.t} className="rn-wu-wrap" variants={item} transition={{ duration: 0.5, ease: EASE }}>
           <a className="rn-wu" href={w.url} target="_blank" rel="noopener">
-            <span className="rn-wu-n" aria-hidden="true">{pad(i + 1)}</span>
-            <span className="rn-wu-body">
-              <span className="rn-wu-meta">{w.meta}</span>
-              <span className="rn-wu-t">{w.t}</span>
-              <span className="rn-wu-d">{w.d}</span>
+            <span className="rn-wu-in">
+              <span className="rn-wu-badge" aria-hidden="true"><ShardNumber n={i + 1} /></span>
+              <span className="rn-wu-body">
+                <span className="rn-wu-t">{w.t}</span>
+                <span className="rn-wu-meta">{w.meta}</span>
+                <span className="rn-wu-d">{w.d}</span>
+              </span>
+              <span className="rn-wu-go" aria-hidden="true">›</span>
             </span>
-            <span className="rn-wu-go" aria-hidden="true"><ArrowUpRight size={18} /></span>
           </a>
         </motion.li>
       ))}
@@ -125,6 +149,8 @@ export default function Achievements() {
           {!reduce && <animateMotion dur="9s" repeatCount="indefinite"><mpath href="#rn-shot-path" /></animateMotion>}
         </circle>
       </svg>
+      <Pitch />
+      <Glass className="g-tr" /><Glass className="g-bl" />
       <Reticle className="r1" /><Reticle className="r2" /><Reticle className="r3" />
       <span className="rn-10" aria-hidden="true">10</span>
 

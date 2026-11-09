@@ -205,7 +205,7 @@ export const certs = [
 /* CTF write-ups on the Achievements "CTF write-ups" tab: one row per event, linking to its write-ups.
    Keep d to one short line; the write-up itself has the detail. */
 export const writeups = [
-  { t:"TryHackMe Hacker Holidays", meta:"TryHackMe · Jul 27 – Aug 9",
+  { t:"TryHackMe Hacker Holidays", meta:"Jul 27 – Aug 9 · TryHackMe",
     url:"https://hal-imaxabdi.github.io/tryhackme-hacker-holidays/",
     d:"14 rooms across OSINT, AI, web, cloud, forensics and boot2root." },
   { t:"Digital Forensics CTF", meta:"President University · Team captain",
