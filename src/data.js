@@ -15,7 +15,7 @@ export const me = {
 /* About section: one string per paragraph. */
 export const about = [
   "I'm Halima, an international final-year Informatics (Cybersecurity) student at President University in Indonesia, focused on defensive security: reading logs, investigating alerts and spotting when something on a network is off.",
-  "I've completed a SOC Analyst internship and I'm building a home SOC lab. My goal is to become a security architect who designs systems to be secure from the start.",
+  "Outside class I keep practising with small home labs and CTF challenges, and there is always something new for me to learn. In the long run, I'd like to help build systems that are secure from the start.",
 ];
 export const education = { degree: "Informatics", school: "President University, Indonesia", status: "Ongoing" };
 export const interests = ["Security operations", "Network security", "Incident response", "AI security"];

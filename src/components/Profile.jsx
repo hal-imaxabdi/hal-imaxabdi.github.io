@@ -1,101 +1,94 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { art } from "../art.js";
 import { about, jobs, me } from "../data.js";
-import { scrollToSection } from "../router.js";
-import Art from "./Art.jsx";
-import { ArrowLeft } from "./Icons.jsx";
-import SectionHead from "./SectionHead.jsx";
-import { Tags } from "./ui.jsx";
+import { Ball } from "./Icons.jsx";
 import "./profile.css";
 
 const EASE = [0.22, 1, 0.36, 1];
-// Cikarang, West Java (President University)
-const COORDS = "6.28° S / 107.17° E";
+// words in the bio picked out in blue
+const HIGHLIGHT = /(Halima)/;
+// current role ("… now") first, the rest in data order
+const ordered = [...jobs].sort((a, b) => b.when.includes("now") - a.when.includes("now"));
 
-// A glowing map pin with Halima's photo, flat rings pulsing under it, and its coordinates.
-function LocationPin() {
+// A jigsaw piece: a nod to Isagi Yoichi (#11) fitting the puzzle of the field together.
+function Puzzle({ className }) {
   return (
-    <div className="loc">
-      <svg className="loc-circuit" viewBox="0 0 300 260" aria-hidden="true">
-        <path d="M150 60 H40 V170 H0 M150 60 H262 V128 H300 M60 230 H200 L230 200 H300" />
-        <circle cx="40" cy="170" r="3" /><circle cx="262" cy="128" r="3" /><circle cx="230" cy="200" r="3" />
-      </svg>
-      <p className="loc-coords"><span>{me.first}_loc //</span>{COORDS}</p>
-      <div className="loc-pin">
-        <span className="loc-photo"><img src={art.photo} alt={me.name} width="400" height="400" loading="lazy" /></span>
-      </div>
-      <span className="loc-rings" aria-hidden="true"><i /><i /><i /></span>
-    </div>
+    <svg className={`pz ${className}`} viewBox="0 0 100 100" aria-hidden="true">
+      <path d="M20 30 H38 C34 30 34 16 50 16 C66 16 66 30 62 30 H80 V48 C80 44 94 44 94 60 C94 76 80 76 80 72 V90 H62 C66 90 66 76 50 76 C34 76 34 90 38 90 H20 V72 C20 76 34 76 34 60 C34 44 20 44 20 48 Z" />
+    </svg>
   );
 }
+
+const Stripes = () => <span className="pf-stripes" aria-hidden="true"><i /><i /><i /></span>;
 
 export default function Profile() {
   const reduce = useReducedMotion();
   // whileInView reveal; with reduced motion everything simply renders in place
-  const reveal = (i = 0, from = { opacity: 0, y: 28 }) => reduce ? {} : {
+  const reveal = (i = 0, from = { opacity: 0, y: 24 }) => reduce ? {} : {
     initial: from, whileInView: { opacity: 1, x: 0, y: 0 }, viewport: { once: true, margin: "0px 0px -10% 0px" },
     transition: { duration: 0.7, ease: EASE, delay: i * 0.08 },
   };
 
   return (
     <section className="sec sec-profile" id="profile" aria-labelledby="profile-title">
-      <div className="wrap">
-        <div className="profile-top">
-          <div className="profile-main">
-            <SectionHead n={1} title="Profile" id="profile-title" />
-            <div className="profile-text">
-              {about.map((para, i) => <motion.p className="prose" key={para.slice(0, 24)} {...reveal(i + 1)}>{para}</motion.p>)}
+      {/* faint circuit lines and puzzle pieces behind everything */}
+      <svg className="pf-circuit" viewBox="0 0 1000 560" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 40 H40 L90 90 H230 L270 50 H470" />
+        <path d="M1000 120 H860 L820 160 H560" />
+        <path d="M1000 300 H930 L820 410" />
+        <path d="M0 520 H60 L120 460 H300" />
+      </svg>
+      <Puzzle className="pz-1" /><Puzzle className="pz-2" /><Puzzle className="pz-3" /><Puzzle className="pz-4" /><Puzzle className="pz-5" />
+
+      <div className="wrap pf-grid">
+        <motion.aside className="pf-side" aria-label="Photo" {...reveal(0, { opacity: 0, x: -30 })}>
+          <div className="pf-frame">
+            <Stripes />
+            <div className="pf-photo">
+              <img src={art.photo} alt={me.name} width="400" height="400" loading="lazy" />
             </div>
+            <svg className="pf-edge" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <polygon points="9,12 32,0 100,0 100,60 72,100 0,100" />
+            </svg>
           </div>
-          <motion.aside className="profile-side" aria-label="Location" {...reveal(1, { opacity: 0, y: -30 })}>
-            <LocationPin />
-          </motion.aside>
-        </div>
+          <span className="pf-11" aria-hidden="true">11</span>
+        </motion.aside>
 
-        <div className="record">
-          <motion.h3 className="record-title" {...reveal(0, { opacity: 0, x: -30 })}>Track record</motion.h3>
-
-          {/* the runner, with blue motion streaks sliding in behind him */}
-          <div className="record-runner" aria-hidden="true">
-            <motion.div className="streaks"
-              initial={reduce ? false : "off"} whileInView="on" viewport={{ once: true, margin: "0px 0px -15% 0px" }}
-              transition={{ staggerChildren: 0.07 }}>
-              {[0, 1, 2, 3, 4, 5].map((k) => (
-                <motion.i key={k} variants={{ off: { x: "60%", opacity: 0 }, on: { x: "0%", opacity: 1 } }} transition={{ duration: 0.9, ease: EASE }} />
-              ))}
-            </motion.div>
-            <motion.div {...reveal(1, { opacity: 0, x: 80 })}>
-              <Art src={art.profile} className="runner-art" />
-            </motion.div>
-          </div>
-
-          <ol className="timeline">
-            {jobs.map((j, i) => (
-              <motion.li key={j.role + j.org} className={j.type === "education" ? "is-edu" : ""} {...reveal(i * 0.6)}>
-                <div className="tl-side">
-                  <p className="tl-when">{j.when}</p>
-                  <span className="tl-hex" aria-hidden="true"><i /></span>
-                </div>
-                <span className="tl-node" aria-hidden="true" />
-                <div className="tl-body">
-                  <p className="tl-kind">{j.type === "education" ? "Education" : "Experience"}{j.mode ? ` · ${j.mode}` : ""}</p>
-                  <h4 className="tl-role">{j.role}</h4>
-                  <p className="tl-org">{j.org}</p>
-                  <ul className="tl-points">
-                    {j.points.map(([t, d]) => <li key={t}><strong>{t}</strong> {d}</li>)}
-                  </ul>
-                  {j.tags && <Tags items={j.tags} />}
-                </div>
-              </motion.li>
+        <div className="pf-main">
+          <header className="pf-head">
+            <Stripes />
+            <h2 id="profile-title">Profile</h2>
+          </header>
+          <div className="pf-text">
+            {about.map((para, i) => (
+              <motion.p className="prose" key={para.slice(0, 24)} {...reveal(i + 1)}>
+                {para.split(HIGHLIGHT).map((part, k) => (k % 2 ? <span className="hl" key={k}>{part}</span> : part))}
+              </motion.p>
             ))}
-          </ol>
-        </div>
+          </div>
 
-        <p className="back-pitch">
-          <a className="btn btn-ghost btn-sm" href="#top" onClick={(e) => { e.preventDefault(); history.replaceState(null, "", "/"); scrollToSection("top"); }}>
-            <ArrowLeft size={16} /> Back to pitch
-          </a>
-        </p>
+          <div className="pf-record">
+            <header className="pf-head">
+              <Stripes />
+              <h3>Track record</h3>
+            </header>
+            <ol className="tr">
+              {ordered.map((j, i) => (
+                <motion.li key={j.role + j.org} {...reveal(i * 0.6)}>
+                  <span className="tr-ball" aria-hidden="true"><Ball size={20} /></span>
+                  <div className="tr-when">
+                    <p className="tr-date">{j.when}</p>
+                    <p className="tr-kind">{j.type === "education" ? "Education" : "Experience"}{j.mode ? ` · ${j.mode}` : ""}</p>
+                  </div>
+                  <div className="tr-what">
+                    <h4 className="tr-role">{j.role}</h4>
+                    <p className="tr-org">{j.org}</p>
+                  </div>
+                </motion.li>
+              ))}
+            </ol>
+          </div>
+        </div>
       </div>
     </section>
   );
