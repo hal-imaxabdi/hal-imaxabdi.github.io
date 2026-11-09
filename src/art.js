@@ -1,4 +1,4 @@
-/* CHARACTER ART (WebP files in public/art/, converted from design/characters/*.png with sharp,
+/* CHARACTER ART (WebP files in public/art/, converted from the original PNGs with sharp,
    quality 88, alpha kept, resize only).
    To swap one: drop a new .webp into public/art/ and change its path here.
    Set a slot to null (or leave the file out) and that spot simply stays empty.
@@ -8,7 +8,6 @@ export const art = {
   intel: "/art/intel.webp",                 // green #13, crouching: "Skills" on the pitch (top left) + 02 Intel
   fieldwork: "/art/fieldwork.webp",         // white hair #11, sitting with the ball: "Project" on the pitch (top right) + 03 Field Work
   profile: "/art/profile-runner.webp",      // #10 running: "Achievements" on the pitch (bottom left) + beside the Track Record in 01 Profile
-  achievements: "/art/achievements.webp",   // close-up portrait: 04 Achievements banner
   contact: "/art/contact.webp",             // red hair, sprinting: "Contact" on the pitch (bottom right) + 05 Contact
   photo: "/halima.webp",                    // Halima: only inside the location pin in 01 Profile
   // home pitch only

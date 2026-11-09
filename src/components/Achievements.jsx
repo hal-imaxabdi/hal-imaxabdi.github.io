@@ -1,5 +1,6 @@
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { useCallback, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { writeups } from "../data.js";
 import { CertImage, CertLightbox, earned } from "./Certs.jsx";
 import { ShardNumber } from "./SectionHead.jsx";
@@ -22,72 +23,72 @@ const Reticle = ({ className = "" }) => (
 );
 const Stripes = () => <span className="rn-stripes" aria-hidden="true"><i /><i /><i /></span>;
 
-const TABS = [
-  { id: "certs", label: "Certificates" },
-  { id: "writeups", label: "CTF write-ups" },
-];
-
-function Tabs({ tab, setTab }) {
-  const refs = useRef([]);
-  const onKey = (e, i) => {
-    const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
-    if (!step) return;
-    const k = (i + step + TABS.length) % TABS.length;
-    setTab(TABS[k].id);
-    refs.current[k]?.focus();
-  };
-  return (
-    <div className="rn-tabs" role="tablist" aria-label="Achievements">
-      {TABS.map((t, i) => (
-        <button key={t.id} ref={(el) => (refs.current[i] = el)} role="tab" id={`rn-tab-${t.id}`} aria-controls="rn-panel"
-          aria-selected={tab === t.id} tabIndex={tab === t.id ? 0 : -1} className="rn-tab"
-          onClick={() => setTab(t.id)} onKeyDown={(e) => onKey(e, i)}>
-          {t.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 const item = { off: { opacity: 0, y: 22 }, on: { opacity: 1, y: 0 } };
 const List = ({ reduce, className, children }) => (
   <motion.ul className={className} initial={reduce ? false : "off"} animate="on" transition={{ staggerChildren: 0.06 }}>{children}</motion.ul>
 );
 
-/* Certificates as two rows that keep sliding in opposite directions (top row left, bottom row right).
-   Each row holds its certificates twice so the loop is seamless; hovering or focusing a row pauses it,
-   and clicking a card opens it full size. Small HUD cards (the CTF card shape), so 30+ still fit. */
+/* Certificates as a calm two-column index (number, title, issuer, date). Hovering a row brings up a
+   preview of that certificate in a small glowing HUD frame that follows the cursor and leans into the
+   movement; clicking opens it full size. Nothing moves on its own, and it stays tidy at 10 or 40. */
 function Certificates({ reduce }) {
   const [open, setOpen] = useState(null);
   const close = useCallback(() => setOpen(null), []);
-  const rows = [0, 1].map((k) => earned.map((c, i) => ({ c, i })).filter(({ i }) => i % 2 === k));
+  const [hi, setHi] = useState(null);
+  const card = useRef(null);
+  const pos = useRef({ x: 0, y: 0, tx: 0, ty: 0 });
 
-  const Card = ({ c, i, copy }) => (
-    <li className="rn-cw">
-      <button className="rn-cert" onClick={() => setOpen(i)} tabIndex={copy ? -1 : 0} aria-hidden={copy || undefined} aria-label={`View ${c.t} certificate`}>
-        <span className="rn-cert-in">
-          <span className="rn-cert-img"><CertImage c={c} /></span>
-          <span className="rn-cert-cap">
-            <strong>{c.t}</strong>
-            <span>{[c.org, c.date].filter(Boolean).join(" · ")}</span>
-          </span>
-        </span>
-      </button>
-    </li>
-  );
+  // the preview glides after the cursor and tilts with its speed
+  useEffect(() => {
+    if (hi == null) return;
+    let raf;
+    const tick = () => {
+      const p = pos.current;
+      p.x += (p.tx - p.x) * (reduce ? 1 : 0.2);
+      p.y += (p.ty - p.y) * (reduce ? 1 : 0.2);
+      const tilt = reduce ? 0 : Math.max(-7, Math.min(7, (p.tx - p.x) * 0.06));
+      if (card.current) card.current.style.transform = `translate3d(${p.x}px, ${p.y}px, 0) rotate(${tilt}deg)`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [hi, reduce]);
+
+  const aim = (e, snap) => {
+    const w = 300, flip = e.clientX + w + 40 > window.innerWidth;
+    const p = pos.current;
+    p.tx = flip ? e.clientX - w - 28 : e.clientX + 28;
+    p.ty = Math.min(window.innerHeight - 220, Math.max(16, e.clientY - 100));
+    if (snap) { p.x = p.tx; p.y = p.ty; }
+  };
+  const hoverable = typeof window !== "undefined" && window.matchMedia("(hover: hover)").matches;
 
   return (
     <>
-      <div className={`rn-reels ${reduce ? "is-still" : ""}`}>
-        {rows.map((row, k) => (
-          <div key={k} className={`rn-reel ${k ? "is-right" : ""}`} style={{ "--dur": `${row.length * 6}s` }}>
-            <ul className="rn-reel-track">
-              {row.map((x) => <Card key={x.c.t} {...x} />)}
-              {!reduce && row.map((x) => <Card key={`copy-${x.c.t}`} {...x} copy />)}
-            </ul>
-          </div>
+      <ol className="rn-index">
+        {earned.map((c, i) => (
+          <li key={c.t}>
+            <button className="rn-crow" onClick={() => setOpen(i)} aria-label={`View ${c.t} certificate`}
+              onPointerEnter={hoverable ? (e) => { aim(e, hi == null); setHi(i); } : undefined}
+              onPointerMove={hoverable ? (e) => aim(e) : undefined}
+              onPointerLeave={hoverable ? () => setHi(null) : undefined}>
+              <span className="rn-crow-n" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+              <span className="rn-crow-txt">
+                <strong>{c.t}</strong>
+                <span>{c.org}</span>
+              </span>
+              <span className="rn-crow-date">{c.date}</span>
+            </button>
+          </li>
         ))}
-      </div>
+      </ol>
+
+      {hoverable && createPortal(
+        <div ref={card} className={`rn-peek ${hi != null ? "is-on" : ""}`} aria-hidden="true">
+          <span className="rn-peek-in">{hi != null && <CertImage key={earned[hi].t} c={earned[hi]} />}</span>
+        </div>,
+        document.body
+      )}
       <CertLightbox list={earned} index={open} onChange={setOpen} onClose={close} />
     </>
   );
@@ -126,22 +127,16 @@ function Writeups({ reduce }) {
   );
 }
 
-/* ---------- ACHIEVEMENTS: certificates and CTF write-ups behind two tabs ---------- */
+/* ---------- ACHIEVEMENTS: certificates, then CTF write-ups, each under its own small heading ---------- */
 export default function Achievements() {
   const reduce = useReducedMotion();
-  const [tab, setTab] = useState("certs");
 
   return (
     <section className="sec sec-achievements" id="achievements" aria-labelledby="achievements-title">
-      {/* background: the curved shot with a ball riding it, crosshairs, #10 */}
-      <svg className="rn-shot" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-        <path id="rn-shot-path" d={SHOT} />
-        <circle r="5" className="rn-shot-ball">
-          {!reduce && <animateMotion dur="9s" repeatCount="indefinite"><mpath href="#rn-shot-path" /></animateMotion>}
-        </circle>
-      </svg>
+      {/* background: the curved shot (a still trail), the shattered glass, crosshairs, #10 */}
+      <svg className="rn-shot" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d={SHOT} /></svg>
       <Pitch />
-      <ShatteredGlass className="sg-tr" ball reduce={reduce} /><ShatteredGlass className="sg-bl" variant="b" />
+      <ShatteredGlass className="sg-tr" ball reduce={reduce} /><ShatteredGlass className="sg-bl" />
       <Reticle className="r1" /><Reticle className="r2" /><Reticle className="r3" />
       <span className="rn-10" aria-hidden="true">10</span>
 
@@ -152,18 +147,16 @@ export default function Achievements() {
         </header>
         <p className="rn-intro">Certificates I've earned and the CTFs I've played and written up.</p>
 
-        <Tabs tab={tab} setTab={setTab} />
+        <section className="rn-block" aria-labelledby="rn-certs-title">
+          <h3 className="rn-sub" id="rn-certs-title">Certificates</h3>
+          <Certificates reduce={reduce} />
+        </section>
 
-        <div className="rn-body" role="tabpanel" id="rn-panel" aria-labelledby={`rn-tab-${tab}`}>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div key={tab} exit={reduce ? undefined : { opacity: 0, transition: { duration: 0.15 } }}>
-              {tab === "certs" && <Certificates reduce={reduce} />}
-              {tab === "writeups" && <Writeups reduce={reduce} />}
-            </motion.div>
-          </AnimatePresence>
-        </div>
+        <section className="rn-block" aria-labelledby="rn-ctf-title">
+          <h3 className="rn-sub" id="rn-ctf-title">CTF write-ups</h3>
+          <Writeups reduce={reduce} />
+        </section>
       </div>
-
     </section>
   );
 }

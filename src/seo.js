@@ -37,7 +37,7 @@ export function pageMeta(route) {
   }
   return {
     path: "/",
-    title: `${me.name} · Cybersecurity, SOC & Network Security`,
+    title: me.name,
     description: `${me.name} is an Informatics student at President University focused on cybersecurity: SOC analysis, log investigation and network security.`,
     image: SHARE_IMAGE,
   };

@@ -13,15 +13,13 @@
 /* ---------- background details ---------- */
 .rn-shot { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .rn-shot path { fill: none; stroke: rgba(90,162,255,.22); stroke-width: 1.5; stroke-dasharray: 2 10; stroke-linecap: round; }
-.rn-shot-ball { fill: var(--ice); filter: drop-shadow(0 0 6px rgba(90,162,255,.9)); }
 
-.rn-reticle { position: absolute; z-index: 0; width: 34px; height: 34px; pointer-events: none; animation: rn-aim 14s linear infinite; }
+.rn-reticle { position: absolute; z-index: 0; width: 34px; height: 34px; pointer-events: none; }
 .rn-reticle circle, .rn-reticle path { fill: none; stroke: rgba(90,162,255,.3); stroke-width: 1.3; stroke-linecap: round; }
 .rn-reticle .dot { fill: rgba(90,162,255,.5); stroke: none; }
 .rn-reticle.r1 { right: 12%; top: 14%; }
-.rn-reticle.r2 { left: 4%; top: 46%; width: 26px; height: 26px; animation-direction: reverse; }
-.rn-reticle.r3 { right: 34%; bottom: 8%; width: 22px; height: 22px; animation-duration: 20s; }
-@keyframes rn-aim { to { transform: rotate(360deg); } }
+.rn-reticle.r2 { left: 4%; top: 46%; width: 26px; height: 26px; }
+.rn-reticle.r3 { right: 34%; bottom: 8%; width: 22px; height: 22px; }
 
 /* Rin's #10: a faint outlined numeral, like the 11, 8 and 7 in the other sections */
 .rn-10 {
@@ -43,62 +41,53 @@
 .rn-stripes i:nth-child(3) { opacity: .4; }
 .rn-intro { font-size: clamp(15px, 1.1vw, 16px); line-height: 1.7; color: var(--text-2); margin-bottom: clamp(16px, 3svh, 26px); max-width: 60ch; }
 
-/* ---------- tabs: slanted Blue Lock slabs ---------- */
-.rn-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: clamp(18px, 3svh, 28px); }
-.rn-tab {
-  display: inline-flex; align-items: center; gap: 10px; padding: 11px 26px; cursor: pointer;
-  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
-  font-family: var(--f-hud); font-weight: 600; font-size: 13px; letter-spacing: .14em; text-transform: uppercase;
-  color: var(--text-2); background: #0d1d45;
-  transition: background-color .2s, color .2s;
+/* ---------- the two blocks: certificates, then CTF write-ups ---------- */
+.rn-block + .rn-block { margin-top: clamp(40px, 7svh, 64px); }
+.rn-sub {
+  display: flex; align-items: center; gap: 12px; margin-bottom: clamp(14px, 2.4svh, 20px);
+  font-family: var(--f-hud); font-weight: 600; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--blue-hi);
 }
-.rn-tab:hover { color: var(--ice); background: #132a63; }
-.rn-tab[aria-selected="true"] { background: var(--blue); color: #fff; box-shadow: inset 0 -3px 0 var(--ice); }
-.rn-tab:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
-/* ---------- certificates: two rows sliding in opposite directions ---------- */
-.rn-reels { display: grid; gap: clamp(14px, 2.4svh, 22px); margin: 0 calc(-1 * clamp(8px, 2vw, 24px)); }
-.rn-reel {
-  overflow: hidden; padding: 10px 0;
-  /* fade the ends so cards slide in and out softly */
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-}
-.rn-reel-track { display: flex; gap: 18px; width: max-content; padding-right: 18px; animation: rn-reel-left var(--dur, 40s) linear infinite; }
-.rn-reel.is-right .rn-reel-track { animation-name: rn-reel-right; }
-.rn-reel:hover .rn-reel-track, .rn-reel:focus-within .rn-reel-track { animation-play-state: paused; }
-/* the track holds every card twice, so moving it by half loops seamlessly */
-@keyframes rn-reel-left { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@keyframes rn-reel-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
-/* reduced motion: no sliding, each row just scrolls sideways */
-.rn-reels.is-still .rn-reel { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
-.rn-reels.is-still .rn-reel-track { animation: none; }
+.rn-sub::before { content: ""; width: 18px; height: 2px; background: var(--blue); }
 
-/* a small HUD card, the same shape as the CTF cards: corners cut on all four sides, a bright blue edge */
-.rn-cw { flex: none; width: clamp(260px, 24vw, 320px); filter: drop-shadow(0 0 4px rgba(90,162,255,.5)) drop-shadow(0 0 12px rgba(31,107,255,.25)); transition: filter .3s var(--ease); }
-.rn-cw:has(.rn-cert:hover), .rn-cw:has(.rn-cert:focus-visible) { filter: drop-shadow(0 0 7px rgba(143,193,255,.9)) drop-shadow(0 0 22px rgba(31,107,255,.5)); }
-.rn-cert {
-  --k: 14px;
-  --shape: polygon(var(--k) 0, calc(100% - var(--k)) 0, 100% var(--k), 100% calc(100% - var(--k)), calc(100% - var(--k)) 100%, var(--k) 100%, 0 calc(100% - var(--k)), 0 var(--k));
-  display: block; width: 100%; padding: 1.5px; cursor: zoom-in; text-align: left; color: inherit;
-  clip-path: var(--shape); background: linear-gradient(100deg, #d6ecff, #5aa2ff 18%, #1f6bff 50%, #5aa2ff 82%, #d6ecff);
-  transition: transform .3s var(--ease);
+/* ---------- certificates: a calm two-column index, with a preview that follows the cursor ---------- */
+.rn-index { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(24px, 4vw, 56px); counter-reset: none; }
+.rn-index li { border-bottom: 1px solid var(--line); }
+.rn-index li:nth-child(-n+2) { border-top: 1px solid var(--line); }
+.rn-crow {
+  position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 16px;
+  width: 100%; padding: 16px 10px 16px 12px; text-align: left; cursor: zoom-in; color: inherit; background: transparent; border: 0;
+  transition: background-color .25s var(--ease);
 }
-.rn-cert:hover, .rn-cert:focus-visible { transform: translateY(-3px); outline: none; }
-.rn-cert-in {
-  position: relative; display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; gap: 12px;
-  padding: 12px 14px; clip-path: var(--shape);
-  background:
-    radial-gradient(60% 120% at 0% 50%, rgba(31,107,255,.28), transparent 70%),
-    repeating-linear-gradient(115deg, transparent 0 22px, rgba(90,162,255,.05) 22px 24px),
-    linear-gradient(165deg, #0d2058, #0a1733 50%, #081230);
+/* hover: a blue bar slides down the left edge and the row tints */
+.rn-crow::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--blue); transform: scaleY(0); transform-origin: top; transition: transform .3s var(--ease); }
+.rn-crow:hover, .rn-crow:focus-visible { background: rgba(31,107,255,.07); outline: none; }
+.rn-crow:focus-visible { box-shadow: inset 0 0 0 2px var(--focus); }
+.rn-crow:hover::before, .rn-crow:focus-visible::before { transform: scaleY(1); }
+/* the number: an outlined jersey numeral that fills in on hover */
+.rn-crow-n {
+  width: 1.6em; font-family: var(--f-display); font-weight: 700; font-style: italic; font-size: 30px; line-height: 1;
+  color: transparent; -webkit-text-stroke: 1px rgba(90,162,255,.6); transition: color .25s var(--ease);
 }
-/* a small HUD light bar on the top edge */
-.rn-cert-in::before { content: ""; position: absolute; top: 4px; left: 30%; width: 34%; height: 2px; border-radius: 2px; background: linear-gradient(90deg, transparent, #8fc1ff, transparent); }
-.rn-cert-img { position: relative; display: block; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 4px; background: rgba(6, 12, 30, .7); border: 1px solid rgba(90,162,255,.35); }
-.rn-cert-img img { position: absolute; inset: 2px; width: calc(100% - 4px); height: calc(100% - 4px); object-fit: contain; }
-.rn-cert-cap { display: grid; gap: 3px; min-width: 0; }
-.rn-cert-cap strong { font-family: var(--f-hud); font-weight: 600; font-size: 14.5px; line-height: 1.25; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.rn-cert-cap span { font-size: 12px; color: var(--blue-hi); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rn-crow:hover .rn-crow-n, .rn-crow:focus-visible .rn-crow-n { color: var(--blue-hi); }
+.rn-crow-txt { display: grid; gap: 3px; min-width: 0; }
+.rn-crow-txt strong { font-family: var(--f-hud); font-weight: 600; font-size: clamp(15px, 1.2vw, 17px); line-height: 1.3; color: var(--text); }
+.rn-crow-txt span { font-size: 13.5px; color: var(--blue-hi); }
+.rn-crow-date { font-family: var(--f-mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+/* the preview: a small glowing HUD frame (the CTF card shape) that follows the cursor */
+.rn-peek {
+  position: fixed; left: 0; top: 0; z-index: 60; width: 300px; pointer-events: none;
+  opacity: 0; scale: .92; transition: opacity .2s var(--ease), scale .25s var(--ease);
+  filter: drop-shadow(0 0 8px rgba(90,162,255,.6)) drop-shadow(0 18px 40px rgba(0,0,0,.55));
+}
+.rn-peek.is-on { opacity: 1; scale: 1; }
+.rn-peek-in {
+  --k: 16px;
+  display: block; aspect-ratio: 16 / 10.6; padding: 8px;
+  clip-path: polygon(var(--k) 0, calc(100% - var(--k)) 0, 100% var(--k), 100% calc(100% - var(--k)), calc(100% - var(--k)) 100%, var(--k) 100%, 0 calc(100% - var(--k)), 0 var(--k));
+  background: linear-gradient(100deg, #d6ecff, #5aa2ff 18%, #1f6bff 50%, #5aa2ff 82%, #d6ecff);
+}
+.rn-peek-in img, .rn-peek-in .cert-missing { display: block; width: 100%; height: 100%; object-fit: contain; background: #0a1838; }
 
 /* ---------- CTF write-ups: glowing HUD cards, two per row ---------- */
 .rn-wus { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(18px, 2.4vw, 32px); padding: 6px 4px; }
@@ -148,40 +137,34 @@
 .rn-pitch { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .rn-pitch rect, .rn-pitch path, .rn-pitch circle { fill: none; stroke: rgba(90,162,255,.07); stroke-width: 1.2; vector-effect: non-scaling-stroke; }
 
-/* shattered glass: the ball has hit near the top-right corner; a smaller, older crack bottom-left */
-.sg { position: absolute; z-index: 0; pointer-events: none; aspect-ratio: 1; width: var(--sg, clamp(420px, 44vw, 640px)); }
-.sg svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.sg-tr { right: calc(var(--sg, clamp(420px, 44vw, 640px)) * -0.3); top: calc(var(--sg, clamp(420px, 44vw, 640px)) * -0.28); }
-.sg-bl { --sg: clamp(300px, 30vw, 440px); left: calc(var(--sg) * -0.34); bottom: calc(var(--sg) * -0.3); opacity: .55; transform: rotate(140deg); }
-.sg-crack path { fill: none; stroke: rgba(232, 244, 255, .82); stroke-linecap: round; stroke-linejoin: round; }
-.sg-glow path { fill: none; stroke: rgba(90, 162, 255, .16); stroke-linecap: round; filter: blur(1.5px); }
-.sg-pane { fill: #cfe6ff; }
-.sg-chip { fill: #e8f4ff; stroke: rgba(255,255,255,.5); stroke-width: .5; }
-.sg-glint { fill: none; stroke: #fff; stroke-width: 1.2; stroke-linecap: round; filter: drop-shadow(0 0 3px #8fc1ff); }
-.sg-loose path { fill: rgba(143, 193, 255, .08); stroke: rgba(214, 236, 255, .45); stroke-width: 1; animation: sg-drift 9s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
-.sg-loose path:nth-child(2n) { animation-delay: -4s; animation-duration: 11s; }
-@keyframes sg-drift { 0%, 100% { transform: translate(0, 0) rotate(0); } 50% { transform: translate(6px, 8px) rotate(8deg); } }
+/* shattered glass: a real impact crack near the top-right corner with the ball in it; a fainter one bottom-left */
+.sg { --w: clamp(520px, 54vw, 860px); position: absolute; z-index: 0; pointer-events: none; width: var(--w); aspect-ratio: 1280 / 852; }
+.sg img {
+  display: block; width: 100%; height: 100%; opacity: .7;
+  -webkit-mask-image: radial-gradient(circle at 57.8% 34.2%, #000 14%, rgba(0,0,0,.55) 34%, transparent 60%);
+  mask-image: radial-gradient(circle at 57.8% 34.2%, #000 14%, rgba(0,0,0,.55) 34%, transparent 60%);
+}
+.sg-tr { right: calc(var(--w) * -0.3); top: calc(var(--w) * -0.135); }
+.sg-bl { --w: clamp(380px, 36vw, 560px); left: calc(var(--w) * -0.5); bottom: calc(var(--w) * -0.42); transform: rotate(160deg); }
+.sg-bl img { opacity: .35; }
 /* the ball sits in the hole it made */
-.sg-ball { position: absolute; left: 50%; top: 50%; translate: -50% -50%; line-height: 0; filter: drop-shadow(0 6px 14px rgba(0,0,0,.55)) drop-shadow(0 0 14px rgba(90,162,255,.35)); }
+.sg-ball { position: absolute; left: 57.8%; top: 34.2%; translate: -50% -50%; line-height: 0; filter: drop-shadow(0 6px 14px rgba(0,0,0,.6)) drop-shadow(0 0 16px rgba(90,162,255,.35)); }
 .sg-ball .ball3d { display: block; }
 
 /* ---------- responsive ---------- */
 @media (max-width: 760px) {
-  .rn-cw { width: 250px; }
-  .rn-cert-in { grid-template-columns: 80px minmax(0, 1fr); padding: 10px 12px; }
+  .rn-index { grid-template-columns: 1fr; }
+  .rn-index li:nth-child(2) { border-top: 0; }
   .rn-wus { grid-template-columns: 1fr; }
   .rn-10 { font-size: 140px; opacity: .7; }
 }
 @media (max-width: 480px) {
-  .rn-tab { padding: 10px 18px; font-size: 12px; }
   .rn-wu-in { padding: 20px 12px 20px 16px; gap: 12px; }
   .rn-wu-badge { width: 72px; }
-  .sg-tr { --sg: 300px; }
+  .sg-tr { --w: 420px; }
   .sg-bl { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .rn-reticle { animation: none; }
-  .rn-cert, .rn-cw, .rn-wu, .rn-wu-wrap, .rn-wu-badge .shard, .rn-wu-go { transition: none; }
-  .sg-loose path { animation: none; }
+  .rn-crow, .rn-crow::before, .rn-crow-n, .rn-peek, .rn-wu, .rn-wu-wrap, .rn-wu-badge .shard, .rn-wu-go { transition: none; }
 }
 
