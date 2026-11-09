@@ -18,7 +18,6 @@ export const about = [
   "Outside class I keep practising with small home labs and CTF challenges, and there is always something new for me to learn. In the long run, I'd like to help build systems that are secure from the start.",
 ];
 export const education = { degree: "Informatics", school: "President University, Indonesia", status: "Ongoing" };
-export const interests = ["Security operations", "Network security", "Incident response", "AI security"];
 
 /* Add a project by copying an entry. Order matters: the first three appear in the readme summary,
    and every finished project appears on the Projects page with its own case-study page.
@@ -38,7 +37,6 @@ export const interests = ["Security operations", "Network security", "Incident r
      skills [..]            "Skills demonstrated" tags
      status:"building"      work in progress: shown greyed in the desktop labs/ folder only,
                             with no case-study page and no sitemap entry (needs only t, slug, k, d, tags, cats) */
-export const projectCats = ["Security", "Tools", "Web"];
 export const projects = [
   { t:"WAF Homelab", slug:"waf-homelab", cats:["Security"],
     problem:"Does a web application firewall really stop common attacks, and what slips past it? Reading about a WAF is not the same as watching one block (or miss) a live attack.",

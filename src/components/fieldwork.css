@@ -24,17 +24,6 @@
   font-size: clamp(170px, 22vw, 320px); color: transparent; -webkit-text-stroke: 1px rgba(226,236,255,.16);
 }
 
-/* the ball trap */
-.nv-trap { position: relative; display: grid; justify-items: center; width: 120px; flex: none; }
-.nv-ball { position: relative; z-index: 1; display: block; line-height: 0; filter: drop-shadow(0 0 12px rgba(214,236,255,.45)); animation: nv-bob 3.6s ease-in-out infinite; }
-.nv-rings { position: relative; width: 120px; height: 30px; margin-top: 10px; }
-.nv-rings i { position: absolute; left: 50%; top: 50%; translate: -50% -50%; border-radius: 50%; border: 1px solid var(--blue-hi); animation: nv-ring 3.6s ease-in-out infinite; }
-.nv-rings i:nth-child(1) { width: 40px; height: 10px; opacity: .8; }
-.nv-rings i:nth-child(2) { width: 80px; height: 20px; opacity: .45; animation-delay: .2s; }
-.nv-rings i:nth-child(3) { width: 118px; height: 30px; opacity: .22; animation-delay: .4s; }
-@keyframes nv-bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-8px) rotate(25deg); } }
-@keyframes nv-ring { 0%, 100% { box-shadow: 0 0 0 rgba(90,162,255,0); } 50% { box-shadow: 0 0 12px rgba(90,162,255,.6); } }
-
 /* ---------- heading ---------- */
 .nv-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: clamp(20px, 4svh, 34px); }
 .nv-top > div { flex: 1; min-width: 0; }
@@ -124,7 +113,7 @@
 .nv-row:hover .nv-go b { transform: translateX(5px); }
 
 @media (prefers-reduced-motion: reduce) {
-  .nv-pad, .nv-ball, .nv-rings i, .nv-face { animation: none; }
+  .nv-pad, .nv-face { animation: none; }
   .nv-card, .nv-shot img, .nv-drop-ball, .nv-drop-ring { transition: none; }
 }
 @media (max-width: 760px) {
@@ -133,7 +122,6 @@
   .nv-card { max-width: 460px; }
 }
 @media (max-width: 640px) {
-  .nv-trap { display: none; }
   .nv-face { width: 46px; height: 46px; }
   .nv-pad.p2 { display: none; }
   .nv-7 { font-size: 150px; }

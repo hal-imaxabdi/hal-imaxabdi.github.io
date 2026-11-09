@@ -1,42 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- A clear glass "H" with no background: see-through blue glass, a deeper blue outer edge
+       (so it reads on light tabs), a bright inner rim and a shine (so it reads on dark tabs). -->
   <defs>
-    <!-- soft blue light behind the glass -->
-    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>
-    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.2"/></filter>
-    <clipPath id="tile"><rect width="64" height="64" rx="15"/></clipPath>
-    <!-- frosted glass: brighter at the top-left, almost clear at the bottom-right -->
-    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#ffffff" stop-opacity=".55"/>
-      <stop offset=".5" stop-color="#d6ecff" stop-opacity=".22"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity=".1"/>
+    <linearGradient id="body" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8fc1ff" stop-opacity=".75"/>
+      <stop offset=".5" stop-color="#3a7fff" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#1f6bff" stop-opacity=".65"/>
     </linearGradient>
-    <!-- the glass edge catches light on one side and fades on the other -->
-    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
-      <stop offset=".6" stop-color="#d6ecff" stop-opacity=".35"/>
-      <stop offset="1" stop-color="#8fc1ff" stop-opacity=".8"/>
+      <stop offset=".55" stop-color="#d6ecff" stop-opacity=".25"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity=".7"/>
     </linearGradient>
     <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#fff" stop-opacity=".9"/>
-      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
     </linearGradient>
+    <clipPath id="h"><path d="M12 8h14v17h12V8h14v48H38V39H26v17H12z"/></clipPath>
   </defs>
 
-  <g clip-path="url(#tile)">
-    <!-- dark tile with blurred blue lights glowing behind the glass -->
-    <rect width="64" height="64" fill="#06102a"/>
-    <circle cx="16" cy="16" r="15" fill="#1f6bff" filter="url(#blur)"/>
-    <circle cx="50" cy="48" r="16" fill="#5aa2ff" filter="url(#blur)"/>
-    <circle cx="44" cy="12" r="8" fill="#0c3fb8" filter="url(#blur)"/>
+  <!-- outer edge in deep blue -->
+  <path d="M12 8h14v17h12V8h14v48H38V39H26v17H12z" fill="url(#body)" stroke="#1f6bff" stroke-width="2.5" stroke-linejoin="round"/>
+
+  <g clip-path="url(#h)">
+    <!-- a soft darker band through the middle, like light bending in thick glass -->
+    <path d="M0 44L64 30v12L0 56z" fill="#0c3fb8" opacity=".25"/>
+    <!-- diagonal shine sweeping across the glass -->
+    <path d="M0 0h40L0 34z" fill="url(#shine)" opacity=".55"/>
+    <!-- bright inner rim -->
+    <path d="M12 8h14v17h12V8h14v48H38V39H26v17H12z" fill="none" stroke="url(#rim)" stroke-width="3" stroke-linejoin="round"/>
   </g>
 
-  <!-- the H as a pane of frosted glass -->
-  <path d="M16 13h10v14h12V13h10v38H38V36H26v15H16z" fill="#1f6bff" opacity=".35" filter="url(#soft)"/>
-  <path d="M16 13h10v14h12V13h10v38H38V36H26v15H16z" fill="url(#glass)" stroke="url(#edge)" stroke-width="1.6" stroke-linejoin="round"/>
-  <!-- light streaks on the glass -->
-  <path d="M18 15.5h6v6c-2 .5-4 1.5-6 3z" fill="url(#shine)" opacity=".8"/>
-  <path d="M40 15.5h6v6c-2 .5-4 1.5-6 3z" fill="url(#shine)" opacity=".8"/>
-
-  <!-- the tile's own thin glass rim -->
-  <rect x=".75" y=".75" width="62.5" height="62.5" rx="14.25" fill="none" stroke="#8fc1ff" stroke-opacity=".45" stroke-width="1.5"/>
+  <!-- small specular glints on the top edges -->
+  <path d="M15 11.5h7" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+  <path d="M41 11.5h7" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
 </svg>

@@ -1,5 +1,4 @@
 /* one view at a time: a fixed "Pitch" button replaces the per-section back links */
-.home-view .back-pitch { display: none; }
 /* small "Pitch" pill, fixed bottom-left; the ball rolls back on hover */
 .gate {
   position: fixed; z-index: 40; left: clamp(12px, 2vw, 24px); bottom: clamp(12px, 2vw, 24px);

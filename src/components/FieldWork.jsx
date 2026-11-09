@@ -7,7 +7,7 @@ import "./fieldwork.css";
 const EASE = [0.22, 1, 0.36, 1];
 
 /* Nagi-inspired details (no character art, no Japanese text): white/silver on dark navy marble,
-   the ball's pentagon, a tiny button-eyed face, faint game controllers, the ball "trap",
+   the ball's pentagon, a tiny button-eyed face, faint game controllers,
    and his #7 once per page as a faint outline. */
 function Pad({ className }) {
   return (
@@ -29,16 +29,6 @@ export function NagiDecor() {
       <Pad className="p1" /><Pad className="p2" />
       <span className="nv-7" aria-hidden="true">7</span>
     </>
-  );
-}
-
-// the ball "trap": a ball resting in the air over soft rings
-export function Trap({ className = "" }) {
-  return (
-    <span className={`nv-trap ${className}`} aria-hidden="true">
-      <span className="nv-ball"><Ball size={40} /></span>
-      <span className="nv-rings"><i /><i /><i /></span>
-    </span>
   );
 }
 

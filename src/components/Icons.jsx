@@ -16,7 +16,6 @@ export const Mail = (p) => <Svg {...p}><path d="M3 6h18v12H3zM3 7l9 7 9-7" /></S
 export const Copy = (p) => <Svg {...p}><path d="M9 9h11v11H9zM5 15H4V4h11v1" /></Svg>;
 export const Check = (p) => <Svg {...p}><path d="m5 12 5 5 9-10" /></Svg>;
 export const Close = (p) => <Svg {...p}><path d="M6 6l12 12M18 6 6 18" /></Svg>;
-export const Menu = (p) => <Svg {...p}><path d="M4 7h16M4 12h16M4 17h10" /></Svg>;
 
 // A full-colour football: white leather, a dark centre pentagon, seams and the edge patches.
 const ring = (r, a0) => Array.from({ length: 5 }, (_, k) => {

@@ -11,9 +11,7 @@
 .ps .page-h1 { background: linear-gradient(90deg, #fff 40%, var(--blue-hi)); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
 .ps .page-h1 .count { -webkit-text-fill-color: transparent; }
 .ps .crumb { display: inline-block; padding: 6px 14px; background: rgba(31,107,255,.18); clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); }
-.ps .case-block, .ps .match-body, .ps .glance > div, .ps .flow-node, .ps .next-project { background: rgba(8,18,46,.82); border-color: var(--line-hi); box-shadow: 0 0 18px rgba(31,107,255,.18); backdrop-filter: blur(2px); }
-.ps .case-block { padding: clamp(14px, 2vw, 24px); }
-.ps .match-shot, .ps .case-shot { box-shadow: 0 0 0 2px var(--blue-hi), 0 0 26px rgba(31,107,255,.45); }
+.ps .glance > div { background: rgba(8,18,46,.82); border-color: var(--line-hi); box-shadow: 0 0 18px rgba(31,107,255,.18); backdrop-filter: blur(2px); }
 @media (max-width: 860px) { .ps-art { opacity: .16; height: 60svh; } }
 .ps { padding-top: 76px; }
 .home-back {
