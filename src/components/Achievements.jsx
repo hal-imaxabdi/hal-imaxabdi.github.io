@@ -1,77 +1,153 @@
-import { motion, useReducedMotion } from "framer-motion";
-import { useCallback, useState } from "react";
-import { art } from "../art.js";
-import Art from "./Art.jsx";
-import BackToPitch from "./BackToPitch.jsx";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useCallback, useRef, useState } from "react";
+import { writeups } from "../data.js";
 import { CertImage, CertLightbox, earned } from "./Certs.jsx";
-import SectionHead from "./SectionHead.jsx";
+import { ArrowUpRight } from "./Icons.jsx";
 import "./achievements.css";
 
 const EASE = [0.22, 1, 0.36, 1];
-// The front page shows a few highlights (the first ones in data.js); the full list is on /certificates/.
-const FEATURED = earned.length;
+const pad = (n) => String(n).padStart(2, "0");
 
-// Cyan glass shards that drift slowly behind his head (decoration only).
-const SHARDS = [
-  { p: "70,30 118,18 96,64", x: 6, d: 7 }, { p: "230,150 280,120 262,176", x: -8, d: 9 },
-  { p: "420,20 470,34 440,70", x: 7, d: 8 }, { p: "560,190 612,170 590,226", x: -6, d: 10 },
-  { p: "700,40 744,70 706,96", x: 8, d: 7.5 }, { p: "820,150 868,132 850,188", x: -7, d: 9.5 },
-  { p: "330,90 352,60 366,104", x: 5, d: 11 }, { p: "150,210 190,196 176,240", x: -5, d: 8.5 },
+/* Rin Itoshi-inspired details (all blue, no character art): his curved shot as a bending trail
+   with a ball riding it, faint crosshairs for his precision, frames that "lock on" with a
+   crosshair on hover, and his #10. */
+const SHOT = "M-40 660 C 260 660, 420 160, 760 150 S 1120 260, 1260 60";
+
+// a small crosshair / target-lock mark
+const Reticle = ({ className = "" }) => (
+  <svg className={`rn-reticle ${className}`} viewBox="0 0 40 40" aria-hidden="true">
+    <circle cx="20" cy="20" r="12" /><circle cx="20" cy="20" r="2" className="dot" />
+    <path d="M20 2v9M20 29v9M2 20h9M29 20h9" />
+  </svg>
+);
+const Stripes = () => <span className="rn-stripes" aria-hidden="true"><i /><i /><i /></span>;
+
+const TABS = [
+  { id: "certs", label: "Certificates", count: earned.length },
+  { id: "writeups", label: "CTF write-ups", count: writeups.length },
 ];
 
-function Shards({ reduce }) {
+function Tabs({ tab, setTab }) {
+  const refs = useRef([]);
+  const onKey = (e, i) => {
+    const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    if (!step) return;
+    const k = (i + step + TABS.length) % TABS.length;
+    setTab(TABS[k].id);
+    refs.current[k]?.focus();
+  };
   return (
-    <svg className="ach-shards" viewBox="0 0 900 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      {SHARDS.map((s, i) => (
-        <motion.polygon key={i} points={s.p} style={{ transformBox: "fill-box", transformOrigin: "center" }}
-          animate={reduce ? undefined : { y: [0, -10, 0], x: [0, s.x, 0], rotate: [0, s.x * 2, 0] }}
-          transition={{ duration: s.d, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }} />
+    <div className="rn-tabs" role="tablist" aria-label="Achievements">
+      {TABS.map((t, i) => (
+        <button key={t.id} ref={(el) => (refs.current[i] = el)} role="tab" id={`rn-tab-${t.id}`} aria-controls="rn-panel"
+          aria-selected={tab === t.id} tabIndex={tab === t.id ? 0 : -1} className="rn-tab"
+          onClick={() => setTab(t.id)} onKeyDown={(e) => onKey(e, i)}>
+          {t.label}{t.count != null && <span className="rn-tab-n">{pad(t.count)}</span>}
+        </button>
       ))}
-    </svg>
+    </div>
   );
 }
 
-/* ---------- 04 ACHIEVEMENTS: portrait banner with glass shards, certificates across its bottom edge ---------- */
+const item = { off: { opacity: 0, y: 22 }, on: { opacity: 1, y: 0 } };
+const List = ({ reduce, className, children }) => (
+  <motion.ul className={className} initial={reduce ? false : "off"} animate="on" transition={{ staggerChildren: 0.06 }}>{children}</motion.ul>
+);
+
+/* A Blue Lock frame: cut corners, a glowing blue edge, solid navy inside, speed lines in the corner,
+   and a crosshair that locks onto the corner on hover. `as` is the outer element (a, button or div). */
+function Frame({ as: Tag = "div", className = "", children, ...rest }) {
+  return (
+    <div className="rn-glow">
+      <Tag className={`rn-frame ${className}`} {...rest}>
+        <span className="rn-frame-in">
+          <span className="rn-speed" aria-hidden="true" />
+          <Reticle className="rn-lock" />
+          {children}
+        </span>
+      </Tag>
+    </div>
+  );
+}
+
+function Certificates({ reduce, onOpen }) {
+  return (
+    <List reduce={reduce} className="rn-certs">
+      {earned.map((c, i) => (
+        <motion.li key={c.t} variants={item} transition={{ duration: 0.45, ease: EASE }}>
+          <Frame as="button" className="rn-cert" onClick={() => onOpen(i)} aria-label={`View ${c.t} certificate`}>
+            <span className="rn-cert-img"><CertImage c={c} /></span>
+            <span className="rn-cert-cap">
+              <strong>{c.t}</strong>
+              <span>{[c.org, c.date].filter(Boolean).join(" · ")}</span>
+            </span>
+          </Frame>
+        </motion.li>
+      ))}
+    </List>
+  );
+}
+
+// CTF write-ups as a calm list: number, title, one line, arrow. The write-up itself has the detail.
+function Writeups({ reduce }) {
+  return (
+    <List reduce={reduce} className="rn-wus">
+      {writeups.map((w, i) => (
+        <motion.li key={w.t} variants={item} transition={{ duration: 0.45, ease: EASE }}>
+          <a className="rn-wu" href={w.url} target="_blank" rel="noopener">
+            <span className="rn-wu-n" aria-hidden="true">{pad(i + 1)}</span>
+            <span className="rn-wu-body">
+              <span className="rn-wu-meta">{w.meta}</span>
+              <span className="rn-wu-t">{w.t}</span>
+              <span className="rn-wu-d">{w.d}</span>
+            </span>
+            <span className="rn-wu-go" aria-hidden="true"><ArrowUpRight size={18} /></span>
+          </a>
+        </motion.li>
+      ))}
+    </List>
+  );
+}
+
+/* ---------- ACHIEVEMENTS: certificates and CTF write-ups behind two tabs ---------- */
 export default function Achievements() {
   const reduce = useReducedMotion();
+  const [tab, setTab] = useState("certs");
   const [open, setOpen] = useState(null);
   const close = useCallback(() => setOpen(null), []);
-  const featured = earned.slice(0, FEATURED);
-  const inView = { once: true, margin: "0px 0px -10% 0px" };
 
   return (
     <section className="sec sec-achievements" id="achievements" aria-labelledby="achievements-title">
-      <div className="wrap ach-wrap">
-        <SectionHead n={4} title="Achievements" id="achievements-title" />
+      {/* background: the curved shot with a ball riding it, crosshairs, #10 */}
+      <svg className="rn-shot" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <path id="rn-shot-path" d={SHOT} />
+        <circle r="5" className="rn-shot-ball">
+          {!reduce && <animateMotion dur="9s" repeatCount="indefinite"><mpath href="#rn-shot-path" /></animateMotion>}
+        </circle>
+      </svg>
+      <Reticle className="r1" /><Reticle className="r2" /><Reticle className="r3" />
+      <span className="rn-10" aria-hidden="true">10</span>
 
-        <motion.div className="ach-banner"
-          initial={reduce ? false : { opacity: 0, x: -60 }} whileInView={{ opacity: 1, x: 0 }} viewport={inView} transition={{ duration: 0.9, ease: EASE }}>
-          <div className="ach-banner-in">
-            <Shards reduce={reduce} />
-            <Art src={art.achievements} className="ach-art" />
-          </div>
-        </motion.div>
+      <div className="wrap rn-wrap">
+        <header className="rn-head">
+          <Stripes />
+          <h2 id="achievements-title">Achievements</h2>
+        </header>
+        <p className="rn-intro">Certificates I've earned and the CTFs I've played and written up.</p>
 
-        <motion.ul className="ach-cards"
-          initial={reduce ? false : "off"} whileInView="on" viewport={inView} transition={{ staggerChildren: 0.12, delayChildren: 0.25 }}>
-          {featured.map((c, i) => (
-            <motion.li key={c.t} whileHover={reduce ? undefined : { y: -6 }} variants={{ off: { opacity: 0, y: 36 }, on: { opacity: 1, y: 0 } }} transition={{ duration: 0.6, ease: EASE }}>
-              <button className="ach-card" onClick={() => setOpen(i)} aria-label={`View ${c.t} certificate`}>
-                <span className="ach-panel">
-                  <span className="ach-img"><CertImage c={c} /></span>
-                  <span className="ach-cap">
-                    <strong>{c.t}</strong>
-                    <span>{[c.org, c.date].filter(Boolean).join(" - ")}</span>
-                  </span>
-                </span>
-              </button>
-            </motion.li>
-          ))}
-        </motion.ul>
+        <Tabs tab={tab} setTab={setTab} />
 
-        <CertLightbox list={featured} index={open} onChange={setOpen} onClose={close} />
-        <BackToPitch />
+        <div className="rn-body" role="tabpanel" id="rn-panel" aria-labelledby={`rn-tab-${tab}`}>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div key={tab} exit={reduce ? undefined : { opacity: 0, transition: { duration: 0.15 } }}>
+              {tab === "certs" && <Certificates reduce={reduce} onOpen={setOpen} />}
+              {tab === "writeups" && <Writeups reduce={reduce} />}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
+
+      <CertLightbox list={earned} index={open} onChange={setOpen} onClose={close} />
     </section>
   );
 }

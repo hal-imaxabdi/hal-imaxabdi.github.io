@@ -202,6 +202,17 @@ export const certs = [
     id:"FR-D11-4AF80-778F5", verify:"https://internship.flyrank.ai/verify" },
 ];
 
+/* CTF write-ups on the Achievements "CTF write-ups" tab: one row per event, linking to its write-ups.
+   Keep d to one short line; the write-up itself has the detail. */
+export const writeups = [
+  { t:"TryHackMe Hacker Holidays", meta:"TryHackMe · Jul 27 – Aug 9",
+    url:"https://hal-imaxabdi.github.io/tryhackme-hacker-holidays/",
+    d:"14 rooms across OSINT, AI, web, cloud, forensics and boot2root." },
+  { t:"Digital Forensics CTF", meta:"President University · Team captain",
+    url:"https://gorgeous-snickerdoodle-a06df8.netlify.app",
+    d:"16 challenge parts, from network traffic and steganography to NTFS journal forensics." },
+];
+
 /* Optional "Next goals" row on the Certificates page. It only renders when this list has entries, e.g. ["ISC2 CC", "AWS Security Specialty"]. */
 export const goals = [];
 
