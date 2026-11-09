@@ -71,6 +71,9 @@ export function metaTags(m) {
     `<meta name="twitter:title" content="${esc(m.title)}" />`,
     `<meta name="twitter:description" content="${esc(m.description)}" />`,
     `<meta name="twitter:image" content="${abs(m.image)}" />`,
+    // home only: start downloading the pitch (the biggest thing on screen) right away,
+    // the phone-sized copy on phones, instead of waiting for the app to ask for it
+    ...(m.path === "/" ? [`<link rel="preload" as="image" href="/art/pitch.webp" imagesrcset="/art/pitch-sm.webp 820w, /art/pitch.webp 1394w" imagesizes="(max-width: 860px) 100vw, 60vw" fetchpriority="high" />`] : []),
   ].join("\n  ");
 }
 

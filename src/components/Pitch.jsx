@@ -24,6 +24,19 @@ export const PLAYERS = [
   { id: "contact", label: "Contact", src: art.contact, ratio: 1204 / 1100, x: 81, y: 86, h: 0.235, fx: 0.74, cx: 0.24 },
 ];
 
+/* Phones download small copies (public/art/*-sm.webp, 360px wide figures, 820px wide pitch);
+   larger screens get the full files. WIDTHS are the full files' pixel widths. */
+const WIDTHS = { "/art/pitch.webp": 1394, "/art/home-profile.webp": 841, "/art/intel.webp": 1047, "/art/fieldwork.webp": 969, "/art/profile-runner.webp": 1005, "/art/contact.webp": 1204 };
+const SMALL = { "/art/pitch.webp": 820 };
+export const PITCH_SIZES = "(max-width: 860px) 100vw, 60vw";
+function responsive(src, sizes) {
+  const full = WIDTHS[src];
+  if (!full) return {};
+  return { srcSet: `${src.replace(".webp", "-sm.webp")} ${SMALL[src] || 360}w, ${src} ${full}w`, sizes };
+}
+// how wide a figure is drawn: its height (a share of the pitch width) times its aspect ratio
+const figSizes = (p) => `(max-width: 860px) ${Math.ceil(p.h * p.ratio * 104)}vw, ${Math.ceil(p.h * p.ratio * 60)}vw`;
+
 export const TILT = 16;
 const EASE = [0.22, 1, 0.36, 1];
 const KICK_MS = 620;
@@ -78,7 +91,7 @@ function Player({ p, i, counter, reduce, kicking, onKick }) {
                   <span className="chip">{p.label}</span>
                   <span className="tag-line" />
                 </span>
-                <img className="pp-fig" src={p.src} alt="" style={{ height: `calc(var(--pw) * ${p.h})`, aspectRatio: p.ratio }}
+                <img className="pp-fig" src={p.src} {...responsive(p.src, figSizes(p))} alt="" style={{ height: `calc(var(--pw) * ${p.h})`, aspectRatio: p.ratio }}
                   draggable="false" decoding="async" fetchpriority={p.me ? "high" : undefined} />
               </motion.button>
               {/* the ball that flies off on kick-off */}
@@ -168,7 +181,7 @@ export default function Pitch({ onPick, players = PLAYERS }) {
             transition={sway ? { duration: 10, repeat: Infinity, ease: "easeInOut" } : { duration: 0.6 }}
           >
             <motion.div className="pitch-plane" style={{ rotateX: tilt }}>
-              <img className="pitch-img" src={art.pitch} alt="" aria-hidden="true" draggable="false" fetchpriority="high" />
+              <img className="pitch-img" src={art.pitch} {...responsive(art.pitch, PITCH_SIZES)} alt="" aria-hidden="true" draggable="false" fetchpriority="high" />
               <div className="pitch-players" role="group" aria-label="Pick a player to explore">
                 {players.map((p, i) => (
                   <Player key={p.id} p={p} i={i} counter={counter} reduce={reduce} kicking={kicking} onKick={kick} />
