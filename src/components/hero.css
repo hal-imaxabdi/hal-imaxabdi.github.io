@@ -99,7 +99,9 @@
   .hero { align-items: center; padding: 20px 0 28px; }
   .hero-inner { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 4px; padding: 0 16px; }
   .hero-copy { justify-self: stretch; gap: 14px; }
-  .hero-inner .pitch-stage { --pw: min(calc(100vw - 16px), 760px); }
+  /* a little wider than the screen and centred exactly, so the far-right player (Contact)
+     sits well inside instead of on the edge; the hero clips the slab's outer glow evenly */
+  .hero-inner .pitch-stage { --pw: min(calc(100vw + 12px), 780px); max-width: none; margin-inline: calc((100% - var(--pw)) / 2); }
   .hero-hi { font-size: clamp(40px, 12vw, 76px); }
   .hero-name .line-1 { font-size: clamp(60px, 19vw, 120px); }
   .hero-name .line-2 { font-size: clamp(26px, 8.2vw, 56px); }
