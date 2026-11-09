@@ -1,0 +1,13 @@
+/* Typewriter: all messages share one grid cell, so the size never changes while typing */
+.tw { display: inline-grid; text-align: left; }
+.tw-sizer, .tw-text { grid-area: 1 / 1; }
+.tw-sizer { display: grid; visibility: hidden; }
+.tw-sizer > span { grid-area: 1 / 1; }
+.tw-caret {
+  display: inline-block; width: .5em; height: 1.05em; margin-left: .12em; vertical-align: -.16em;
+  background: currentColor; border-radius: 1px; opacity: .9;
+}
+.tw-caret.is-idle { animation: tw-blink 1s steps(1) infinite; }
+@keyframes tw-blink { 50% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) { .tw-caret.is-idle { animation: none; } }

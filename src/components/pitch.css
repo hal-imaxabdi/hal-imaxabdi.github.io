@@ -1,117 +1,126 @@
 /* =========================================================
    THE PITCH (Pitch.jsx). Everything is sized from --pw, the pitch width,
-   so the whole formation scales together. --cy is where the pitch centre sits
-   inside the stage (players stand above the far end, so it sits low).
+   so the whole formation scales together. The pitch image is 1394 × 713.
+   --top is the room above the far edge for the far players and their labels.
    ========================================================= */
 .pitch-stage {
-  --pw: clamp(240px, min(42vw, calc((100svh - var(--nav-h)) * .76)), 680px);
-  --ph: calc(var(--pw) * 105 / 68);
-  --cy: calc(var(--pw) * .6);
-  position: relative; width: 100%; height: calc(var(--pw) * 1.2);
+  --pw: 640px;
+  --ph: calc(var(--pw) * 713 / 1394);
+  --top: calc(var(--pw) * .2);
+  position: relative; width: var(--pw); max-width: 100%;
+  height: calc(var(--top) + var(--ph) + var(--pw) * .04);
 }
 .pitch-view {
   position: absolute; inset: 0;
-  perspective: calc(var(--pw) * 3.2);
-  perspective-origin: 50% var(--cy);
+  perspective: calc(var(--pw) * 2.6);
+  perspective-origin: 50% 40%;
 }
+.pitch-rig, .pitch-sway { position: absolute; inset: 0; transform-style: preserve-3d; }
 .pitch-plane {
-  position: absolute; left: 50%; top: calc(var(--cy) - var(--ph) / 2);
-  width: var(--pw); height: var(--ph); margin-left: calc(var(--pw) / -2);
-  transform-style: preserve-3d;
+  position: absolute; left: 0; top: var(--top); width: var(--pw); height: var(--ph);
+  transform-style: preserve-3d; transform-origin: 50% 70%;
 }
-/* the turf: mowing stripes, a pool of stadium light, a glowing rim */
-.pitch-turf {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(60% 40% at 50% 55%, rgba(140,200,255,.30), transparent 72%),
-    repeating-linear-gradient(180deg, #1a48c0 0 7.142%, #2457dc 7.142% 14.285%);
-  box-shadow: 0 0 0 1px rgba(90,162,255,.55), 0 0 40px rgba(31,107,255,.55), 0 0 120px rgba(31,107,255,.3), inset 0 0 50px rgba(5,11,28,.55);
-}
-.pitch-lines {
-  position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible;
-  filter: drop-shadow(0 0 2px rgba(90,162,255,.95)) drop-shadow(0 0 6px rgba(31,107,255,.6));
-}
-.pitch-lines * { fill: none; stroke: #d6ecff; stroke-width: 1.4; vector-effect: non-scaling-stroke; }
-.pitch-lines .dot { fill: #d6ecff; }
-/* the front face of the slab, folded down from the near edge */
-.pitch-edge {
-  position: absolute; left: 0; right: 0; top: 100%; height: calc(var(--pw) * .028);
-  transform-origin: 50% 0; transform: rotateX(-90deg);
-  background: linear-gradient(180deg, #2a5fd6, #0a1a4a); box-shadow: 0 0 24px rgba(31,107,255,.5);
+/* the slab artwork, with the neon glow rebuilt around its edge */
+.pitch-img {
+  position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; user-select: none;
+  filter:
+    drop-shadow(0 0 2px rgba(120,180,255,.95))
+    drop-shadow(0 0 calc(var(--pw) * .012) rgba(31,107,255,.9))
+    drop-shadow(0 0 calc(var(--pw) * .04) rgba(31,107,255,.55));
 }
 .pitch-players { position: absolute; inset: 0; transform-style: preserve-3d; }
 
 /* ---------- a player: anchor on the turf, figure stands upright ---------- */
 .pp { position: absolute; width: 0; height: 0; transform-style: preserve-3d; }
+.pp-shadow, .pp-ring { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%) translateZ(1px); border-radius: 50%; }
 .pp-shadow {
-  position: absolute; left: 0; top: 0; width: calc(var(--pw) * .2); height: calc(var(--pw) * .1);
-  transform: translate(-50%, -50%) translateZ(1px); border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(2,6,18,.75), rgba(2,6,18,.35) 55%, transparent);
+  width: calc(var(--pw) * .2); height: calc(var(--pw) * .06);
+  background: radial-gradient(closest-side, rgba(1,6,16,.8), rgba(1,6,16,.4) 55%, transparent);
+  transform: translate(-42%, -40%) translateZ(1px);
 }
-.pp-upright {
-  position: absolute; left: 0; bottom: 0; transform-origin: 50% 100%;
-  transform-style: preserve-3d;
+/* the glowing ring: an ellipse, to match the perspective painted into the turf */
+.pp-ring { width: calc(var(--pw) * .15); height: calc(var(--pw) * .05); }
+.pp-ring i {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid rgba(190,224,255,.95);
+  box-shadow: 0 0 10px rgba(90,162,255,.95), 0 0 22px rgba(31,107,255,.6), inset 0 0 10px rgba(90,162,255,.7);
+  background: radial-gradient(closest-side, rgba(31,107,255,.28), transparent 75%);
+  transition: transform .3s var(--ease), border-color .3s;
 }
+.pp-ring i + i { background: none; opacity: 0; }
+
+.pp-upright { position: absolute; left: 0; bottom: 0; transform-origin: 50% 100%; transform-style: preserve-3d; }
+.pp-float, .pp-kick { position: relative; }
+
 /* only the button takes the pointer: in Chrome 3D hit-testing the coplanar
    wrappers would otherwise swallow clicks meant for the player */
-.pitch-plane, .pitch-turf, .pitch-lines, .pitch-edge, .pitch-players, .pp, .pp-upright, .pp-drop, .pp-float, .pp-shadow { pointer-events: none; }
+.pitch-stage, .pitch-view, .pitch-rig, .pitch-sway, .pitch-plane, .pitch-img, .pitch-players,
+.pp, .pp-upright, .pp-drop, .pp-float, .pp-kick, .pp-shadow, .pp-ring, .pp-ball { pointer-events: none; }
 .pp-btn {
-  position: relative; display: block; cursor: pointer; text-align: left; pointer-events: auto;
-  -webkit-tap-highlight-color: transparent;
+  position: relative; display: block; cursor: pointer; pointer-events: auto;
+  min-width: 44px; min-height: 44px; -webkit-tap-highlight-color: transparent;
 }
-.pp-btn:focus-visible { outline: none; }
+.pp-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; border-radius: 10px; }
 .pp-fig {
-  display: block; max-width: none; user-select: none; pointer-events: auto;
-  filter: drop-shadow(0 0 calc(var(--pw) * .03) rgba(90,162,255,.55)) drop-shadow(0 8px 10px rgba(0,0,0,.45));
+  display: block; max-width: none; width: auto; user-select: none;
+  filter: drop-shadow(0 0 calc(var(--pw) * .01) rgba(90,162,255,.6)) drop-shadow(0 calc(var(--pw) * .012) calc(var(--pw) * .012) rgba(0,0,0,.55));
   transition: filter .3s var(--ease);
 }
-.pp-btn:hover .pp-fig, .pp-btn:focus-visible .pp-fig {
-  filter: drop-shadow(0 0 calc(var(--pw) * .035) rgba(90,162,255,.95)) drop-shadow(0 0 calc(var(--pw) * .08) rgba(31,107,255,.6)) drop-shadow(0 8px 10px rgba(0,0,0,.45));
-}
 
-/* label chip with a little pointer tail */
+/* ---------- label: an angled hex chip, a thin line and a dot down to the head ---------- */
+.tag {
+  position: absolute; bottom: 100%; transform: translateX(-50%); z-index: 2;
+  display: flex; flex-direction: column; align-items: center;
+  --tag-c: rgba(120,180,255,.75);
+  font-size: clamp(10px, calc(var(--pw) * .019), 15px);
+  filter: drop-shadow(0 0 5px rgba(31,107,255,.6));
+  transition: filter .25s var(--ease);
+}
 .chip {
-  position: absolute; bottom: calc(100% + var(--pw) * .028); transform: translateX(-50%); white-space: nowrap; z-index: 1;
-  font-family: var(--f-hud); font-weight: 600; font-size: clamp(10px, calc(var(--pw) * .031), 15px); letter-spacing: .1em; text-transform: uppercase; line-height: 1;
-  color: var(--text); padding: .62em .9em .58em;
-  background: rgba(6, 14, 36, .94); border: 1px solid rgba(90,162,255,.55);
-  box-shadow: 0 4px 14px rgba(0,0,0,.45);
-  transition: background-color .25s var(--ease), border-color .25s, box-shadow .25s;
+  position: relative; display: block; white-space: nowrap;
+  font-family: var(--f-hud); font-weight: 600; font-style: italic; letter-spacing: .08em; text-transform: uppercase; line-height: 1;
+  color: #fff; padding: .72em 1.35em .68em;
+  /* a border on a clipped shape: an outer fill of the border colour, an inner panel inset by 1px */
+  background: var(--tag-c);
+  clip-path: polygon(.75em 0, calc(100% - .75em) 0, 100% 50%, calc(100% - .75em) 100%, .75em 100%, 0 50%);
+  transition: background-color .25s var(--ease);
 }
-.chip::after {
-  content: ""; position: absolute; left: 50%; top: 100%; width: .7em; height: .7em; margin: -.33em 0 0 -.35em;
-  background: inherit; border-right: 1px solid rgba(90,162,255,.55); border-bottom: 1px solid rgba(90,162,255,.55); transform: rotate(45deg);
+.chip::before {
+  content: ""; position: absolute; inset: 1.5px; z-index: -1;
+  background: linear-gradient(180deg, rgba(14,30,72,.97), rgba(5,12,32,.97));
+  clip-path: inherit; transition: background .25s var(--ease);
 }
-.pp-btn:hover .chip, .pp-btn:focus-visible .chip { background: var(--blue); border-color: #8fc1ff; box-shadow: 0 0 18px rgba(31,107,255,.7); }
-.pp-btn:hover .chip::after, .pp-btn:focus-visible .chip::after { border-color: #8fc1ff; }
-.pp-btn:focus-visible .chip { outline: 2px solid var(--focus); outline-offset: 3px; }
+.chip { isolation: isolate; }
+.tag-line {
+  position: relative; width: 1px; height: calc(var(--pw) * .03); margin-bottom: calc(var(--pw) * .006);
+  background: linear-gradient(180deg, var(--tag-c), rgba(143,193,255,.95));
+}
+.tag-line::after {
+  content: ""; position: absolute; left: 50%; bottom: -3px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%;
+  background: #d6ecff; box-shadow: 0 0 6px 1px rgba(90,162,255,.95);
+}
 
-/* a glowing ring on the turf under every other player: it also frames a figure whose art ends at the thighs */
-.pp-base {
-  position: absolute; left: 0; top: 0; width: calc(var(--pw) * .24); height: calc(var(--pw) * .24);
-  transform: translate(-50%, -50%) translateZ(1px); border-radius: 50%; pointer-events: none;
-  border: 2px solid rgba(143,193,255,.9);
-  background: radial-gradient(closest-side, rgba(31,107,255,.45), rgba(31,107,255,.12) 70%, transparent);
-  box-shadow: 0 0 14px rgba(90,162,255,.8), inset 0 0 14px rgba(90,162,255,.55);
+/* ---------- hover / focus / kick: lift (Framer), brighter label, glowing figure, pulsing ring ---------- */
+.pp-btn:hover .tag, .pp-btn:focus-visible .tag, .is-kicking .tag { --tag-c: #b9dcff; }
+.pp-btn:hover .chip::before, .pp-btn:focus-visible .chip::before, .is-kicking .chip::before { background: linear-gradient(180deg, #3a82ff, #1f6bff); }
+.pp-btn:hover .tag, .pp-btn:focus-visible .tag, .is-kicking .tag { filter: drop-shadow(0 0 10px rgba(90,162,255,.95)); }
+.pp-btn:hover .pp-fig, .pp-btn:focus-visible .pp-fig {
+  filter: drop-shadow(0 0 calc(var(--pw) * .014) rgba(120,190,255,.95)) drop-shadow(0 0 calc(var(--pw) * .04) rgba(31,107,255,.6)) drop-shadow(0 calc(var(--pw) * .012) calc(var(--pw) * .012) rgba(0,0,0,.55));
 }
+.pp:has(.pp-btn:hover) .pp-ring i, .pp:has(.pp-btn:focus-visible) .pp-ring i, .is-kicking .pp-ring i { border-color: #fff; }
+.pp:has(.pp-btn:hover) .pp-ring i:first-child, .pp:has(.pp-btn:focus-visible) .pp-ring i:first-child { transform: scale(1.08); }
+.pp:has(.pp-btn:hover) .pp-ring i + i, .pp:has(.pp-btn:focus-visible) .pp-ring i + i, .is-kicking .pp-ring i + i { animation: pp-pulse 1.3s cubic-bezier(.2,.6,.3,1) infinite; }
+.pp:has(.pp-btn:hover) .pp-ring i + i + i, .pp:has(.pp-btn:focus-visible) .pp-ring i + i + i, .is-kicking .pp-ring i + i + i { animation-delay: .65s; }
+@keyframes pp-pulse { from { transform: scale(.9); opacity: .95; } to { transform: scale(1.7); opacity: 0; } }
 
-/* ---------- Profile: the bright blue chip and a pulsing ring under the feet ---------- */
-.chip-me { background: var(--blue); border-color: #8fc1ff; box-shadow: 0 0 18px rgba(31,107,255,.75); }
-.chip-me::after { border-color: #8fc1ff; }
-.pp-btn:hover .chip-me, .pp-btn:focus-visible .chip-me { background: #3a82ff; }
-.pp-me .pp-shadow { width: calc(var(--pw) * .16); height: calc(var(--pw) * .16); background: radial-gradient(closest-side, rgba(90,162,255,.7), rgba(31,107,255,.3) 50%, transparent); }
-
-/* pulsing ring on the turf under the player */
-.pp-ring { position: absolute; left: 0; top: 0; width: 0; height: 0; transform: translateZ(1px); pointer-events: none; }
-.pp-ring i {
-  position: absolute; left: calc(var(--pw) * -.13); top: calc(var(--pw) * -.13); width: calc(var(--pw) * .26); height: calc(var(--pw) * .26);
-  border-radius: 50%; border: 2px solid rgba(143,193,255,.9); box-shadow: 0 0 12px rgba(90,162,255,.8), inset 0 0 12px rgba(90,162,255,.5);
-  animation: pp-pulse 2.4s cubic-bezier(.2,.6,.3,1) infinite;
+/* ---------- the kick-off ball ---------- */
+.pp-ball {
+  position: absolute; bottom: 0; width: calc(var(--pw) * .032); height: calc(var(--pw) * .032); opacity: 0;
+  filter: drop-shadow(0 0 6px rgba(90,162,255,.9));
 }
-.pp-ring i + i { animation-delay: 1.2s; }
-@keyframes pp-pulse { from { transform: scale(.35); opacity: .95; } to { transform: scale(1.25); opacity: 0; } }
+.pp-ball svg { display: block; width: 100%; height: 100%; }
+
 
 @media (prefers-reduced-motion: reduce) {
-  .pp-ring i { animation: none; transform: scale(.8); opacity: .7; }
-  .pp-ring i + i { display: none; }
+  .pp-ring i + i { animation: none !important; }
 }

@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 // A small, consistent icon set (24px grid, 2px strokes, square ends) drawn for this site.
 const Svg = ({ size = 18, children, ...p }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
@@ -15,6 +17,35 @@ export const Copy = (p) => <Svg {...p}><path d="M9 9h11v11H9zM5 15H4V4h11v1" /><
 export const Check = (p) => <Svg {...p}><path d="m5 12 5 5 9-10" /></Svg>;
 export const Close = (p) => <Svg {...p}><path d="M6 6l12 12M18 6 6 18" /></Svg>;
 export const Menu = (p) => <Svg {...p}><path d="M4 7h16M4 12h16M4 17h10" /></Svg>;
+
+// A full-colour football: white leather, a dark centre pentagon, seams and the edge patches.
+const ring = (r, a0) => Array.from({ length: 5 }, (_, k) => {
+  const a = ((a0 + k * 72) * Math.PI) / 180;
+  return [12 + r * Math.cos(a), 12 + r * Math.sin(a)];
+});
+const pts = (list) => list.map(([x, y]) => `${x.toFixed(2)},${y.toFixed(2)}`).join(" ");
+const BALL_CORE = ring(3.4, -90);
+const BALL_OUTER = ring(6.8, -90);
+// an outer pentagon sits beyond each corner of the core, one point facing the centre
+const BALL_PATCHES = ring(9.6, -90).map(([cx, cy], k) => pts(ring(2.8, 90 + k * 72).map(([x, y]) => [x - 12 + cx, y - 12 + cy])));
+export function Ball({ size = 24, ...p }) {
+  const id = useId().replace(/:/g, "");
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false" {...p}>
+      <defs>
+        <radialGradient id={`bs${id}`} cx=".38" cy=".32" r=".75"><stop offset="0" stopColor="#fff" /><stop offset=".7" stopColor="#e6eefb" /><stop offset="1" stopColor="#9fb3d6" /></radialGradient>
+        <clipPath id={`bc${id}`}><circle cx="12" cy="12" r="10.6" /></clipPath>
+      </defs>
+      <circle cx="12" cy="12" r="10.6" fill={`url(#bs${id})`} />
+      <g clipPath={`url(#bc${id})`} fill="#0b1630" stroke="#0b1630" strokeWidth=".6" strokeLinejoin="round">
+        <polygon points={pts(BALL_CORE)} />
+        {BALL_CORE.map(([x, y], k) => <line key={k} x1={x} y1={y} x2={BALL_OUTER[k][0]} y2={BALL_OUTER[k][1]} />)}
+        {BALL_PATCHES.map((d, k) => <polygon key={k} points={d} />)}
+      </g>
+      <circle cx="12" cy="12" r="10.6" fill="none" stroke="#0b1630" strokeWidth=".8" />
+    </svg>
+  );
+}
 
 export const GitHub = ({ size = 18, ...p }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" {...p}>
