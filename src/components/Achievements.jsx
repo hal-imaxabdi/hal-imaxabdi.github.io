@@ -3,6 +3,7 @@ import { useCallback, useRef, useState } from "react";
 import { writeups } from "../data.js";
 import { CertImage, CertLightbox, earned } from "./Certs.jsx";
 import { ShardNumber } from "./SectionHead.jsx";
+import ShatteredGlass from "./ShatteredGlass.jsx";
 import "./achievements.css";
 
 const EASE = [0.22, 1, 0.36, 1];
@@ -53,54 +54,46 @@ const List = ({ reduce, className, children }) => (
   <motion.ul className={className} initial={reduce ? false : "off"} animate="on" transition={{ staggerChildren: 0.06 }}>{children}</motion.ul>
 );
 
-/* A Blue Lock frame: cut corners, a glowing blue edge, solid navy inside, speed lines in the corner,
-   and a crosshair that locks onto the corner on hover. `as` is the outer element (a, button or div). */
-function Frame({ as: Tag = "div", className = "", children, ...rest }) {
-  return (
-    <div className="rn-glow">
-      <Tag className={`rn-frame ${className}`} {...rest}>
-        <span className="rn-frame-in">
-          <span className="rn-speed" aria-hidden="true" />
-          <Reticle className="rn-lock" />
-          {children}
+/* Certificates as two rows that keep sliding in opposite directions (top row left, bottom row right).
+   Each row holds its certificates twice so the loop is seamless; hovering or focusing a row pauses it,
+   and clicking a card opens it full size. Small HUD cards (the CTF card shape), so 30+ still fit. */
+function Certificates({ reduce }) {
+  const [open, setOpen] = useState(null);
+  const close = useCallback(() => setOpen(null), []);
+  const rows = [0, 1].map((k) => earned.map((c, i) => ({ c, i })).filter(({ i }) => i % 2 === k));
+
+  const Card = ({ c, i, copy }) => (
+    <li className="rn-cw">
+      <button className="rn-cert" onClick={() => setOpen(i)} tabIndex={copy ? -1 : 0} aria-hidden={copy || undefined} aria-label={`View ${c.t} certificate`}>
+        <span className="rn-cert-in">
+          <span className="rn-cert-img"><CertImage c={c} /></span>
+          <span className="rn-cert-cap">
+            <strong>{c.t}</strong>
+            <span>{[c.org, c.date].filter(Boolean).join(" · ")}</span>
+          </span>
         </span>
-      </Tag>
-    </div>
+      </button>
+    </li>
   );
-}
 
-function Certificates({ reduce, onOpen }) {
   return (
-    <List reduce={reduce} className="rn-certs">
-      {earned.map((c, i) => (
-        <motion.li key={c.t} variants={item} transition={{ duration: 0.45, ease: EASE }}>
-          <Frame as="button" className="rn-cert" onClick={() => onOpen(i)} aria-label={`View ${c.t} certificate`}>
-            <span className="rn-cert-img"><CertImage c={c} /></span>
-            <span className="rn-cert-cap">
-              <strong>{c.t}</strong>
-              <span>{[c.org, c.date].filter(Boolean).join(" · ")}</span>
-            </span>
-          </Frame>
-        </motion.li>
-      ))}
-    </List>
+    <>
+      <div className={`rn-reels ${reduce ? "is-still" : ""}`}>
+        {rows.map((row, k) => (
+          <div key={k} className={`rn-reel ${k ? "is-right" : ""}`} style={{ "--dur": `${row.length * 6}s` }}>
+            <ul className="rn-reel-track">
+              {row.map((x) => <Card key={x.c.t} {...x} />)}
+              {!reduce && row.map((x) => <Card key={`copy-${x.c.t}`} {...x} copy />)}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <CertLightbox list={earned} index={open} onChange={setOpen} onClose={close} />
+    </>
   );
 }
 
-/* Background: shattered glass breaking in from two corners (drawn for the top-right corner,
-   flipped for the bottom-left), plus faint pitch lines behind everything. */
-const GLASS = [
-  "300,0 196,0 236,58", "300,0 236,58 300,96", "236,58 196,0 150,34 204,104", "236,58 300,96 262,156 204,104",
-  "204,104 150,34 112,92 160,150", "262,156 204,104 160,150 214,206", "300,96 300,190 262,156",
-];
-const FLOAT = ["124,170 146,154 140,186", "84,58 102,48 96,76", "178,226 200,214 190,244", "250,240 266,232 262,256", "60,128 72,118 70,140"];
-const Glass = ({ className }) => (
-  <svg className={`rn-glass ${className}`} viewBox="0 0 300 300" aria-hidden="true">
-    {GLASS.map((p) => <polygon key={p} points={p} />)}
-    <g className="float">{FLOAT.map((p) => <polygon key={p} points={p} />)}</g>
-    <path className="crack" d="M300 0 L120 150 M300 0 L170 260 M300 0 L70 50 M236 58 L40 100" />
-  </svg>
-);
+/* Background: faint pitch lines behind everything (the shattered glass is in ShatteredGlass.jsx). */
 const Pitch = () => (
   <svg className="rn-pitch" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <rect x="40" y="40" width="1120" height="620" /><path d="M600 40v620" /><circle cx="600" cy="350" r="92" />
@@ -137,8 +130,6 @@ function Writeups({ reduce }) {
 export default function Achievements() {
   const reduce = useReducedMotion();
   const [tab, setTab] = useState("certs");
-  const [open, setOpen] = useState(null);
-  const close = useCallback(() => setOpen(null), []);
 
   return (
     <section className="sec sec-achievements" id="achievements" aria-labelledby="achievements-title">
@@ -150,7 +141,7 @@ export default function Achievements() {
         </circle>
       </svg>
       <Pitch />
-      <Glass className="g-tr" /><Glass className="g-bl" />
+      <ShatteredGlass className="sg-tr" ball reduce={reduce} /><ShatteredGlass className="sg-bl" variant="b" />
       <Reticle className="r1" /><Reticle className="r2" /><Reticle className="r3" />
       <span className="rn-10" aria-hidden="true">10</span>
 
@@ -166,14 +157,13 @@ export default function Achievements() {
         <div className="rn-body" role="tabpanel" id="rn-panel" aria-labelledby={`rn-tab-${tab}`}>
           <AnimatePresence mode="wait" initial={false}>
             <motion.div key={tab} exit={reduce ? undefined : { opacity: 0, transition: { duration: 0.15 } }}>
-              {tab === "certs" && <Certificates reduce={reduce} onOpen={setOpen} />}
+              {tab === "certs" && <Certificates reduce={reduce} />}
               {tab === "writeups" && <Writeups reduce={reduce} />}
             </motion.div>
           </AnimatePresence>
         </div>
       </div>
 
-      <CertLightbox list={earned} index={open} onChange={setOpen} onClose={close} />
     </section>
   );
 }
