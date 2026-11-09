@@ -78,3 +78,9 @@
 @media (max-width: 1000px) { .ach-cards { margin-top: -20px; } }
 .ach-art { right: 0; width: 100%; height: 100%; object-fit: cover; object-position: 72% 22%; }
 @media (max-width: 480px) { .ach-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 0 4px; } .ach-cap strong { font-size: 11px; } .ach-cap span { font-size: 10px; } }
+@media (max-width: 640px) {
+  .ach-cards { display: flex; grid-template-columns: none; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px; padding: 4px 16px 12px; margin-left: -16px; margin-right: -16px; scrollbar-width: none; }
+  .ach-cards::-webkit-scrollbar { display: none; }
+  .ach-cards > li { flex: none; width: 74%; scroll-snap-align: center; }
+  .ach-cap strong { font-size: 13px; } .ach-cap span { font-size: 11px; }
+}
