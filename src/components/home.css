@@ -1,42 +1,21 @@
 /* one view at a time: a fixed "Pitch" button replaces the per-section back links */
 .home-view .back-pitch { display: none; }
-/* Blue Lock "exit gate": #11 bib + padlock + label, fixed bottom-left */
-.home-back {
-  position: fixed; z-index: 40; left: clamp(12px, 2vw, 28px); bottom: clamp(12px, 2.4vw, 28px);
-  display: inline-flex; align-items: stretch; padding: 0; border: 0; cursor: pointer; overflow: hidden;
-  color: var(--text); background: rgba(6, 14, 36, .94); backdrop-filter: blur(6px);
-  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
-  box-shadow: inset 0 0 0 1px var(--line-hi); transition: box-shadow .3s var(--ease);
+/* small "Pitch" pill, fixed bottom-left; the ball rolls back on hover */
+.gate {
+  position: fixed; z-index: 40; left: clamp(12px, 2vw, 24px); bottom: clamp(12px, 2vw, 24px);
+  display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px 0 6px; cursor: pointer;
+  border: 1px solid var(--line-hi); border-radius: 999px; background: rgba(6, 14, 36, .9); backdrop-filter: blur(6px);
+  font-family: var(--f-hud); font-weight: 600; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--text-2);
+  transition: border-color .25s var(--ease), color .25s var(--ease), box-shadow .25s var(--ease);
 }
-/* the light sweep that runs across on hover */
-.home-back::before {
-  content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 40%; pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(143, 193, 255, .4), transparent); transform: skewX(-20deg);
-  transition: left .6s var(--ease);
-}
-.hb-bib {
-  display: grid; place-items: center; min-width: 50px; padding: 0 10px 0 16px;
-  font-family: var(--f-display); font-weight: 900; font-style: italic; font-size: 24px; line-height: 1; color: #06102a;
-  background: linear-gradient(160deg, var(--ice), var(--blue-hi) 45%, var(--blue));
-  clip-path: polygon(12px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
-}
-.hb-lock { display: grid; place-items: center; padding: 0 2px 0 12px; color: var(--blue-hi); transition: color .3s var(--ease); }
-.hb-lock svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; overflow: visible; }
-.hb-shackle { transition: transform .35s var(--ease); }
-.hb-text {
-  display: grid; padding: 8px 22px 8px 8px; text-align: left; line-height: 1.25;
-  font-family: var(--f-hud); font-weight: 600; font-size: 13px; letter-spacing: .14em; text-transform: uppercase;
-}
-.hb-text small { font-size: 9.5px; font-weight: 500; letter-spacing: .26em; color: var(--muted); }
-.home-back:hover, .home-back:focus-visible { box-shadow: inset 0 0 0 1px var(--blue-hi), inset 0 0 18px rgba(31, 107, 255, .35); }
-.home-back:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--focus); }
-.home-back:hover::before, .home-back:focus-visible::before { left: 120%; }
-.home-back:hover .hb-shackle, .home-back:focus-visible .hb-shackle { transform: translateY(-3.5px); }
-.home-back:hover .hb-lock { color: var(--ice); }
-@media (prefers-reduced-motion: reduce) { .home-back::before, .hb-shackle { transition: none; } }
-@media (max-width: 520px) { .hb-bib { min-width: 42px; font-size: 20px; } .hb-text { font-size: 12px; padding-right: 18px; } }
+.gate-ball { display: grid; place-items: center; transition: transform .6s var(--ease); }
+.gate-ball svg { display: block; }
+.gate:hover, .gate:focus-visible { border-color: var(--blue-hi); color: var(--ice); box-shadow: 0 0 14px rgba(31, 107, 255, .35); }
+.gate:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.gate:hover .gate-ball, .gate:focus-visible .gate-ball { transform: translateX(-3px) rotate(-360deg); }
+@media (prefers-reduced-motion: reduce) { .gate-ball { transition: none; } }
 
-.home-view .sec { min-height: 100svh; padding-top: clamp(56px, 9svh, 88px); padding-bottom: clamp(88px, 12svh, 120px); }
+.home-view .sec { min-height: 100svh; padding-top: clamp(56px, 9svh, 88px); padding-bottom: clamp(64px, 9svh, 96px); }
 
 /* view-change wipe */
 .wipe {

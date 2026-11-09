@@ -5,21 +5,19 @@ import FieldWork from "../components/FieldWork.jsx";
 import Hero from "../components/Hero.jsx";
 import Intel from "../components/Intel.jsx";
 import Profile from "../components/Profile.jsx";
+import { Ball } from "../components/Icons.jsx";
 import { scrollToSection } from "../router.js";
 import "../components/home.css";
 
 const VIEWS = { profile: Profile, intel: Intel, fieldwork: FieldWork, achievements: Achievements, contact: Contact };
 const EASE = [0.76, 0, 0.24, 1];
 
-// Blue Lock themed "back to pitch" button: a #11 player bib, a padlock that unlocks on hover, and a light sweep.
+// Small "back to pitch" pill: the ball rolls back towards the pitch on hover.
 function BackGate() {
   return (
-    <button className="home-back" onClick={() => scrollToSection("top")}>
-      <span className="hb-bib" aria-hidden="true">11</span>
-      <span className="hb-lock" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path className="hb-shackle" d="M7.5 11V8a4.5 4.5 0 0 1 9 0v3" /><rect x="5" y="11" width="14" height="10" rx="1.5" /><path d="M12 14.5v3" /></svg>
-      </span>
-      <span className="hb-text"><small>Exit gate</small>Back to pitch</span>
+    <button className="gate" onClick={() => scrollToSection("top")} aria-label="Back to pitch">
+      <span className="gate-ball" aria-hidden="true"><Ball size={22} /></span>
+      <span className="gate-text" aria-hidden="true">Pitch</span>
     </button>
   );
 }
