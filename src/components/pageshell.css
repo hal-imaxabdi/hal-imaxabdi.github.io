@@ -14,11 +14,16 @@
 .ps .glance > div { background: rgba(8,18,46,.82); border-color: var(--line-hi); box-shadow: 0 0 18px rgba(31,107,255,.18); backdrop-filter: blur(2px); }
 @media (max-width: 860px) { .ps-art { opacity: .16; height: 60svh; } }
 .ps { padding-top: 76px; }
+/* the Back button on every sub-page (projects, one project, certificates): the same glass pill as the menu */
 .home-back {
-  position: fixed; z-index: 40; left: clamp(12px, 2vw, 28px); top: clamp(12px, 2vw, 24px); text-decoration: none;
-  display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px 10px 14px;
-  font-family: var(--f-hud); font-weight: 600; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: #fff;
-  background: rgba(8, 20, 52, .92); clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); box-shadow: inset 0 0 0 1px var(--line-hi);
+  position: fixed; z-index: 40; left: clamp(12px, 2vw, 28px); top: 16px; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 18px 0 14px; border-radius: 999px;
+  font-family: var(--f-hud); font-weight: 600; font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase; color: #fff;
+  background: rgba(6, 14, 36, .82); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border: 1px solid rgba(143,193,255,.4); box-shadow: 0 10px 34px rgba(2,6,18,.5), inset 0 1px 0 rgba(214,236,255,.14);
+  transition: background-color .25s var(--ease), border-color .25s var(--ease), box-shadow .25s var(--ease);
 }
-.home-back:hover { background: var(--blue); }
+.home-back svg { transition: transform .25s var(--ease); }
+.home-back:hover, .home-back:focus-visible { background: var(--blue); border-color: var(--ice); box-shadow: 0 0 18px rgba(31,107,255,.65); outline: none; }
+.home-back:hover svg { transform: translateX(-3px); }
 .ps .page-h1 { font-size: clamp(36px, 6vw, 80px); }

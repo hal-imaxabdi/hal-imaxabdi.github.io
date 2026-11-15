@@ -1,14 +1,17 @@
-/* PROJECT SHOWCASE (Showcase.jsx): large cards that stack as you scroll */
+/* PROJECT SHOWCASE (Showcase.jsx): large cards that stack as you scroll.
+   Sizes are tied to the HEIGHT of the screen (svh), so a card is as big as it can be
+   while its buttons still fit on screen, on a tall monitor or a short laptop alike. */
 .sc-list { list-style: none; margin: clamp(20px, 4svh, 36px) 0 0; padding: 0; display: grid; gap: clamp(20px, 4svh, 36px); }
 
 /* each card sticks a little lower than the one before, so their top edges stay visible like a deck */
-.sc-item { position: sticky; top: calc(80px + var(--i) * 10px); }
+.sc-item { position: sticky; top: calc(78px + var(--i) * 10px); }
 
 .sc-card {
   position: relative; overflow: hidden; isolation: isolate;
-  display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); align-items: center; gap: clamp(18px, 3vw, 40px);
-  max-width: 980px; margin: 0 auto; padding: clamp(18px, 2.2vw, 28px) clamp(20px, 2.6vw, 32px);
-  border: 1px solid rgba(90,162,255,.3); border-radius: 22px 6px 22px 6px;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: clamp(20px, 3.4vw, 48px);
+  padding: clamp(18px, 4.2svh, 40px) clamp(22px, 3vw, 40px);
+  max-height: calc(100svh - 124px);                      /* never taller than the space under the menu */
+  border: 1px solid rgba(90,162,255,.3); border-radius: 26px 6px 26px 6px;
   background: linear-gradient(140deg, #0c2050 0%, #08142f 55%, #060e24 100%);
   box-shadow: 0 -18px 40px rgba(3,8,23,.55), inset 0 1px 0 rgba(214,236,255,.12);
   transition: border-color .3s var(--ease);
@@ -23,29 +26,29 @@
 .sc-card.is-flip::before { transform: scaleX(-1); }
 
 /* ---------- the words ---------- */
-.sc-text { display: grid; gap: 7px; min-width: 0; }
+.sc-text { display: grid; gap: clamp(6px, 1.5svh, 12px); min-width: 0; }
 .sc-meta { display: flex; align-items: baseline; gap: 10px; }
-.sc-n { font-family: var(--f-display); font-weight: 900; font-style: italic; font-size: clamp(30px, 3vw, 42px); line-height: .8; color: transparent; -webkit-text-stroke: 1.2px var(--blue-hi); }
-.sc-of { font-family: var(--f-hud); font-size: 12px; letter-spacing: .1em; color: var(--muted); }
-.sc-cat { margin-left: auto; font-family: var(--f-hud); font-weight: 600; font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--blue-hi); padding: 4px 10px; border: 1px solid var(--line-hi); border-radius: 999px; }
-.sc-title { font-family: var(--f-display); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: clamp(26px, 2.7vw, 38px); line-height: .95; }
+.sc-n { font-family: var(--f-display); font-weight: 900; font-style: italic; font-size: clamp(34px, 7.4svh, 64px); line-height: .8; color: transparent; -webkit-text-stroke: 1.4px var(--blue-hi); }
+.sc-of { font-family: var(--f-hud); font-size: 13px; letter-spacing: .1em; color: var(--muted); }
+.sc-cat { margin-left: auto; font-family: var(--f-hud); font-weight: 600; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--blue-hi); padding: 5px 12px; border: 1px solid var(--line-hi); border-radius: 999px; white-space: nowrap; }
+.sc-title { font-family: var(--f-display); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: clamp(28px, min(3.7vw, 7.6svh), 54px); line-height: .94; }
 .sc-title a { color: #fff; text-decoration: none; background: linear-gradient(var(--blue-hi), var(--blue-hi)) 0 100% / 0 3px no-repeat; transition: background-size .5s var(--ease); }
 .sc-card:hover .sc-title a { background-size: 100% 3px; }
-.sc-k { font-family: var(--f-hud); font-weight: 600; font-size: 13px; letter-spacing: .06em; color: var(--blue-hi); }
-.sc-d { font-size: 14px; line-height: 1.55; color: var(--text-2); max-width: 54ch; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.sc-k { font-family: var(--f-hud); font-weight: 600; font-size: clamp(13px, 2.2svh, 15px); letter-spacing: .06em; color: var(--blue-hi); }
+.sc-d { font-size: clamp(13.5px, 2.5svh, 16px); line-height: 1.6; color: var(--text-2); max-width: 54ch; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-.sc-stats { display: flex; gap: 8px 22px; margin: 2px 0; padding: 8px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.sc-stats div { min-width: 0; flex: 1; display: flex; align-items: baseline; gap: 8px; }
-.sc-stats dt { font-family: var(--f-display); font-weight: 900; font-style: italic; font-size: clamp(18px, 1.7vw, 22px); line-height: 1.1; color: #fff; white-space: nowrap; flex: none; }
-.sc-stats dd { margin: 0; font-size: 12px; line-height: 1.35; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sc-stats { display: flex; gap: 8px 24px; margin: 0; padding: clamp(8px, 1.6svh, 12px) 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.sc-stats div { min-width: 0; flex: 1; }
+.sc-stats dt { font-family: var(--f-display); font-weight: 900; font-style: italic; font-size: clamp(20px, 4svh, 30px); line-height: 1; color: #fff; white-space: nowrap; }
+.sc-stats dd { margin: 4px 0 0; font-size: 12.5px; line-height: 1.35; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 .sc-tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
-.sc-tags li { font-family: var(--f-mono); font-size: 11px; color: var(--ice); padding: 3px 9px; border-radius: 999px; background: rgba(31,107,255,.14); border: 1px solid rgba(90,162,255,.4); }
+.sc-tags li { font-family: var(--f-mono); font-size: 12px; color: var(--ice); padding: 4px 10px; border-radius: 999px; background: rgba(31,107,255,.14); border: 1px solid rgba(90,162,255,.4); }
 
-.sc-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
-.sc-btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; text-decoration: none;
-  font-family: var(--f-hud); font-weight: 600; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text);
-  border: 1px solid var(--line-hi); border-radius: 10px 3px 10px 3px; transition: background-color .25s var(--ease), transform .25s var(--ease), border-color .25s; }
+.sc-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 2px; }
+.sc-btn { display: inline-flex; align-items: center; gap: 8px; height: clamp(38px, 6.6svh, 46px); padding: 0 18px; text-decoration: none; white-space: nowrap;
+  font-family: var(--f-hud); font-weight: 600; font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--text);
+  border: 1px solid var(--line-hi); border-radius: 12px 3px 12px 3px; transition: background-color .25s var(--ease), transform .25s var(--ease), border-color .25s; }
 .sc-btn.is-main { background: var(--blue); border-color: rgba(143,193,255,.7); color: #fff; }
 .sc-btn b { font-weight: 600; transition: transform .25s var(--ease); }
 .sc-btn:hover, .sc-btn:focus-visible { background: var(--blue); border-color: var(--ice); transform: translateY(-2px); outline: none; }
@@ -53,29 +56,36 @@
 
 /* ---------- the screenshot: stands in 3D and leans towards the mouse ---------- */
 .sc-stage { display: block; perspective: 1100px; }
-.sc-shot { position: relative; display: block; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 12px 4px 12px 4px;
+.sc-shot { position: relative; display: block; aspect-ratio: 16 / 10; max-height: calc(100svh - 200px); margin: 0 auto; overflow: hidden; border-radius: 16px 4px 16px 4px;
   border: 1px solid rgba(143,193,255,.55); background: #0d1a3a; transform-style: preserve-3d;
-  box-shadow: 0 16px 36px rgba(2,6,18,.6), 0 0 24px rgba(31,107,255,.3); }
+  box-shadow: 0 22px 46px rgba(2,6,18,.6), 0 0 30px rgba(31,107,255,.32); }
 .sc-shot img { width: 100%; height: 100%; object-fit: cover; transition: transform .9s var(--ease); }
 .sc-card:hover .sc-shot img { transform: scale(1.05); }
 /* the light that sweeps across on hover */
 .sc-sheen { position: absolute; inset: 0; background: linear-gradient(105deg, transparent 35%, rgba(214,236,255,.28) 50%, transparent 65%); transform: translateX(-120%); }
 .sc-card:hover .sc-sheen { transform: translateX(120%); transition: transform .9s var(--ease); }
 
-/* short screens (small laptops, or a browser zoomed in): tighten further so a whole card fits */
-@media (min-width: 861px) and (max-height: 720px) {
-  .sc-item { top: calc(72px + var(--i) * 8px); }
-  .sc-card { padding: 16px 22px; }
-  .sc-d { -webkit-line-clamp: 2; }
-  .sc-tags { display: none; }
-  .sc-title { font-size: clamp(24px, 2.4vw, 32px); }
-}
+/* short screens: the tags go first, then the description gets shorter, so the buttons always fit */
+@media (min-width: 861px) and (max-height: 760px) { .sc-tags { display: none; } }
+@media (min-width: 861px) and (max-height: 600px) { .sc-d { -webkit-line-clamp: 2; } .sc-of { display: none; } }
 
-/* tablets and phones: one column, no stacking */
+/* tablets and phones: one column, no stacking, a compact card */
 @media (max-width: 860px) {
+  .sc-list { gap: 16px; margin-top: 18px; }
   .sc-item { position: static; }
-  .sc-card { grid-template-columns: 1fr; padding: 16px; border-radius: 18px 6px 18px 6px; }
-  .sc-stats { flex-direction: column; gap: 6px; }
+  .sc-card { grid-template-columns: 1fr; gap: 14px; max-height: none; padding: 14px; border-radius: 18px 6px 18px 6px; }
   .sc-card .sc-stage, .sc-card.is-flip .sc-stage { order: -1; }
+  .sc-shot { aspect-ratio: 16 / 9; max-height: none; border-radius: 10px 4px 10px 4px; }
+  .sc-text { gap: 6px; }
+  .sc-n { font-size: 30px; } .sc-of { display: none; }
+  .sc-cat { font-size: 9.5px; letter-spacing: .14em; padding: 4px 9px; }
+  .sc-title { font-size: clamp(24px, 7vw, 32px); }
+  .sc-k { font-size: 12.5px; }
+  .sc-d { font-size: 14px; line-height: 1.55; -webkit-line-clamp: 3; }
+  .sc-stats { padding: 8px 0; gap: 6px 16px; }
+  .sc-stats dt { font-size: 20px; } .sc-stats dd { font-size: 11.5px; margin-top: 2px; }
+  .sc-tags { display: none; }
+  .sc-actions { gap: 8px; }
+  .sc-btn { flex: 1; justify-content: center; height: 40px; padding: 0 10px; font-size: 11px; letter-spacing: .08em; }
 }
 @media (prefers-reduced-motion: reduce) { .sc-shot img, .sc-sheen, .sc-btn, .sc-title a { transition: none; } }

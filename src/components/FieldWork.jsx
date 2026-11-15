@@ -1,7 +1,9 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { caseStudies } from "../data.js";
 import { img } from "../router.js";
+import { ArrowLeft } from "./Icons.jsx";
 import Showcase from "./Showcase.jsx";
+import "./pageshell.css";
 import "./fieldwork.css";
 
 const EASE = [0.22, 1, 0.36, 1];
@@ -53,7 +55,7 @@ export function NagiPage({ children }) {
   return (
     <div className="page nv nv-page">
       <NagiDecor />
-      <a className="nv-back" href="/#fieldwork"><span aria-hidden="true">←</span> Home</a>
+      <a className="home-back" href="/#fieldwork"><ArrowLeft size={16} /> Back</a>
       <div className="wrap nv-wrap">{children}</div>
     </div>
   );

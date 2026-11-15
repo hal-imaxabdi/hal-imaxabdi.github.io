@@ -93,8 +93,10 @@ function NavBar({ current, scrolled }) {
 function Band() {
   const row = [...BAND, ...BAND];
   return (
-    <div className="band" aria-hidden="true">
-      <div className="band-row">{row.map((w, i) => <span key={i} className={i % 2 ? "is-line" : ""}>{w}<i>✦</i></span>)}</div>
+    <div className="band-hold" aria-hidden="true">
+      <div className="band">
+        <div className="band-row">{row.map((w, i) => <span key={i} className={i % 2 ? "is-line" : ""}>{w}<i>✦</i></span>)}</div>
+      </div>
     </div>
   );
 }

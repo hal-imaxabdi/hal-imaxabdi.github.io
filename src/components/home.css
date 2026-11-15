@@ -62,7 +62,9 @@
 }
 
 /* ---------- the moving band of words under the hero ---------- */
-.band { position: relative; overflow: hidden; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: rgba(31,107,255,.07); transform: rotate(-1.2deg) scale(1.04); margin: 10px 0 26px; }
+/* the band is tilted, so it sits in a holder that trims its ends: nothing sticks out past the sides of the screen */
+.band-hold { overflow: hidden; padding: 14px 0; }
+.band { position: relative; overflow: hidden; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: rgba(31,107,255,.07); transform: rotate(-1.2deg) scale(1.04); margin: 0; }
 .band-row { display: flex; width: max-content; animation: band 36s linear infinite; }
 .band-row span { display: inline-flex; align-items: center; white-space: nowrap; font-family: var(--f-display); font-weight: 900; font-style: italic; text-transform: uppercase; font-size: clamp(30px, 4.4vw, 60px); line-height: 1; color: #fff; }
 .band-row span.is-line { color: transparent; -webkit-text-stroke: 1px var(--blue-hi); }
@@ -72,7 +74,7 @@
 
 /* ---------- each section sits in a shell with a huge outlined word drifting behind it ---------- */
 .shell { position: relative; overflow: clip; border-top: 1px solid var(--line); }
-.band + .shell { border-top: 0; }
+.band-hold + .shell { border-top: 0; }
 .ghost { position: absolute; z-index: 0; top: clamp(10px, 2svh, 28px); left: 0; pointer-events: none; white-space: nowrap; }
 .ghost span { display: inline-block; font-family: var(--f-display); font-weight: 900; font-style: italic; text-transform: uppercase; line-height: .9; font-size: clamp(110px, 19vw, 300px);
   color: transparent; -webkit-text-stroke: 1px rgba(90,162,255,.13); will-change: transform; }
@@ -127,3 +129,44 @@
 
 @media (prefers-reduced-motion: reduce) { .band-row { animation: none; } .sk-art, .nv-row .nv-shot img { transition: none; } }
 @media (prefers-reduced-motion: reduce) { .dock ul, .dock button, .dock svg, .more-link, .more-link b { transition: none; } }
+
+/* =========================================================
+   PHONES: everything a size smaller and closer together, and the heavier effects switched off
+   ========================================================= */
+@media (max-width: 700px) {
+  .home-view .sec { padding-top: 44px !important; padding-bottom: 44px !important; scroll-margin-top: 8px; }
+  .home-view .sec > .wrap { padding-left: 16px; padding-right: 16px; }
+  .home-view :is(.pf-head, .sk-head, .nv-head, .rn-head, .ct-head) h2 { font-size: 19px !important; letter-spacing: .1em !important; }
+  .home-view :is(.pf-head, .sk-head, .nv-head, .rn-head, .ct-head) { margin-bottom: 10px; }
+  .home-view .prose, .home-view :is(.sk-intro, .nv-intro, .rn-intro) { font-size: 14.5px; line-height: 1.6; }
+
+  .ghost span { font-size: 84px; }                       /* the outlined words behind sections */
+  .band { padding: 10px 0; }
+  .band-hold { padding: 8px 0; }
+  .band-row span { font-size: 26px; }
+
+  /* profile: a smaller photo, a tighter timeline */
+  .home-view .pf-frame { width: 168px; }
+  .home-view .pf-side { gap: 8px; }
+  .home-view .pf-grid { gap: 18px; }
+
+  /* skills: shorter pictures, smaller chips */
+  .home-view .sk-grid { gap: 12px; }
+  .home-view .sk-art { height: 78px; }
+  .home-view .sk-card { padding: 14px 14px 16px; }
+  .home-view .sk-art { width: calc(100% + 28px); margin: -14px -14px 12px; }
+  .home-view .sk-chips { gap: 5px; }
+  .home-view .sk-chips li { font-size: 12px; padding: .38em .75em; }
+
+  /* certificates and buttons */
+  .cert-feature { gap: 10px; }
+  .cert-feature .cert-caption { padding: 9px 10px 11px; }
+  .cert-feature .cert-caption strong { font-size: 13px; }
+  .more-row { margin-top: 18px; }
+  .more-link { height: 42px; padding: 0 20px; font-size: 12px; }
+
+  /* lighter on the phone's graphics chip */
+  .flood { mix-blend-mode: normal; animation: none; opacity: .55; }
+  .hero-stadium { animation: none; }
+  .dock ul, .ct-link { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
