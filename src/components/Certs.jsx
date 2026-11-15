@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Close } from "./Icons.jsx";
 import { certs, goals } from "../data.js";
 import { certImg } from "../router.js";
@@ -58,7 +59,9 @@ export function CertLightbox({ list, index, onChange, onClose }) {
   if (!c) return null;
   const details = [["Issued by", c.org], ["Date", c.date], ["Credential ID", c.id], ["Expires", c.expires]].filter(([, v]) => v);
 
-  return (
+  // Drawn straight into <body>, so it always fills the screen no matter how far the page is scrolled
+  // (inside the page wrapper it was positioned against the page instead of the screen).
+  return createPortal(
     <div className="lightbox" data-lenis-prevent onClick={onClose}>
       <div className="lightbox-panel card" role="dialog" aria-modal="true" aria-label={c.t} onClick={(e) => e.stopPropagation()}>
         <div className="lightbox-img"><CertImage c={c} alt={`${c.t} certificate from ${c.org}`} /></div>
@@ -85,7 +88,8 @@ export function CertLightbox({ list, index, onChange, onClose }) {
           </div>
         </aside>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

@@ -1,0 +1,33 @@
+/* KICK-OFF opening screen (Splash.jsx) */
+.splash { position: fixed; inset: 0; z-index: 200; cursor: pointer; overflow: hidden; }
+.splash.is-leaving { pointer-events: none; }
+
+/* two navy halves meeting on a diagonal; each has a bright blue edge */
+.sp-half { position: absolute; inset: 0; background: radial-gradient(90% 80% at 50% 45%, #0a1b46 0%, #050c22 60%, #030817 100%); }
+.sp-a { clip-path: polygon(0 0, 58% 0, 42% 100%, 0 100%); }
+.sp-b { clip-path: polygon(58% 0, 100% 0, 100% 100%, 42% 100%); }
+.sp-half i { position: absolute; top: -10%; bottom: -10%; left: 50%; width: 3px; margin-left: -1.5px; transform: rotate(8.6deg) scaleY(1.2); opacity: 0;
+  background: linear-gradient(180deg, transparent, #8fc1ff 30%, #fff 50%, #8fc1ff 70%, transparent); box-shadow: 0 0 24px 4px rgba(31,107,255,.9); transition: opacity .2s; }
+.splash.is-leaving .sp-half i { opacity: 1; }
+
+/* one small group in the middle of the screen: the pitch, then the counter and label under it */
+.sp-stage { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(14px, 3svh, 26px); padding: 24px; }
+
+/* the pitch, seen from above (never taller than about a third of the screen) */
+.sp-pitch { position: relative; width: min(64vw, 380px, 52svh); aspect-ratio: 600 / 380; }
+.sp-pitch svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 10px rgba(31,107,255,.55)); }
+.sp-pitch .l { fill: none; stroke: #8fc1ff; stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: sp-draw 1s cubic-bezier(.6, 0, .2, 1) forwards; }
+.sp-pitch .l1 { animation-duration: 1.2s; }
+.sp-pitch .l2 { animation-delay: .25s; animation-duration: .7s; }
+.sp-pitch .l3 { animation-delay: .4s; animation-duration: .8s; stroke: #d6ecff; }
+.sp-pitch .l4 { animation-delay: .55s; animation-duration: .8s; opacity: .7; }
+.sp-pitch .l5 { animation-delay: .8s; animation-duration: .6s; opacity: .7; }
+@keyframes sp-draw { to { stroke-dashoffset: 0; } }
+.sp-spot { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 50%; background: #d6ecff; box-shadow: 0 0 12px #5aa2ff; opacity: 0; animation: sp-in .3s .6s forwards; }
+.sp-ball { position: absolute; left: 50%; top: 50%; width: 34px; height: 34px; margin: -17px; filter: drop-shadow(0 0 14px rgba(90,162,255,.9)); }
+.sp-ball svg { display: block; width: 100%; height: 100%; }
+@keyframes sp-in { to { opacity: 1; } }
+
+.sp-foot { display: grid; justify-items: center; gap: 6px; }
+.sp-count { font-family: var(--f-display); font-weight: 900; font-style: italic; font-size: clamp(40px, 7svh, 64px); line-height: .9; color: transparent; -webkit-text-stroke: 1.2px #5aa2ff; font-variant-numeric: tabular-nums; }
+.sp-label { font-family: var(--f-hud); font-weight: 600; font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--blue-hi); }

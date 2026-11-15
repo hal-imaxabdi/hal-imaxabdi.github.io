@@ -16,7 +16,7 @@ export function parse(pathname, hash = "") {
   const section = hash.replace(/^#/, "");
   if (parts[0] === "projects" && parts[1]) return { page: "project", slug: parts[1] };
   if (parts[0] === "projects") return { page: "projects" };
-  if (parts[0] === "certificates") return { page: "home", section: "achievements" };
+  if (parts[0] === "certificates") return { page: "certificates" };
   const known = homeSections.includes(section) ? section : oldSections[section];
   return { page: "home", section: known };
 }

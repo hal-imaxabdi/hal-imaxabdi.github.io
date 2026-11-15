@@ -1,16 +1,8 @@
-/* CHARACTER ART (WebP files in public/art/, converted from the original PNGs with sharp,
-   quality 88, alpha kept, resize only).
-   To swap one: drop a new .webp into public/art/ and change its path here.
-   Set a slot to null (or leave the file out) and that spot simply stays empty.
-
-   Blue Lock characters are copyrighted by their owners; this is a personal, non-commercial fan tribute. */
+/* SITE ARTWORK (WebP files in public/art/).
+   To swap one: drop a new .webp into public/art/ and change its path here. */
 export const art = {
-  intel: "/art/intel.webp",                 // green #13, crouching: "Skills" on the pitch (top left) + 02 Intel
-  fieldwork: "/art/fieldwork.webp",         // white hair #11, sitting with the ball: "Project" on the pitch (top right) + 03 Field Work
-  profile: "/art/profile-runner.webp",      // #10 running: "Achievements" on the pitch (bottom left) + beside the Track Record in 01 Profile
-  contact: "/art/contact.webp",             // red hair, sprinting: "Contact" on the pitch (bottom right) + 05 Contact
-  photo: "/halima.webp",                    // Halima: only inside the location pin in 01 Profile
-  // home pitch only
-  homeProfile: "/art/home-profile.webp",    // #11 sprinting towards you: "Profile" in the centre of the pitch
-  pitch: "/art/pitch.webp",                 // the neon pitch slab (from Isometric_Neon_Football_Pitch.png, trimmed, alpha kept)
+  stadium: "/art/stadium.webp",             // home background: empty stadium at night (stadium-sm.webp for phones)
+  stadiumSm: "/art/stadium-sm.webp",
+  centreCircle: "/art/centre-circle.webp",  // contact background: the centre circle from above
+  photo: "/halima.webp",                    // Halima: only inside the location pin in Profile
 };

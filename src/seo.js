@@ -11,7 +11,7 @@ export function pageMeta(route) {
     return {
       path: "/projects/",
       title: `Projects · ${me.name}`,
-      description: `Security labs and tools by ${me.name}, including ${names}.`,
+      description: `Backend projects, security tools and labs by ${me.name}, including ${names}.`,
       image: SHARE_IMAGE,
     };
   }
@@ -38,7 +38,7 @@ export function pageMeta(route) {
   return {
     path: "/",
     title: me.name,
-    description: `${me.name} is an Informatics student at President University focused on cybersecurity: SOC analysis, log investigation and network security.`,
+    description: `${me.name} is an Informatics student at President University working in backend development and security: APIs, application security and threat detection.`,
     image: SHARE_IMAGE,
   };
 }
@@ -73,7 +73,7 @@ export function metaTags(m) {
     `<meta name="twitter:image" content="${abs(m.image)}" />`,
     // home only: start downloading the pitch (the biggest thing on screen) right away,
     // the phone-sized copy on phones, instead of waiting for the app to ask for it
-    ...(m.path === "/" ? [`<link rel="preload" as="image" href="/art/pitch.webp" imagesrcset="/art/pitch-sm.webp 820w, /art/pitch.webp 1394w" imagesizes="(max-width: 860px) 100vw, 60vw" fetchpriority="high" />`] : []),
+    ...(m.path === "/" ? [`<link rel="preload" as="image" href="/art/stadium.webp" imagesrcset="/art/stadium-sm.webp 900w, /art/stadium.webp 1672w" imagesizes="100vw" fetchpriority="high" />`] : []),
   ].join("\n  ");
 }
 
