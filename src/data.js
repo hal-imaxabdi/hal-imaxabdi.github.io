@@ -47,7 +47,7 @@ export const projects = [
     points:[["Phishing","look-alike domains such as paypa1.com, a sender pretending to be a brand, requests for your password"],
             ["Fake jobs","fees to get hired, moving the chat to Telegram or WhatsApp, offers with no interview, high pay for no experience"],
             ["Fake shops","80–90% discounts, payment only by crypto or gift cards, no contact details, countdown pressure"],
-            ["Explains each result","a verdict with the scam type, numbered warning signs tied to its 47 documented rules, and what to do next; in the demo, Scam X-ray highlights the exact words"],
+            ["Explains each result","a verdict (high risk, suspicious or no warning signs found) with the scam type, numbered warning signs each tied to one of 47 documented rules with no black-box AI, and what to do next; in the demo, Scam X-ray highlights the exact words"],
             ["Private","everything runs in the browser, and nothing you read is sent anywhere"]],
     flow:[["Gmail or web page", "Extension reads the message or page"], ["47 documented rules", "Phishing, fake-job and fake-shop checks in the browser"], ["Side panel", "Verdict, warning signs, what to do next"]],
     stack:[["Extension",["TypeScript","React","Chrome Manifest V3"]],
