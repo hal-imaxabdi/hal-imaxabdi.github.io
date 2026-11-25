@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="description" content="Project case study by Halima Abdirizak Mohamed: the situation, the task, what I built and the results.">
+   <meta name="robots" content="index, follow">
+   <meta property="og:title" content="Project case study | Halima A. Mohamed">
+   <meta property="og:image" content="assets/img/og.png">
+
+   <!--=============== FAVICON ===============-->
+   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+
+   <!--=============== FONTS ===============-->
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Syne:wght@600&family=JetBrains+Mono:wght@400;600&display=swap">
+
+   <!--=============== ICONS (Remix Icon subset, rebuild with tools/subset-icons.py) ===============-->
+   <link rel="preload" href="assets/vendor/remixicon/remixicon-subset.woff2" as="font" type="font/woff2" crossorigin>
+   <link rel="stylesheet" href="assets/vendor/remixicon/remixicon-subset.css">
+
+   <!--=============== CSS ===============-->
+   <link rel="stylesheet" href="assets/css/styles.css">
+
+   <title>Project case study | Halima A. Mohamed</title>
+</head>
+<body>
+   <!--==================== HEADER & NAV ====================-->
+   <header class="header" id="header">
+      <nav class="nav container">
+         <a href="index.html" class="nav__logo"><span>&lt;</span>Halima<span>/&gt;</span></a>
+
+         <div class="nav__menu" id="nav-menu">
+            <ul class="nav__list">
+               <li><a href="index.html#about" class="nav__link">About</a></li>
+               <li><a href="index.html#work" class="nav__link active-link">Projects</a></li>
+               <li><a href="index.html#experience" class="nav__link">Experience</a></li>
+               <li><a href="index.html#skills" class="nav__link">Skills</a></li>
+               <li><a href="index.html#contact" class="nav__contact">Contact me</a></li>
+            </ul>
+
+            <button class="nav__close" id="nav-close" aria-label="Close menu">
+               <i class="ri-close-large-line"></i>
+            </button>
+         </div>
+
+         <button class="nav__toggle" id="nav-toggle" aria-label="Open menu">
+            <i class="ri-menu-line"></i>
+         </button>
+      </nav>
+   </header>
+
+   <!--==================== CASE STUDY ====================-->
+   <main class="main">
+      <div class="cursor" id="cursor"></div>
+
+      <article class="case" id="case">
+         <div class="case__container container" id="case-content">
+            <noscript>
+               <div class="case__missing">
+                  <h1>Case studies need JavaScript</h1>
+                  <p>You can still see all projects on <a href="https://github.com/hal-imaxabdi">GitHub</a>.</p>
+               </div>
+            </noscript>
+         </div>
+         <div class="blob-big" style="top: 6rem; right: -3rem;"></div>
+      </article>
+   </main>
+
+   <!--==================== FOOTER ====================-->
+   <footer class="footer">
+      <div class="footer__container container grid">
+         <h2 class="footer__title">Let's build software that's secure from the <span>first commit</span>.</h2>
+
+         <div class="footer__content">
+            <ul class="footer__links">
+               <li><a href="index.html#work" class="footer__link">Projects</a></li>
+               <li><a href="index.html#experience" class="footer__link">Experience</a></li>
+               <li><a href="index.html#skills" class="footer__link">Skills</a></li>
+            </ul>
+            <div class="footer__social">
+               <a href="https://github.com/hal-imaxabdi" target="_blank" rel="noopener" class="footer__social-link" aria-label="GitHub"><i class="ri-github-line"></i></a>
+               <a href="https://www.linkedin.com/in/halima-abdirizak-mohamed/" target="_blank" rel="noopener" class="footer__social-link" aria-label="LinkedIn"><i class="ri-linkedin-box-line"></i></a>
+               <a href="mailto:halimamohamedabdirizak@gmail.com" class="footer__social-link" aria-label="Email"><i class="ri-mail-line"></i></a>
+            </div>
+         </div>
+      </div>
+      <span class="footer__copy">&#169; <span id="year"></span> Halima Abdirizak Mohamed</span>
+   </footer>
+
+   <!--========== SCROLL UP ==========-->
+   <a href="#case" class="scrollup" id="scroll-up" aria-label="Back to top"><i class="ri-arrow-up-line"></i></a>
+
+   <!--=============== JS ===============-->
+   <script src="assets/js/projects-data.js" defer></script>
+   <script src="assets/js/project.js" defer></script>
+</body>
+</html>

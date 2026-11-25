@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hal-imaxabdi.github.io/sitemap.xml

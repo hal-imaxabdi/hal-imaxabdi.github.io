@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta name="description" content="Halima Abdirizak Mohamed: software and cybersecurity. I build backend systems in Python, FastAPI and PostgreSQL, secure them from the start, and test them the way an attacker would.">
+   <meta name="robots" content="index, follow">
+   <meta property="og:title" content="Halima A. Mohamed | Cybersecurity & Software">
+   <meta property="og:description" content="I build backend systems and secure them from the start.">
+   <meta property="og:image" content="assets/img/og.png">
+
+   <!--=============== FAVICON ===============-->
+   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+
+   <!--=============== FONTS ===============-->
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Syne:wght@600&family=JetBrains+Mono:wght@400;600&display=swap">
+
+   <!--=============== ICONS (Remix Icon subset, rebuild with tools/subset-icons.py) ===============-->
+   <link rel="preload" href="assets/vendor/remixicon/remixicon-subset.woff2" as="font" type="font/woff2" crossorigin>
+   <link rel="stylesheet" href="assets/vendor/remixicon/remixicon-subset.css">
+
+   <!--=============== CSS ===============-->
+   <link rel="stylesheet" href="assets/css/styles.css">
+
+   <title>Halima A. Mohamed | Cybersecurity & Software</title>
+</head>
+<body>
+   <!--==================== HEADER & NAV ====================-->
+   <header class="header" id="header">
+      <nav class="nav container">
+         <a href="#home" class="nav__logo"><span>&lt;</span>Halima<span>/&gt;</span></a>
+
+         <div class="nav__menu" id="nav-menu">
+            <ul class="nav__list">
+               <li><a href="#about" class="nav__link">About</a></li>
+               <li><a href="#work" class="nav__link">Projects</a></li>
+               <li><a href="#experience" class="nav__link">Experience</a></li>
+               <li><a href="#skills" class="nav__link">Skills</a></li>
+               <li><a href="#contact" class="nav__contact">Contact me</a></li>
+            </ul>
+
+            <button class="nav__close" id="nav-close" aria-label="Close menu">
+               <i class="ri-close-large-line"></i>
+            </button>
+         </div>
+
+         <button class="nav__toggle" id="nav-toggle" aria-label="Open menu">
+            <i class="ri-menu-line"></i>
+         </button>
+      </nav>
+   </header>
+
+   <!--==================== MAIN ====================-->
+   <main class="main">
+      <!-- CUSTOM CURSOR -->
+      <div class="cursor" id="cursor"></div>
+
+      <!--==================== HOME ====================-->
+      <section class="home section" id="home">
+         <div class="home__container container grid">
+            <div class="home__data">
+               <h3 class="home__subtitle">Hi! I'm Halima</h3>
+               <h1 class="home__title">
+                  Cybersecurity & <br>
+                  <span id="home-typed">Software Engineering</span>
+               </h1>
+               <p class="home__description">
+                  I build backend systems, secure them from the start, and test them the way an attacker would.
+               </p>
+               <div class="home__buttons">
+                  <a href="#work" class="button">View projects <i class="ri-arrow-right-line"></i></a>
+                  <a href="assets/pdf/Halima_Abdirizak_Mohamed_CV.pdf" class="button button--ghost" download>
+                     Download CV <i class="ri-download-2-line"></i>
+                  </a>
+               </div>
+            </div>
+
+            <div class="home__image">
+               <div class="home__blob"></div>
+               <div class="home__shape">
+                  <img src="assets/img/halima.webp" alt="Halima Abdirizak Mohamed" class="home__img" width="400" height="400" fetchpriority="high">
+               </div>
+
+               <div class="home__terminal">
+                  <span class="home__prompt">$</span> whoami<br>
+                  <span class="home__out">swe + appsec</span>
+               </div>
+
+            </div>
+         </div>
+         <div class="blob-big" style="top: 10rem; left: -3rem;"></div>
+         <div class="blob-small" style="top: 30rem; right: 0;"></div>
+      </section>
+
+      <!--==================== ABOUT ====================-->
+      <section class="about section" id="about">
+         <div class="about__container container grid">
+            <h2 class="about__title">
+               About Me: I work where <span>cybersecurity</span> meets <span>software</span>,
+               building systems that hold up under attack.
+            </h2>
+
+            <div class="about__data">
+               <p class="about__description">
+                  Cybersecurity-focused Informatics student and backend engineer with two engineering internships
+                  behind me. I build production APIs in Python, FastAPI and TypeScript, and build security in from
+                  the first commit: authentication, access control, signed webhooks and dependency risk. I've found
+                  and fixed real vulnerabilities in team codebases, and I ship tools that help other developers do
+                  the same.
+               </p>
+               <ul class="about__facts">
+                  <li><i class="ri-graduation-cap-line"></i> B.Sc. Informatics (Cybersecurity) · CGPA 3.73 · 2027</li>
+                  <li><i class="ri-flag-line"></i> Open to cybersecurity & software roles</li>
+               </ul>
+               <div class="about__buttons">
+                  <a href="#contact" class="button">Contact me <i class="ri-arrow-right-line"></i></a>
+                  <a href="assets/pdf/Halima_Abdirizak_Mohamed_CV.pdf" class="button button--ghost" download>
+                     Download CV <i class="ri-download-2-line"></i>
+                  </a>
+               </div>
+            </div>
+         </div>
+      </section>
+
+      <!--==================== WORK ====================-->
+      <section class="work section" id="work">
+         <h2 class="section__title">Featured <span>Projects</span></h2>
+         <p class="work__intro">Browse with the arrows or swipe. Open any project for the full case study.</p>
+
+         <div class="work__container container">
+            <div class="work__track" id="work-wrapper" tabindex="0" aria-label="Projects, use arrow keys to browse"><!-- Filled by main.js --></div>
+            <div class="work__controls">
+               <button class="work__nav" id="work-prev" aria-label="Previous project"><i class="ri-arrow-left-line"></i></button>
+               <div class="work__dots" id="work-dots"></div>
+               <button class="work__nav" id="work-next" aria-label="Next project"><i class="ri-arrow-right-line"></i></button>
+            </div>
+         </div>
+      </section>
+
+      <!--==================== SERVICES ====================-->
+      <section class="services section" id="service">
+         <h2 class="section__title"><span>What</span> I Do</h2>
+
+         <div class="services__container container grid">
+            <article class="services__card services-open">
+               <button class="services__button">
+                  <span class="services__icon"><i class="ri-code-box-line"></i></span>
+                  <h3 class="services__name">Backend Engineering</h3>
+                  <i class="ri-arrow-down-s-line services__arrow"></i>
+               </button>
+               <div class="services__info">
+                  <p class="services__description">
+                     APIs and services that stay correct under retries, race conditions and bad input, backed by real test suites.
+                  </p>
+                  <ul class="services__list">
+                     <li class="services__item"><i class="ri-check-line"></i> FastAPI, Node.js & Cloudflare Workers</li>
+                     <li class="services__item"><i class="ri-check-line"></i> PostgreSQL schema & constraints</li>
+                     <li class="services__item"><i class="ri-check-line"></i> Idempotent, exactly-once design</li>
+                     <li class="services__item"><i class="ri-check-line"></i> Pytest & CI pipelines</li>
+                  </ul>
+               </div>
+            </article>
+
+            <article class="services__card">
+               <button class="services__button">
+                  <span class="services__icon"><i class="ri-shield-keyhole-line"></i></span>
+                  <h3 class="services__name">Application Security</h3>
+                  <i class="ri-arrow-down-s-line services__arrow"></i>
+               </button>
+               <div class="services__info">
+                  <p class="services__description">
+                     Security built in from the first commit: auth, access control and data protection mapped to the OWASP Top 10.
+                  </p>
+                  <ul class="services__list">
+                     <li class="services__item"><i class="ri-check-line"></i> Sessions, OIDC, JWT & MFA</li>
+                     <li class="services__item"><i class="ri-check-line"></i> Role-based access control</li>
+                     <li class="services__item"><i class="ri-check-line"></i> Field encryption (AES-256)</li>
+                     <li class="services__item"><i class="ri-check-line"></i> Signed webhook verification</li>
+                  </ul>
+               </div>
+            </article>
+
+            <article class="services__card">
+               <button class="services__button">
+                  <span class="services__icon"><i class="ri-bug-line"></i></span>
+                  <h3 class="services__name">Security Testing & Labs</h3>
+                  <i class="ri-arrow-down-s-line services__arrow"></i>
+               </button>
+               <div class="services__info">
+                  <p class="services__description">
+                     I attack what I build in isolated labs, document what's blocked and what slips through, then fix it.
+                  </p>
+                  <ul class="services__list">
+                     <li class="services__item"><i class="ri-check-line"></i> SQLi, XSS & command injection</li>
+                     <li class="services__item"><i class="ri-check-line"></i> WAF deployment & testing</li>
+                     <li class="services__item"><i class="ri-check-line"></i> Kali, Nmap & Wireshark</li>
+                     <li class="services__item"><i class="ri-check-line"></i> CTF challenges & write-ups</li>
+                  </ul>
+               </div>
+            </article>
+
+            <article class="services__card">
+               <button class="services__button">
+                  <span class="services__icon"><i class="ri-git-branch-line"></i></span>
+                  <h3 class="services__name">DevSecOps & Tooling</h3>
+                  <i class="ri-arrow-down-s-line services__arrow"></i>
+               </button>
+               <div class="services__info">
+                  <p class="services__description">
+                     Tools that make security part of the developer workflow, from lockfile scanning to failing the build.
+                  </p>
+                  <ul class="services__list">
+                     <li class="services__item"><i class="ri-check-line"></i> Dependency scanning (OSV, CISA KEV)</li>
+                     <li class="services__item"><i class="ri-check-line"></i> GitHub Actions security gates</li>
+                     <li class="services__item"><i class="ri-check-line"></i> Docker & Docker Compose</li>
+                     <li class="services__item"><i class="ri-check-line"></i> Browser extensions (MV3)</li>
+                  </ul>
+               </div>
+            </article>
+         </div>
+      </section>
+
+      <!--==================== EXPERIENCE ====================-->
+      <section class="experience section" id="experience">
+         <h2 class="section__title">My <span>Experience</span></h2>
+
+         <div class="experience__container container">
+            <article class="experience__item">
+               <span class="experience__date">Nov 2026 — now</span>
+               <div>
+                  <h3 class="experience__role">Backend Software Engineering Intern</h3>
+                  <p class="experience__org">SkyyTech · Remote</p>
+                  <p class="experience__context">Securing sign-in for an adaptive learning platform.</p>
+                  <ul class="experience__list">
+                     <li>Built session-based auth and API endpoints on TypeScript, Cloudflare Workers and D1; now adding OIDC login.</li>
+                     <li>Found and fixed an open redirect that let crafted “//” links send users from the login page to outside sites.</li>
+                  </ul>
+               </div>
+            </article>
+            <article class="experience__item">
+               <span class="experience__date">Sep 2026 — now</span>
+               <div>
+                  <h3 class="experience__role">System Intern, E-Technology Program</h3>
+                  <p class="experience__org">President University · On-site</p>
+                  <p class="experience__context">Keeping the program's course content safe and recoverable.</p>
+                  <ul class="experience__list">
+                     <li>Built and maintain a backup dashboard for backing up and restoring course content.</li>
+                     <li>Administer the program's Moodle learning platform.</li>
+                  </ul>
+               </div>
+            </article>
+            <article class="experience__item">
+               <span class="experience__date">Jul — Sep 2026</span>
+               <div>
+                  <h3 class="experience__role">Backend AI Engineering Intern</h3>
+                  <p class="experience__org">FlyRank AI · Remote</p>
+                  <p class="experience__context">Billing for AI-token usage that never counts or charges twice.</p>
+                  <ul class="experience__list">
+                     <li>Built the metering and billing service in FastAPI and PostgreSQL, with idempotency keys for exactly-once metering.</li>
+                     <li>Verified every Midtrans payment webhook with HMAC-SHA512 signatures, backed by 68 automated tests.</li>
+                  </ul>
+               </div>
+            </article>
+         </div>
+      </section>
+
+      <!--==================== SKILLS ====================-->
+      <section class="skills section" id="skills">
+         <h2 class="section__title">My <span>Skills</span></h2>
+         <p class="skills__description">
+            What I use to build software, secure it and break it, practised in internships, projects and labs.
+         </p>
+
+         <div class="skills__container container grid">
+            <article class="skills__card">
+               <h3 class="skills__title"><i class="ri-code-s-slash-line"></i> Build</h3>
+               <div class="skills__list">
+                  <span class="skills__item"><i class="ri-terminal-line"></i>Python</span>
+                  <span class="skills__item"><i class="ri-flashlight-line"></i>FastAPI</span>
+                  <span class="skills__item"><i class="ri-nodejs-line"></i>Node.js & Express</span>
+                  <span class="skills__item"><i class="ri-braces-line"></i>TypeScript</span>
+                  <span class="skills__item"><i class="ri-reactjs-line"></i>React</span>
+                  <span class="skills__item"><i class="ri-database-2-line"></i>PostgreSQL</span>
+                  <span class="skills__item"><i class="ri-leaf-line"></i>MongoDB</span>
+                  <span class="skills__item"><i class="ri-cloud-line"></i>Cloudflare Workers</span>
+                  <span class="skills__item"><i class="ri-stack-line"></i>SQLAlchemy & Alembic</span>
+               </div>
+            </article>
+
+            <article class="skills__card">
+               <h3 class="skills__title"><i class="ri-shield-check-line"></i> Secure</h3>
+               <div class="skills__list">
+                  <span class="skills__item"><i class="ri-error-warning-line"></i>OWASP Top 10</span>
+                  <span class="skills__item"><i class="ri-key-2-line"></i>Auth & Sessions</span>
+                  <span class="skills__item"><i class="ri-user-settings-line"></i>RBAC</span>
+                  <span class="skills__item"><i class="ri-lock-password-line"></i>JWT & CSRF</span>
+                  <span class="skills__item"><i class="ri-speed-up-line"></i>Rate limiting</span>
+                  <span class="skills__item"><i class="ri-search-eye-line"></i>Dependency scanning</span>
+                  <span class="skills__item"><i class="ri-fire-line"></i>SafeLine WAF</span>
+                  <span class="skills__item"><i class="ri-file-shield-2-line"></i>NIST CSF</span>
+               </div>
+            </article>
+
+            <article class="skills__card">
+               <h3 class="skills__title"><i class="ri-tools-line"></i> Test & Ship</h3>
+               <div class="skills__list">
+                  <span class="skills__item"><i class="ri-terminal-box-line"></i>Kali Linux</span>
+                  <span class="skills__item"><i class="ri-radar-line"></i>Nmap</span>
+                  <span class="skills__item"><i class="ri-wifi-line"></i>Wireshark</span>
+                  <span class="skills__item"><i class="ri-test-tube-line"></i>Pytest</span>
+                  <span class="skills__item"><i class="ri-ship-line"></i>Docker</span>
+                  <span class="skills__item"><i class="ri-github-line"></i>GitHub Actions</span>
+                  <span class="skills__item"><i class="ri-git-merge-line"></i>Git</span>
+                  <span class="skills__item"><i class="ri-ubuntu-line"></i>Linux</span>
+               </div>
+            </article>
+         </div>
+      </section>
+
+      <!--==================== CERTIFICATIONS (testimonials in the tutorial) ====================-->
+      <section class="testimonials section">
+         <h2 class="section__title"><span>Certifications</span> & Credentials</h2>
+
+         <div class="testimonials__container">
+            <div class="testimonials__content" id="certs-track"><!-- Filled by main.js --></div>
+         </div>
+      </section>
+
+      <!--==================== CONTACT ====================-->
+      <section class="contact section" id="contact">
+         <h2 class="section__title">Contact <span>Me</span></h2>
+
+         <div class="contact__container container grid">
+            <form class="contact__form grid" id="contact-form">
+               <div class="contact__group grid">
+                  <div class="contact__box">
+                     <label for="name" class="contact__label">Name</label>
+                     <input type="text" name="user_name" id="name" required placeholder="Your name" class="contact__input">
+                  </div>
+                  <div class="contact__box">
+                     <label for="email" class="contact__label">Email</label>
+                     <input type="email" name="user_email" id="email" required placeholder="you@email.com" class="contact__input">
+                  </div>
+               </div>
+               <div class="contact__box">
+                  <label for="message" class="contact__label">Message</label>
+                  <textarea name="user_message" id="message" required placeholder="Tell me about the role or project" class="contact__input"></textarea>
+               </div>
+               <!-- Honeypot: hidden from people, bots fill it in -->
+               <input type="text" name="company" class="contact__hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+               <p class="contact__message" id="contact-message" role="status"></p>
+               <button type="submit" class="button contact__button">Send Message <i class="ri-send-plane-line"></i></button>
+            </form>
+
+            <div class="contact__data grid">
+               <p class="contact__intro">Open to cybersecurity and software roles. Use the form, or reach me directly:</p>
+               <button type="button" class="contact__card" id="copy-email" data-email="halimamohamedabdirizak@gmail.com">
+                  <i class="ri-mail-line contact__icon"></i>
+                  <div>
+                     <h3 class="contact__title">Email</h3>
+                     <span class="contact__address">halimamohamedabdirizak@gmail.com</span>
+                  </div>
+                  <span class="contact__copy" id="copy-email-label"><i class="ri-file-copy-line"></i> Copy</span>
+               </button>
+               <a href="https://www.linkedin.com/in/halima-abdirizak-mohamed/" target="_blank" rel="noopener" class="contact__card">
+                  <i class="ri-linkedin-box-line contact__icon"></i>
+                  <div>
+                     <h3 class="contact__title">LinkedIn</h3>
+                     <span class="contact__address">halima-abdirizak-mohamed</span>
+                  </div>
+                  <i class="ri-arrow-right-up-line contact__go"></i>
+               </a>
+               <a href="https://github.com/hal-imaxabdi" target="_blank" rel="noopener" class="contact__card">
+                  <i class="ri-github-line contact__icon"></i>
+                  <div>
+                     <h3 class="contact__title">GitHub</h3>
+                     <span class="contact__address">hal-imaxabdi</span>
+                  </div>
+                  <i class="ri-arrow-right-up-line contact__go"></i>
+               </a>
+            </div>
+         </div>
+         <div class="blob-big" style="bottom: 0; right: -4rem;"></div>
+      </section>
+   </main>
+
+   <!--==================== FOOTER ====================-->
+   <footer class="footer">
+      <div class="footer__container container grid">
+         <h2 class="footer__title">Let's build software that's secure from the <span>first commit</span>.</h2>
+
+         <div class="footer__content">
+            <ul class="footer__links">
+               <li><a href="#work" class="footer__link">Projects</a></li>
+               <li><a href="#experience" class="footer__link">Experience</a></li>
+               <li><a href="#skills" class="footer__link">Skills</a></li>
+            </ul>
+            <div class="footer__social">
+               <a href="https://github.com/hal-imaxabdi" target="_blank" rel="noopener" class="footer__social-link" aria-label="GitHub"><i class="ri-github-line"></i></a>
+               <a href="https://www.linkedin.com/in/halima-abdirizak-mohamed/" target="_blank" rel="noopener" class="footer__social-link" aria-label="LinkedIn"><i class="ri-linkedin-box-line"></i></a>
+               <a href="mailto:halimamohamedabdirizak@gmail.com" class="footer__social-link" aria-label="Email"><i class="ri-mail-line"></i></a>
+            </div>
+         </div>
+      </div>
+      <span class="footer__copy">&#169; <span id="year"></span> Halima Abdirizak Mohamed</span>
+   </footer>
+
+   <!--========== SCROLL UP ==========-->
+   <a href="#home" class="scrollup" id="scroll-up" aria-label="Back to top"><i class="ri-arrow-up-line"></i></a>
+
+   <!--=============== LIBRARIES ===============-->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.1.0/typed.umd.min.js" defer></script>
+   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
+
+   <!--=============== MAIN JS ===============-->
+   <script src="assets/js/projects-data.js" defer></script>
+   <script src="assets/js/main.js" defer></script>
+</body>
+</html>
