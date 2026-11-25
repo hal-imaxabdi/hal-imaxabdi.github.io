@@ -15,25 +15,18 @@ const certs = [
 
 /*=============== RENDER PROJECTS ===============*/
 const workTrack = document.getElementById('work-wrapper')
-workTrack.innerHTML = projects.map((p, i) => `
-   <article class="work__card">
-      <a href="project.html?p=${p.slug}" class="work__image" aria-label="Read the ${p.name} case study">
+workTrack.innerHTML = projects.map(p => `
+   <a href="project.html?p=${p.slug}" class="work__card">
+      <div class="work__image">
          <img src="assets/img/projects/${p.img}" alt="${p.name} screenshot" class="work__img" loading="lazy" decoding="async">
-         <span class="work__link"><i class="ri-arrow-right-up-line"></i></span>
-      </a>
-      <div class="work__data">
-         <span class="work__number">${String(i + 1).padStart(2, '0')} / ${String(projects.length).padStart(2, '0')}</span>
-         <h3 class="work__name"><a href="project.html?p=${p.slug}">${p.name}</a></h3>
-         <span class="work__kicker">${p.kicker}</span>
-         <p class="work__description">${p.desc}</p>
-         <div class="work__tags">${p.tags.map(t => `<span class="work__tag">${t}</span>`).join('')}</div>
-         <div class="work__actions">
-            <a href="project.html?p=${p.slug}" class="work__action work__action--main">Case study <i class="ri-arrow-right-line"></i></a>
-            <a href="${GITHUB + p.repo}" target="_blank" rel="noopener" class="work__action"><i class="ri-github-line"></i> Code</a>
-            ${p.live ? `<a href="${p.live}" target="_blank" rel="noopener" class="work__action"><i class="ri-external-link-line"></i> Live</a>` : ''}
-         </div>
       </div>
-   </article>`).join('')
+      <div class="work__data">
+         <span class="work__kicker">${p.kicker.split(' · ')[0]}</span>
+         <h3 class="work__name">${p.name}</h3>
+         <p class="work__description">${p.tagline}</p>
+         <span class="work__more">View case study <i class="ri-arrow-right-line"></i></span>
+      </div>
+   </a>`).join('')
 
 /*=============== PROJECTS CAROUSEL ===============*/
 /* A native scroll-snap track: swipe on phones, scroll on trackpads,
