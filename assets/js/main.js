@@ -15,77 +15,68 @@ const certs = [
 
 const pad = n => String(n).padStart(2, '0')
 
-/*=============== RENDER PROJECTS: A CARD DECK ===============*/
-/* One big card in front, the next two stacked behind it. Swipe, drag, use the arrows
-   or the arrow keys and the next project comes forward. It loops, so adding projects
-   to projects-data.js never makes the section any bigger. */
-const deck = document.getElementById('work-deck')
-deck.innerHTML = projects.map(p => `
+/*=============== RENDER PROJECTS: CINEMA SLIDER ===============*/
+/* One large card in the middle, the previous and next projects dimmed at the sides.
+   Swipe, drag, click a side card, use the arrows or the arrow keys and the row slides.
+   It loops, so adding projects to projects-data.js never makes the section bigger. */
+const stage = document.getElementById('work-deck')
+stage.innerHTML = projects.map(p => `
    <a href="project.html?p=${p.slug}" class="work__card" draggable="false">
       <img src="assets/img/projects/${p.img}" alt="" class="work__img" width="1200" height="750" loading="lazy" decoding="async" draggable="false">
       <span class="work__overlay">
-         <span>
+         <span class="work__info">
             <span class="work__name">${p.name}</span>
             <span class="work__type">${p.kicker.split(' · ')[0]}</span>
          </span>
-         <span class="work__go" aria-hidden="true"><i class="ri-arrow-right-up-line"></i></span>
+         <span class="work__cta">View case study <i class="ri-arrow-right-up-line" aria-hidden="true"></i></span>
       </span>
    </a>`).join('')
 
-const cards = [...deck.children]
+const cards = [...stage.children]
 const total = cards.length
 const workCurrent = document.getElementById('work-current')
 let current = 0
 
 document.getElementById('work-total').textContent = pad(total)
 
-/* data-pos 0 is the front card, 1 and 2 peek out behind it, the rest wait out of sight */
+/* Signed distance from the middle card, the short way round the loop */
+const offsetOf = i => {
+   let d = (i - current + total) % total
+   if (d > total / 2) d -= total
+   return d
+}
+
 const layout = () => {
    cards.forEach((card, i) => {
-      const pos = (i - current + total) % total
-      card.dataset.pos = pos < 3 ? pos : 'rest'
-      card.tabIndex = pos === 0 ? 0 : -1
-      card.setAttribute('aria-hidden', pos === 0 ? 'false' : 'true')
+      const d = offsetOf(i)
+      card.dataset.pos = Math.abs(d) <= 2 ? d : 'rest'
+      card.tabIndex = d === 0 ? 0 : -1
+      card.setAttribute('aria-hidden', d === 0 ? 'false' : 'true')
       card.setAttribute('aria-label', `${projects[i].name}, ${i + 1} of ${total}. Open case study`)
    })
    workCurrent.textContent = pad(current + 1)
 }
 
-/* Forward: the front card flies off to the left and drops to the back.
-   Back: the previous card flies in from the left. */
-const go = dir => {
-   if (total < 2) return
-   const hadFocus = deck.contains(document.activeElement)
-   if (dir > 0) {
-      const leaving = cards[current]
-      leaving.classList.add('is-out')
-      setTimeout(() => leaving.classList.remove('is-out'), 420)
-   }
-   current = (current + dir + total) % total
-   if (dir < 0) {
-      const entering = cards[current]
-      entering.style.transition = 'none'
-      entering.classList.add('is-out')
-      void entering.offsetWidth          // apply the off-screen start before animating in
-      entering.style.transition = ''
-      entering.classList.remove('is-out')
-   }
+const go = step => {
+   if (total < 2 || !step) return
+   const hadFocus = stage.contains(document.activeElement)
+   current = (current + step + total) % total
    layout()
    if (hadFocus) cards[current].focus({ preventScroll: true })
 }
 
 document.getElementById('work-prev').addEventListener('click', () => go(-1))
 document.getElementById('work-next').addEventListener('click', () => go(1))
-deck.addEventListener('keydown', e => {
+stage.addEventListener('keydown', e => {
    if (e.key === 'ArrowRight') { e.preventDefault(); go(1) }
    if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1) }
 })
 
-/* Swipe and drag (touch, pen and mouse). The card follows the finger and tilts a little;
-   let go past the threshold and it moves on. A drag never counts as a click. */
+/* Swipe and drag (touch, pen and mouse): the whole row follows the finger.
+   Let go past the threshold and it moves on. A drag never counts as a click. */
 let dragStart = null, dragX = 0, dragged = false
-deck.addEventListener('pointerdown', e => {
-   if (e.button !== 0 || !cards[current].contains(e.target)) return
+stage.addEventListener('pointerdown', e => {
+   if (e.button !== 0) return
    dragStart = e.clientX
    dragX = 0
    dragged = false
@@ -93,25 +84,32 @@ deck.addEventListener('pointerdown', e => {
 window.addEventListener('pointermove', e => {
    if (dragStart === null) return
    dragX = e.clientX - dragStart
-   if (!dragged && Math.abs(dragX) > 6) { dragged = true; deck.classList.add('is-dragging') }
-   if (dragged) cards[current].style.transform = `translateX(${dragX}px) rotate(${dragX / 28}deg)`
+   if (!dragged && Math.abs(dragX) > 6) { dragged = true; stage.classList.add('is-dragging') }
+   if (dragged) stage.style.setProperty('--drag', `${dragX}px`)
 })
 const endDrag = () => {
    if (dragStart === null) return
    dragStart = null
-   deck.classList.remove('is-dragging')
-   cards[current].style.transform = ''
-   const threshold = Math.min(110, deck.offsetWidth * 0.18)
+   stage.classList.remove('is-dragging')
+   stage.style.setProperty('--drag', '0px')
+   setTimeout(() => { dragged = false }, 0)   // after the click that ends a drag has been swallowed
+   const threshold = Math.min(90, stage.offsetWidth * 0.12)
    if (dragX < -threshold) go(1)
    else if (dragX > threshold) go(-1)
 }
 window.addEventListener('pointerup', endDrag)
 window.addEventListener('pointercancel', endDrag)
-deck.addEventListener('click', e => { if (dragged) { e.preventDefault(); dragged = false } }, true)
 
-/* Sideways trackpad swipes move the deck too; vertical scrolling is left alone */
+/* Clicks: a drag does nothing, a side card slides to the middle, the middle card opens */
+stage.addEventListener('click', e => {
+   const card = e.target.closest('.work__card')
+   if (dragged) { e.preventDefault(); dragged = false; return }
+   if (card && card.dataset.pos !== '0') { e.preventDefault(); go(offsetOf(cards.indexOf(card))) }
+}, true)
+
+/* Sideways trackpad swipes move the row too; vertical scrolling is left alone */
 let wheelLock = false
-deck.addEventListener('wheel', e => {
+stage.addEventListener('wheel', e => {
    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) < 25) return
    e.preventDefault()
    if (wheelLock) return
@@ -123,26 +121,17 @@ deck.addEventListener('wheel', e => {
 layout()
 
 /*=============== RENDER WRITEUPS ===============*/
-/* Same card language as the projects: one link each, the writeup itself has the detail */
-const MAX_TOOLS = 3
-document.getElementById('writeups-list').innerHTML = window.WRITEUPS.map(w => {
-   const extra = w.tools.length - MAX_TOOLS
-   return `
-   <li class="writeups__slide">
-      <a href="${w.link.url}" target="_blank" rel="noopener" class="writeups__card">
-         <h3 class="writeups__title">${w.title}</h3>
-         <p class="writeups__context">${w.context}</p>
-         <div class="writeups__tools">
-            ${w.tools.slice(0, MAX_TOOLS).map(t => `<span class="work__tag">${t}</span>`).join('')}
-            ${extra > 0 ? `<span class="work__tag work__tag--more">+${extra}</span>` : ''}
-         </div>
-         <div class="writeups__foot">
-            <span class="writeups__cta">${w.link.label}<span class="sr-only"> (opens in a new tab)</span></span>
-            <span class="work__go" aria-hidden="true"><i class="${w.link.icon}"></i></span>
-         </div>
+/* A simple list: what it is, one short line, and an arrow. The whole row is the link */
+document.getElementById('writeups-list').innerHTML = window.WRITEUPS.map(w => `
+   <li>
+      <a href="${w.link.url}" target="_blank" rel="noopener" class="writeups__row" aria-label="${w.title}: ${w.link.label} (opens in a new tab)">
+         <span class="writeups__text">
+            <span class="writeups__title">${w.title}</span>
+            <span class="writeups__note">${w.note}</span>
+         </span>
+         <span class="writeups__go" aria-hidden="true"><i class="${w.link.icon}"></i></span>
       </a>
-   </li>`
-}).join('')
+   </li>`).join('')
 
 /*=============== RENDER CERTIFICATES ===============*/
 const certsTrack = document.getElementById('certs-track')

@@ -92,8 +92,6 @@ if (reduced) {
    reveal('.skills__description', { y: [16, 0] })
    reveal('.skills__container', { y: [40, 0] }, { children: true, step: 0.1 })
    reveal('.testimonials__container', { y: [24, 0] })
-   reveal('.contact__intro', { y: [16, 0] })
-   reveal('.contact__links', { y: [48, 0], scale: [0.96, 1] }, { children: true, step: 0.1, duration: 0.8 })
 
    /*----- Case-study page -----*/
    reveal('.case__stats', { y: [24, 0] }, { children: true })

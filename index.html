@@ -136,7 +136,7 @@
          <h2 class="section__title">Featured <span>Projects</span></h2>
 
          <div class="work__container container">
-            <div class="work__deck" id="work-deck" role="region" aria-roledescription="carousel" aria-label="Projects. Swipe, drag or use the arrow keys for the next one."><!-- Filled by main.js --></div>
+            <div class="work__stage" id="work-deck" role="region" aria-roledescription="carousel" aria-label="Projects. Swipe, drag or use the arrow keys to see the next one."><!-- Filled by main.js --></div>
 
             <div class="work__controls">
                <button class="work__arrow" id="work-prev" aria-label="Previous project"><i class="ri-arrow-left-line" aria-hidden="true"></i></button>
@@ -251,14 +251,7 @@
                </div>
                <div class="experience__body">
                   <h3 class="experience__role">Backend Software Engineering Intern</h3>
-                  <p class="experience__headline">Securing sign-in for an adaptive learning platform.</p>
-                  <ul class="experience__list">
-                     <li>Built <strong>session-based login</strong> and API endpoints. Now adding OIDC sign-in.</li>
-                     <li>Found and fixed an <strong>open redirect</strong>: crafted “//” links could send users from the login page to outside sites.</li>
-                  </ul>
-                  <ul class="experience__tags" aria-label="Stack">
-                     <li class="work__tag">TypeScript</li><li class="work__tag">Cloudflare Workers</li><li class="work__tag">D1</li><li class="work__tag">OIDC</li>
-                  </ul>
+                  <p class="experience__summary">I'm making sign-in safer for an online learning platform, and I found and fixed a flaw that could send users from its login page to outside sites.</p>
                </div>
             </article>
             <article class="experience__item">
@@ -269,11 +262,7 @@
                </div>
                <div class="experience__body">
                   <h3 class="experience__role">System Intern, E-Technology Program</h3>
-                  <p class="experience__headline">Keeping the program's course content safe and recoverable.</p>
-                  <ul class="experience__list">
-                     <li>Built and maintain the <strong>backup dashboard</strong> that backs up and restores course content.</li>
-                     <li>Administer the program's <strong>Moodle</strong> learning platform.</li>
-                  </ul>
+                  <p class="experience__summary">I built and look after the dashboard that backs up and restores the program's course content, and I run its Moodle learning platform.</p>
                </div>
             </article>
             <article class="experience__item">
@@ -284,14 +273,7 @@
                </div>
                <div class="experience__body">
                   <h3 class="experience__role">Backend AI Engineering Intern</h3>
-                  <p class="experience__headline">Billing for AI-token usage that never counts or charges twice.</p>
-                  <ul class="experience__list">
-                     <li>Built the metering and billing service. Idempotency keys make every usage record count <strong>exactly once</strong>.</li>
-                     <li>Every Midtrans payment webhook is verified with an <strong>HMAC-SHA512</strong> signature, covered by <strong>68 automated tests</strong>.</li>
-                  </ul>
-                  <ul class="experience__tags" aria-label="Stack">
-                     <li class="work__tag">FastAPI</li><li class="work__tag">PostgreSQL</li><li class="work__tag">Midtrans</li>
-                  </ul>
+                  <p class="experience__summary">I built the billing system that tracks AI usage and takes payments, so no customer is ever counted or charged twice.</p>
                </div>
             </article>
          </div>
@@ -358,75 +340,47 @@
             <div class="testimonials__content" id="certs-track"><!-- Filled by main.js --></div>
          </div>
       </section>
-
-      <!--==================== CONTACT ====================-->
-      <section class="contact section" id="contact">
-         <h2 class="section__title">Contact <span>Me</span></h2>
-
-         <div class="contact__container container">
-            <p class="contact__intro">Open to cybersecurity and software roles.</p>
-
-            <ul class="contact__links">
-               <li>
-                  <a href="https://github.com/hal-imaxabdi" target="_blank" rel="noopener" class="contact__link" aria-label="GitHub: hal-imaxabdi (opens in a new tab)">
-                     <span class="contact__top">
-                        <span class="contact__circle"><i class="ri-github-fill" aria-hidden="true"></i></span>
-                        <span class="work__go" aria-hidden="true"><i class="ri-arrow-right-up-line"></i></span>
-                     </span>
-                     <span class="contact__text">
-                        <span class="contact__name">GitHub</span>
-                        <span class="contact__handle">hal-imaxabdi</span>
-                     </span>
-                  </a>
-               </li>
-               <li>
-                  <a href="https://www.linkedin.com/in/halima-abdirizak-mohamed/" target="_blank" rel="noopener" class="contact__link" aria-label="LinkedIn: Halima Abdirizak Mohamed (opens in a new tab)">
-                     <span class="contact__top">
-                        <span class="contact__circle"><i class="ri-linkedin-box-fill" aria-hidden="true"></i></span>
-                        <span class="work__go" aria-hidden="true"><i class="ri-arrow-right-up-line"></i></span>
-                     </span>
-                     <span class="contact__text">
-                        <span class="contact__name">LinkedIn</span>
-                        <span class="contact__handle">halima-abdirizak-mohamed</span>
-                     </span>
-                  </a>
-               </li>
-               <li>
-                  <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=halimamohamedabdirizak@gmail.com" target="_blank" rel="noopener" class="contact__link" aria-label="Email me in Gmail (opens in a new tab)">
-                     <span class="contact__top">
-                        <span class="contact__circle"><i class="ri-mail-fill" aria-hidden="true"></i></span>
-                        <span class="work__go" aria-hidden="true"><i class="ri-arrow-right-up-line"></i></span>
-                     </span>
-                     <span class="contact__text">
-                        <span class="contact__name">Gmail</span>
-                        <span class="contact__handle">halimamohamedabdirizak@gmail.com</span>
-                     </span>
-                  </a>
-               </li>
-            </ul>
-         </div>
-      </section>
    </main>
 
-   <!--==================== FOOTER ====================-->
-   <footer class="footer">
-      <div class="footer__container container grid">
-         <h2 class="footer__title">Let's build software that's secure from the <span>first commit</span>.</h2>
+   <!--==================== CONTACT & FOOTER ====================-->
+   <footer class="footer" id="contact">
+      <div class="footer__container container">
+         <div class="footer__lead">
+            <h2 class="footer__title">Let's build software that's secure from the <span>first commit</span>.</h2>
+            <p class="footer__intro">Open to cybersecurity and software roles.</p>
+         </div>
 
-         <div class="footer__content">
-            <ul class="footer__links">
+         <ul class="footer__contact">
+               <li>
+                  <a href="https://github.com/hal-imaxabdi" target="_blank" rel="noopener" class="footer__contact-link" aria-label="GitHub (opens in a new tab)">
+                     <span class="footer__circle"><i class="ri-github-fill" aria-hidden="true"></i></span>
+                     <span>GitHub</span>
+                  </a>
+               </li>
+               <li>
+                  <a href="https://www.linkedin.com/in/halima-abdirizak-mohamed/" target="_blank" rel="noopener" class="footer__contact-link" aria-label="LinkedIn (opens in a new tab)">
+                     <span class="footer__circle"><i class="ri-linkedin-box-fill" aria-hidden="true"></i></span>
+                     <span>LinkedIn</span>
+                  </a>
+               </li>
+               <li>
+                  <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=halimamohamedabdirizak@gmail.com" target="_blank" rel="noopener" class="footer__contact-link" aria-label="Email me in Gmail (opens in a new tab)">
+                     <span class="footer__circle"><i class="ri-mail-fill" aria-hidden="true"></i></span>
+                     <span>Gmail</span>
+                  </a>
+               </li>
+         </ul>
+      </div>
+
+      <div class="footer__bottom container">
+         <ul class="footer__links">
                <li><a href="#work" class="footer__link">Projects</a></li>
+               <li><a href="#writeups" class="footer__link">Writeups</a></li>
                <li><a href="#experience" class="footer__link">Experience</a></li>
                <li><a href="#skills" class="footer__link">Skills</a></li>
-            </ul>
-            <div class="footer__social">
-               <a href="https://github.com/hal-imaxabdi" target="_blank" rel="noopener" class="footer__social-link" aria-label="GitHub (opens in a new tab)"><i class="ri-github-fill" aria-hidden="true"></i></a>
-               <a href="https://www.linkedin.com/in/halima-abdirizak-mohamed/" target="_blank" rel="noopener" class="footer__social-link" aria-label="LinkedIn (opens in a new tab)"><i class="ri-linkedin-box-fill" aria-hidden="true"></i></a>
-               <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=halimamohamedabdirizak@gmail.com" target="_blank" rel="noopener" class="footer__social-link" aria-label="Email me in Gmail (opens in a new tab)"><i class="ri-mail-fill" aria-hidden="true"></i></a>
-            </div>
-         </div>
+         </ul>
+         <span class="footer__copy">&#169; <span id="year"></span> Halima Abdirizak Mohamed</span>
       </div>
-      <span class="footer__copy">&#169; <span id="year"></span> Halima Abdirizak Mohamed</span>
    </footer>
 
    <!--========== SCROLL UP ==========-->
