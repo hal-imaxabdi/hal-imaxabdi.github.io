@@ -15,110 +15,24 @@ const certs = [
 
 const pad = n => String(n).padStart(2, '0')
 
-/*=============== RENDER PROJECTS: CINEMA SLIDER ===============*/
-/* One large card in the middle, the previous and next projects dimmed at the sides.
-   Swipe, drag, click a side card, use the arrows or the arrow keys and the row slides.
-   It loops, so adding projects to projects-data.js never makes the section bigger. */
-const stage = document.getElementById('work-deck')
-stage.innerHTML = projects.map(p => `
-   <a href="project.html?p=${p.slug}" class="work__card" draggable="false">
-      <img src="assets/img/projects/${p.img}" alt="" class="work__img" width="1200" height="750" loading="lazy" decoding="async" draggable="false">
-      <span class="work__overlay">
-         <span class="work__info">
+/*=============== RENDER PROJECTS: STACKED CARDS ===============*/
+/* Each project is a card that fills the screen: a dark lit panel with the screenshot
+   floating in it. Scrolling brings the next card up over it
+   (CSS position: sticky); motion.js shrinks and dims the card underneath.
+   Adding a project to projects-data.js simply adds one more card to the stack. */
+const stack = document.getElementById('work-stack')
+stack.innerHTML = projects.map((p, i) => `
+   <li class="work__item" style="--i: ${i}">
+      <a href="project.html?p=${p.slug}" class="work__card">
+         <span class="work__shot"><img src="assets/img/projects/${p.img}" alt="" class="work__img" width="1200" height="750" loading="${i ? 'lazy' : 'eager'}" decoding="async"></span>
+         <span class="work__body">
+            <span class="work__index">${pad(i + 1)} / ${pad(projects.length)}</span>
             <span class="work__name">${p.name}</span>
-            <span class="work__type">${p.kicker.split(' · ')[0]}</span>
+            <span class="work__line">${p.tagline}</span>
+            <span class="work__cta">View case study <i class="ri-arrow-right-up-line" aria-hidden="true"></i></span>
          </span>
-         <span class="work__cta">View case study <i class="ri-arrow-right-up-line" aria-hidden="true"></i></span>
-      </span>
-   </a>`).join('')
-
-const cards = [...stage.children]
-const total = cards.length
-const workCurrent = document.getElementById('work-current')
-let current = 0
-
-document.getElementById('work-total').textContent = pad(total)
-
-/* Signed distance from the middle card, the short way round the loop */
-const offsetOf = i => {
-   let d = (i - current + total) % total
-   if (d > total / 2) d -= total
-   return d
-}
-
-const layout = () => {
-   cards.forEach((card, i) => {
-      const d = offsetOf(i)
-      card.dataset.pos = Math.abs(d) <= 2 ? d : 'rest'
-      card.tabIndex = d === 0 ? 0 : -1
-      card.setAttribute('aria-hidden', d === 0 ? 'false' : 'true')
-      card.setAttribute('aria-label', `${projects[i].name}, ${i + 1} of ${total}. Open case study`)
-   })
-   workCurrent.textContent = pad(current + 1)
-}
-
-const go = step => {
-   if (total < 2 || !step) return
-   const hadFocus = stage.contains(document.activeElement)
-   current = (current + step + total) % total
-   layout()
-   if (hadFocus) cards[current].focus({ preventScroll: true })
-}
-
-document.getElementById('work-prev').addEventListener('click', () => go(-1))
-document.getElementById('work-next').addEventListener('click', () => go(1))
-stage.addEventListener('keydown', e => {
-   if (e.key === 'ArrowRight') { e.preventDefault(); go(1) }
-   if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1) }
-})
-
-/* Swipe and drag (touch, pen and mouse): the whole row follows the finger.
-   Let go past the threshold and it moves on. A drag never counts as a click. */
-let dragStart = null, dragX = 0, dragged = false
-stage.addEventListener('pointerdown', e => {
-   if (e.button !== 0) return
-   dragStart = e.clientX
-   dragX = 0
-   dragged = false
-})
-window.addEventListener('pointermove', e => {
-   if (dragStart === null) return
-   dragX = e.clientX - dragStart
-   if (!dragged && Math.abs(dragX) > 6) { dragged = true; stage.classList.add('is-dragging') }
-   if (dragged) stage.style.setProperty('--drag', `${dragX}px`)
-})
-const endDrag = () => {
-   if (dragStart === null) return
-   dragStart = null
-   stage.classList.remove('is-dragging')
-   stage.style.setProperty('--drag', '0px')
-   setTimeout(() => { dragged = false }, 0)   // after the click that ends a drag has been swallowed
-   const threshold = Math.min(90, stage.offsetWidth * 0.12)
-   if (dragX < -threshold) go(1)
-   else if (dragX > threshold) go(-1)
-}
-window.addEventListener('pointerup', endDrag)
-window.addEventListener('pointercancel', endDrag)
-
-/* Clicks: a drag does nothing, a side card slides to the middle, the middle card opens */
-stage.addEventListener('click', e => {
-   const card = e.target.closest('.work__card')
-   if (dragged) { e.preventDefault(); dragged = false; return }
-   if (card && card.dataset.pos !== '0') { e.preventDefault(); go(offsetOf(cards.indexOf(card))) }
-}, true)
-
-/* Sideways trackpad swipes move the row too; vertical scrolling is left alone */
-let wheelLock = false
-stage.addEventListener('wheel', e => {
-   if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) < 25) return
-   e.preventDefault()
-   if (wheelLock) return
-   wheelLock = true
-   go(e.deltaX > 0 ? 1 : -1)
-   setTimeout(() => wheelLock = false, 650)
-}, { passive: false })
-
-layout()
+      </a>
+   </li>`).join('')
 
 /*=============== RENDER WRITEUPS ===============*/
 /* A simple list: what it is, one short line, and an arrow. The whole row is the link */

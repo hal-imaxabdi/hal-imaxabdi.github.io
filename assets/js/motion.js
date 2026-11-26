@@ -85,7 +85,25 @@ if (reduced) {
    /*----- Homepage -----*/
    reveal('.about__data', { y: [24, 0] })
    reveal('.about__buttons', { y: [16, 0] })
-   reveal('.work__container', { y: [70, 0], scale: [0.94, 1] }, { duration: 1 })
+
+   /*----- Project stack: the card underneath shrinks and dims as the next one slides over it -----*/
+   const stackItems = [...document.querySelectorAll('.work__item')]
+   stackItems.forEach((item, i) => {
+      const next = stackItems[i + 1]
+      if (!next) return
+      scroll(
+         animate(item.querySelector('.work__card'), { scale: [1, 0.9], filter: ['brightness(1)', 'brightness(0.4)'] }, { ease: 'linear' }),
+         { target: next, offset: ['start end', 'start start'] }
+      )
+   })
+   /* Each card's title, line and button rise in as the card arrives */
+   stackItems.forEach(item => {
+      if (!below(item)) return
+      const parts = [...item.querySelectorAll('.work__index, .work__name, .work__line, .work__cta')]
+      parts.forEach(el => el.style.opacity = '0')
+      inView(item, () => { play(parts, { y: [40, 0], filter: ['blur(8px)', 'blur(0px)'] }, { duration: 0.9, delay: stagger(0.08) }) }, { amount: 0.35 })
+   })
+
    reveal('.writeups__list', { y: [48, 0], scale: [0.96, 1] }, { children: true, step: 0.1, duration: 0.8 })
    reveal('.services__container', { y: [32, 0] }, { children: true, step: 0.07 })
    reveal('.experience__container', { y: [32, 0] }, { children: true, step: 0.12 })

@@ -102,7 +102,7 @@ img { display: block; max-width: 100%; height: auto; }
 }
 .section__title span { color: var(--first-color); }
 
-.main { position: relative; overflow: hidden; }
+.main { position: relative; overflow: clip; } /* clip, not hidden, so the project cards can stick */
 
 /*=============== BLOB ===============*/
 .blob-small, .blob-big {
@@ -372,57 +372,48 @@ img { display: block; max-width: 100%; height: auto; }
 .about__buttons { display: flex; flex-wrap: wrap; gap: 1rem; }
 
 /*=============== WORK ===============*/
-/* Cinema slider: a large card in the middle, its neighbours dimmed at the sides.
-   --w is the card width; side cards sit exactly one gap away from it. */
-.work__stage {
-  --w: 78vw;
-  --ratio: 1.25;     /* height / width */
-  --s1: .86;         /* scale of the side cards */
-  --gap: .75rem;
-  --drag: 0px;
-  position: relative;
-  height: calc(var(--w) * var(--ratio));
-  margin-bottom: 2rem;
-  touch-action: pan-y;
-  user-select: none;
-  -webkit-user-select: none;
+/* Stacked cards: each project fills the screen and sticks; the next one slides up over it.
+   Every card sticks a little lower than the one before, so the edges of the stack show. */
+.work__stack { list-style: none; display: grid; row-gap: 2.5rem; padding-bottom: 1rem; }
+
+.work__item {
+  position: sticky;
+  top: calc(var(--nav-height, var(--header-height)) + .75rem + var(--i) * .6rem);
+  height: calc(100svh - var(--nav-height, var(--header-height)) - 2.5rem);
+  min-height: 420px;
+  max-height: 860px;
 }
 
 .work__card {
-  --x: 0px;
-  --s: 1;
-  --lift: 0px;
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: var(--w);
-  height: 100%;
-  display: block;
-  border-radius: 1.75rem;
-  overflow: hidden;
+  position: relative;
   isolation: isolate;
-  background-color: var(--container-color);
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: 100%;
+  border-radius: 2rem;
+  background:
+    radial-gradient(circle at 85% 15%, hsla(var(--hue), 85%, 60%, .24), transparent 55%),
+    radial-gradient(circle at 10% 100%, hsla(var(--hue), 85%, 60%, .12), transparent 50%),
+    linear-gradient(160deg, hsl(var(--hue), 30%, 12%), hsl(var(--hue), 30%, 6%));
   border: 1px solid var(--border-color);
   color: var(--text-color);
-  -webkit-user-drag: none;
-  -webkit-tap-highlight-color: transparent;
-  transform: translate(calc(-50% + var(--x) + var(--drag)), var(--lift)) scale(var(--s));
-  transition: transform .75s cubic-bezier(.16, 1, .3, 1), filter .75s, opacity .5s, border-color .4s, box-shadow .6s;
+  box-shadow: 0 -20px 60px hsla(var(--hue), 85%, 4%, .7);
+  transform-origin: 50% 0;
+  transition: border-color .4s;
 }
-.work__card[data-pos="0"] { z-index: 3; cursor: grab; box-shadow: 0 30px 70px hsla(var(--hue), 85%, 6%, .6); }
-.work__card[data-pos="1"], .work__card[data-pos="-1"] { --s: var(--s1); z-index: 2; cursor: pointer; filter: brightness(.42) saturate(.75); }
-.work__card[data-pos="1"] { --x: calc(var(--w) * (1 + var(--s1)) / 2 + var(--gap)); }
-.work__card[data-pos="-1"] { --x: calc(var(--w) * (1 + var(--s1)) / -2 - var(--gap)); }
-.work__card[data-pos="1"]:hover, .work__card[data-pos="-1"]:hover { filter: brightness(.6) saturate(.9); }
-.work__card[data-pos="2"], .work__card[data-pos="-2"], .work__card[data-pos="rest"] { --s: .6; z-index: 1; opacity: 0; pointer-events: none; }
-.work__card[data-pos="2"] { --x: calc(var(--w) * 1.6 + var(--gap) * 2); }
-.work__card[data-pos="-2"] { --x: calc(var(--w) * -1.6 - var(--gap) * 2); }
-.work__stage.is-dragging .work__card { transition: filter .75s, opacity .5s; }
-.work__stage.is-dragging .work__card[data-pos="0"] { cursor: grabbing; }
+.work__card:hover { border-color: hsla(var(--hue), 85%, 60%, .6); }
 
-/* Hovering the middle card: it lifts, the screenshot slowly zooms and the call to action rises */
-.work__card[data-pos="0"]:hover { --lift: -6px; border-color: hsla(var(--hue), 85%, 60%, .6); box-shadow: 0 36px 80px hsla(var(--hue), 85%, 8%, .7); }
-
+/* The screenshot floats in the card like a window */
+.work__shot {
+  position: relative;
+  margin: 1.25rem 1.25rem 0;
+  border-radius: 1.1rem;
+  overflow: hidden;
+  border: 1px solid hsla(var(--hue), 24%, 98%, .12);
+  box-shadow: 0 30px 60px hsla(var(--hue), 85%, 3%, .6);
+  transition: transform 1s cubic-bezier(.16, 1, .3, 1), box-shadow 1s;
+}
 .work__img {
   position: absolute;
   inset: 0;
@@ -430,81 +421,38 @@ img { display: block; max-width: 100%; height: auto; }
   height: 100%;
   object-fit: cover;
   object-position: left top;
-  transition: transform 1.2s cubic-bezier(.16, 1, .3, 1);
+  transition: transform 1.4s cubic-bezier(.16, 1, .3, 1);
 }
-.work__card[data-pos="0"]:hover .work__img { transform: scale(1.06); }
+.work__card:hover .work__img { transform: scale(1.04); }
 
-.work__card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top,
-    hsla(var(--hue), 30%, 4%, .98) 0%,
-    hsla(var(--hue), 30%, 4%, .88) 26%,
-    hsla(var(--hue), 30%, 4%, 0) 62%);
-}
-
-.work__overlay {
-  position: absolute;
-  inset: auto 0 0 0;
-  z-index: 1;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1.5rem;
-  transition: opacity .5s;
-}
-.work__card:not([data-pos="0"]) .work__overlay { opacity: 0; }
+.work__body { display: grid; justify-items: start; row-gap: .75rem; padding: 1.75rem 1.5rem; max-width: 46rem; }
+.work__index { font-family: var(--mono-font); font-size: var(--small-font-size); color: var(--first-color); font-variant-numeric: tabular-nums; }
 .work__name {
-  display: block;
   font-family: var(--second-font);
   font-weight: var(--font-semi-bold);
-  font-size: clamp(1.75rem, 3.4vw, 3rem);
-  line-height: 1.02;
-  letter-spacing: -.025em;
+  font-size: clamp(2.4rem, 3.9vw, 3.9rem);
+  line-height: 1;
+  letter-spacing: -.035em;
   color: var(--white-color);
-  margin-bottom: .4rem;
 }
-.work__type { display: block; font-size: var(--normal-font-size); color: hsl(var(--hue), 20%, 82%); }
+.work__line { font-size: clamp(1rem, 1.7vw, 1.3rem); line-height: 1.5; color: hsl(var(--hue), 20%, 86%); }
 
 .work__cta {
   display: inline-flex;
   align-items: center;
-  column-gap: .4rem;
-  padding: .75rem 1.25rem;
+  column-gap: .45rem;
+  margin-top: .75rem;
+  padding: .85rem 1.4rem;
   border-radius: 4rem;
   background-color: var(--first-color);
   color: var(--black-color);
   font-size: var(--small-font-size);
   font-weight: var(--font-semi-bold);
-  white-space: nowrap;
-  transition: opacity .45s, transform .6s cubic-bezier(.16, 1, .3, 1);
+  transition: box-shadow .4s, transform .5s cubic-bezier(.16, 1, .3, 1);
 }
-@media (hover: hover) {
-  .work__cta { opacity: 0; transform: translateY(12px); }
-  .work__card[data-pos="0"]:hover .work__cta, .work__card[data-pos="0"]:focus-visible .work__cta { opacity: 1; transform: none; }
-}
-
-/* Arrows and counter under the slider */
-.work__controls { display: flex; align-items: center; justify-content: center; gap: 1.25rem; }
-.work__count { font-family: var(--mono-font); font-size: var(--small-font-size); font-variant-numeric: tabular-nums; min-width: 4.5ch; text-align: center; }
-.work__count strong { color: var(--white-color); font-weight: var(--font-semi-bold); }
-.work__arrow {
-  width: 52px;
-  height: 52px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  border: 1px solid var(--border-color);
-  color: var(--white-color);
-  font-size: 1.3rem;
-  cursor: pointer;
-  transition: border-color .3s, color .3s, background-color .3s, transform .3s;
-}
-.work__arrow:hover { border-color: var(--first-color); background-color: var(--first-color); color: var(--black-color); }
-.work__arrow:active { transform: scale(.92); }
+.work__cta i { transition: transform .5s cubic-bezier(.16, 1, .3, 1); }
+.work__card:hover .work__cta { box-shadow: 0 10px 30px hsla(var(--hue), 85%, 60%, .4); }
+.work__card:hover .work__cta i { transform: rotate(45deg); }
 
 .work__tag {
   font-family: var(--mono-font);
@@ -1069,9 +1017,10 @@ html.lenis, html.lenis body { height: auto; }
 
 
 
-  /* Wide, cinema-shaped cards, sized so the slider and its arrows fit on screen together */
-  .work__stage { --w: min(76vw, 980px, max(480px, (100svh - 345px) * 1.78)); --ratio: .5625; --s1: .8; --gap: 1.5rem; margin-bottom: 2.5rem; }
-  .work__overlay { padding: 2.25rem; }
+  .work__card { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); grid-template-rows: minmax(0, 1fr); align-items: center; }
+  .work__shot { order: 2; height: calc(100% - 5rem); margin: 2.5rem 2.5rem 2.5rem 0; transform: perspective(1600px) rotateY(-9deg) rotateX(2deg); }
+  .work__card:hover .work__shot { transform: perspective(1600px) rotateY(-2deg) scale(1.02); box-shadow: 0 40px 80px hsla(var(--hue), 85%, 3%, .7); }
+  .work__body { padding: 3rem; align-self: end; }
 
   .experience__item { grid-template-columns: 210px minmax(0, 1fr); column-gap: 2.5rem; padding-block: 2rem; }
   .experience__meta { flex-direction: column; align-items: flex-start; gap: .45rem; }
