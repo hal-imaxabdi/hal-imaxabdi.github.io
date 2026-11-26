@@ -3,7 +3,7 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <meta name="description" content="Project case study by Halima Abdirizak Mohamed: the situation, the task, what I built and the results.">
+   <meta name="description" content="Project case study by Halima Abdirizak Mohamed: the problem, what I built, what it delivered and the decision behind it.">
    <meta name="robots" content="index, follow">
    <meta property="og:title" content="Project case study | Halima A. Mohamed">
    <meta property="og:image" content="assets/img/og.png">
@@ -20,6 +20,12 @@
    <!--=============== ICONS (Remix Icon subset, rebuild with tools/subset-icons.py) ===============-->
    <link rel="preload" href="assets/vendor/remixicon/remixicon-subset.woff2" as="font" type="font/woff2" crossorigin>
    <link rel="stylesheet" href="assets/vendor/remixicon/remixicon-subset.css">
+
+   <!--=============== MOTION (motion.dev, pinned; preloaded so animations start quickly) ===============-->
+   <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/motion@14.14.0/+esm" crossorigin>
+   <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/framer-motion@14.14.0/dom/+esm" crossorigin>
+   <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/motion-dom@14.14.0/+esm" crossorigin>
+   <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/motion-utils@14.7.0/+esm" crossorigin>
 
    <!--=============== CSS ===============-->
    <link rel="stylesheet" href="assets/css/styles.css">
@@ -96,5 +102,6 @@
    <!--=============== JS ===============-->
    <script src="assets/js/projects-data.js" defer></script>
    <script src="assets/js/project.js" defer></script>
+   <script src="assets/js/motion.js" type="module"></script>
 </body>
 </html>

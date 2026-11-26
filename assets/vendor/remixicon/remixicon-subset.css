@@ -26,6 +26,7 @@
 .ri-code-box-line:before { content: "\eba7"; }
 .ri-code-s-slash-line:before { content: "\ebad"; }
 .ri-database-2-line:before { content: "\ec16"; }
+.ri-double-quotes-l:before { content: "\ec51"; }
 .ri-download-2-line:before { content: "\ec54"; }
 .ri-error-warning-line:before { content: "\eca1"; }
 .ri-external-link-line:before { content: "\ecaf"; }

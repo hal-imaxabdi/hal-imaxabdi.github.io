@@ -1,18 +1,21 @@
 /*=============== CASE STUDY PAGE ===============
-   Renders project.html?p=<slug> from projects-data.js using the STAR format. */
+   Renders project.html?p=<slug> from projects-data.js:
+   the problem, what I built, what it delivered and the decision behind it.
+   Animation lives in motion.js; this file only builds the page. */
 const projects = window.PROJECTS
 const slug = new URLSearchParams(location.search).get('p')
 const index = projects.findIndex(p => p.slug === slug)
 const content = document.getElementById('case-content')
 
-const list = items => `<ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>`
-const step = (letter, title, body, mod = '') => `
-   <section class="case__step${mod}">
-      <span class="case__letter" aria-hidden="true">${letter}</span>
-      <div>
-         <h3 class="case__step-title">${title}</h3>
-         ${body}
-      </div>
+/* Whole numbers of 10 or more count up in motion.js; everything else is shown as written */
+const statValue = value => /^\d+$/.test(value) && +value >= 10
+   ? `<span class="case__stat-value" data-count="${value}">${value}</span>`
+   : `<span class="case__stat-value">${value}</span>`
+
+const block = (id, title, body, mod = '') => `
+   <section class="case__block${mod}" aria-labelledby="${id}">
+      <h2 class="case__heading" id="${id}">${title}</h2>
+      <div class="case__body">${body}</div>
    </section>`
 
 if (index === -1) {
@@ -31,45 +34,60 @@ if (index === -1) {
 
    content.innerHTML = `
       <header class="case__intro">
-         <div>
-            <a href="index.html#work" class="case__back"><i class="ri-arrow-left-line"></i> All projects</a>
-            <span class="case__kicker">${p.kicker}</span>
-            <h1 class="case__title">${p.name}</h1>
-            <p class="case__tagline">${p.tagline}</p>
-            <div class="case__tags">${p.tags.map(t => `<span class="work__tag">${t}</span>`).join('')}</div>
-            <div class="case__buttons">
+         <div class="case__lead">
+            <a href="index.html#work" class="case__back" data-enter><i class="ri-arrow-left-line"></i> All projects</a>
+            <h1 class="case__title" data-enter>${p.name}</h1>
+            <p class="case__tagline" data-enter>${p.tagline}</p>
+            <div class="case__meta" data-enter>
+               <span class="case__kind">${p.kicker}</span>
+               <div class="case__tags">${p.tags.map(t => `<span class="work__tag">${t}</span>`).join('')}</div>
+            </div>
+            <div class="case__buttons" data-enter>
                ${p.live ? `<a href="${p.live}" target="_blank" rel="noopener" class="button">Live demo <i class="ri-external-link-line"></i></a>` : ''}
                <a href="${GITHUB + p.repo}" target="_blank" rel="noopener" class="button${p.live ? ' button--ghost' : ''}">View code <i class="ri-github-line"></i></a>
             </div>
          </div>
-         <figure class="case__cover">
+         <figure class="case__cover" data-enter>
             <img src="assets/img/projects/${p.img}" alt="${p.name} screenshot" width="1200" height="750" fetchpriority="high">
          </figure>
       </header>
 
-      <section aria-label="Key numbers" class="case__stats">
+      <dl class="case__stats" aria-label="Key numbers">
          ${p.stats.map(([value, label]) => `
             <div class="case__stat">
-               <span class="case__stat-value">${value}</span>
-               <span class="case__stat-label">${label}</span>
+               <dt class="case__stat-label">${label}</dt>
+               <dd>${statValue(value)}</dd>
             </div>`).join('')}
-      </section>
+      </dl>
 
-      <section aria-labelledby="star-title">
-         <h2 class="case__heading" id="star-title">How it <span>went</span></h2>
-         <div class="case__star">
-            ${step('S', 'Situation', `<p>${p.situation}</p>`)}
-            ${step('T', 'Task', `<p>${p.task}</p>`)}
-            ${step('A', 'Action', list(p.action), ' case__step--action')}
-            ${step('R', 'Result', list(p.result), ' case__step--result')}
-         </div>
-      </section>
+      ${block('problem-title', 'The problem', `<p class="case__problem">${p.problem}</p>`)}
 
-      ${p.takeaway ? `<p class="case__takeaway"><strong>// Key takeaway</strong>${p.takeaway}</p>` : ''}
+      ${block('built-title', 'What I built', `
+         <div class="case__timeline">
+            <span class="case__rail" aria-hidden="true"><span class="case__rail-fill"></span></span>
+            <ol class="case__steps">
+               ${p.built.map(step => `<li class="case__build">${step}</li>`).join('')}
+            </ol>
+         </div>`)}
+
+      ${block('outcome-title', 'What it delivered', `
+         <ul class="case__outcomes">
+            ${p.outcome.map(o => `
+               <li class="case__outcome${o.figure ? '' : ' case__outcome--plain'}">
+                  ${o.figure ? `<strong class="case__figure">${o.figure}</strong>` : '<i class="ri-check-line case__check" aria-hidden="true"></i>'}
+                  <p>${o.text}</p>
+               </li>`).join('')}
+         </ul>`)}
+
+      ${p.decision ? block('decision-title', 'The decision I\'d defend', `
+         <blockquote class="case__quote">
+            <i class="ri-double-quotes-l" aria-hidden="true"></i>
+            <p>${p.decision}</p>
+         </blockquote>`, ' case__block--decision') : ''}
 
       <nav class="case__pager" aria-label="More projects">
-         <a href="project.html?p=${prev.slug}"><span>← Previous project</span><strong>${prev.name}</strong></a>
-         <a href="project.html?p=${next.slug}" class="case__pager-next"><span>Next project →</span><strong>${next.name}</strong></a>
+         <a href="project.html?p=${prev.slug}"><span><i class="ri-arrow-left-line"></i> Previous project</span><strong>${prev.name}</strong></a>
+         <a href="project.html?p=${next.slug}" class="case__pager-next"><span>Next project <i class="ri-arrow-right-line"></i></span><strong>${next.name}</strong></a>
       </nav>
 
       <section class="case__cta">
@@ -77,6 +95,14 @@ if (index === -1) {
          <p>I'd be glad to walk you through this project in more depth.</p>
          <a href="index.html#contact" class="button">Get in touch <i class="ri-arrow-right-line"></i></a>
       </section>`
+
+   /* Hand-off to motion.js: hide the header for its entrance, from JS only.
+      If motion.js hasn't taken over within a second (slow or blocked CDN), show it anyway. */
+   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const enter = content.querySelectorAll('[data-enter]')
+      enter.forEach(el => el.style.opacity = '0')
+      window.caseEnterFallback = setTimeout(() => enter.forEach(el => el.style.opacity = ''), 1000)
+   }
 }
 
 /*=============== MENU, HEADER, SCROLL UP, YEAR ===============*/

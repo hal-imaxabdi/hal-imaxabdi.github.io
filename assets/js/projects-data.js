@@ -1,7 +1,11 @@
 /*=============== PROJECTS DATA ===============
    One entry per project. Used by the homepage carousel (index.html)
    and by the case-study page (project.html?p=<slug>).
-   Case studies follow STAR: situation, task, action, result. */
+   Case study fields:
+     problem   one paragraph: what was wrong and what I set out to do
+     built     the build steps, in order
+     outcome   what it delivered; `figure` (optional) is the number to emphasise
+     decision  the call I'd defend (optional) */
 window.GITHUB = 'https://github.com/hal-imaxabdi/'
 
 window.PROJECTS = [
@@ -16,20 +20,19 @@ window.PROJECTS = [
       live: 'https://hal-imaxabdi.github.io/hookline/demo/',
       tagline: 'Know why a message looks risky before you click.',
       stats: [['47', 'documented detection rules'], ['98–99%', 'precision on phishing URLs'], ['0', 'bytes sent off the device']],
-      situation: 'Scammers target students and job seekers with fake internships, look-alike login pages and "too good to be true" shops. Most tools either stay silent or block something without saying why.',
-      task: 'Build a tool that flags these scams and explains each warning in plain language, so people learn to spot the next one, without sending what they read anywhere.',
-      action: [
-         'Built a Manifest V3 Chrome extension in TypeScript and React that checks Gmail automatically and adds a side panel for links and pages.',
-         'Wrote 47 documented rules for phishing, fake jobs and fake shops. Every warning points to one rule, with no black-box AI.',
-         'Kept all analysis in the browser, so nothing a user reads leaves their device.',
-         'Shipped a no-install web demo with a "Scam X-ray" that highlights the exact words behind each warning.',
+      problem: 'Scammers go after students and job seekers with fake internships, look-alike login pages and shops that are too good to be true. Most tools either stay silent or block something without saying why. I wanted a tool that flags these scams and explains each warning in plain language, so people learn to spot the next one. It also had to work without sending what they read anywhere.',
+      built: [
+         'A Manifest V3 Chrome extension in TypeScript and React. It checks Gmail automatically and adds a side panel for links and pages.',
+         '47 documented rules for phishing, fake jobs and fake shops. Every warning points to one rule. There is no black-box AI.',
+         'All analysis runs in the browser, so nothing a user reads leaves their device.',
+         'A no-install web demo with a "Scam X-ray" that highlights the exact words behind each warning.',
       ],
-      result: [
-         '98–99% precision on held-out phishing URLs, with 0.2–0.5% false alarms.',
-         '82% precision on held-out fake job ads, with 0.1% false alarms.',
-         'Published the limits too: it catches 24–26% of phishing URLs, so "no warning signs" never means safe.',
+      outcome: [
+         { figure: '98–99%', text: 'precision on held-out phishing URLs, with 0.2–0.5% false alarms.' },
+         { figure: '82%', text: 'precision on held-out fake job ads, with 0.1% false alarms.' },
+         { figure: '24–26%', text: 'of phishing URLs caught. I published that limit too, so "no warning signs" never means safe.' },
       ],
-      takeaway: 'I chose precision over coverage. A warning should almost always be right, and the README publishes the detection rates, misses included.',
+      decision: 'I chose precision over coverage. A warning should almost always be right, and the README publishes the detection rates, misses included.',
    },
    {
       slug: 'dependency-compass',
@@ -42,20 +45,19 @@ window.PROJECTS = [
       live: 'https://dependency-compass.onrender.com',
       tagline: 'Find which vulnerable dependencies to fix first.',
       stats: [['208', 'tests running in CI'], ['3', 'ways to run: web, CLI, Action'], ['3', 'lockfile formats']],
-      situation: 'Dependency scanners return long, flat lists of advisories. Developers can\'t tell which ones are urgent, and packages that couldn\'t be checked are often quietly treated as safe.',
-      task: 'Turn a lockfile into a short, ranked fix list that puts actively exploited vulnerabilities first and never silently skips anything.',
-      action: [
-         'Built a Python and FastAPI service that reads package-lock.json, requirements.txt and composer.lock and checks every package against OSV.dev.',
-         'Ranked findings by the CISA Known Exploited Vulnerabilities catalog first, then by severity, and picked one upgrade per package that fixes every advisory it can.',
-         'Shipped it as a web app, a CLI with meaningful exit codes, and a GitHub Action that fails the build at a chosen severity.',
-         'Treated every upload and feed as untrusted: files are scanned in memory and never stored.',
+      problem: 'Dependency scanners return long, flat lists of advisories. Developers can\'t tell which ones are urgent, and packages that couldn\'t be checked are often quietly treated as safe. I set out to turn a lockfile into a short, ranked fix list that puts actively exploited vulnerabilities first and never skips anything in silence.',
+      built: [
+         'A Python and FastAPI service that reads package-lock.json, requirements.txt and composer.lock and checks every package against OSV.dev.',
+         'Ranking that puts the CISA Known Exploited Vulnerabilities catalog first, then severity. For each package it picks one upgrade that fixes every advisory it can.',
+         'Three ways to run it: a web app, a CLI with meaningful exit codes, and a GitHub Action that fails the build at a chosen severity.',
+         'Every upload and feed is treated as untrusted. Files are scanned in memory and never stored.',
       ],
-      result: [
-         'Released v0.1.0 as a live web demo, a pip-installable CLI and a reusable GitHub Action.',
-         '208 automated tests run in CI on every change.',
-         'Anything it couldn\'t check is listed in the report, never reported as safe.',
+      outcome: [
+         { figure: 'v0.1.0', text: 'released as a live web demo, a pip-installable CLI and a reusable GitHub Action.' },
+         { figure: '208', text: 'automated tests run in CI on every change.' },
+         { text: 'Anything it couldn\'t check is listed in the report. It is never reported as safe.' },
       ],
-      takeaway: 'Scan the lockfile, not package.json: only lockfiles pin exact versions, so version ranges are reported as unchecked instead of guessed.',
+      decision: 'Scan the lockfile, not package.json. Only lockfiles pin exact versions, so version ranges are reported as unchecked instead of guessed.',
    },
    {
       slug: 'slotwise',
@@ -68,20 +70,19 @@ window.PROJECTS = [
       live: 'https://slotwise-mocha.vercel.app',
       tagline: 'Fully booked. Never double-booked.',
       stats: [['772', 'automated tests'], ['3', 'roles: client, staff, owner'], ['DB-level', 'double-booking guarantee']],
-      situation: 'Barbershops, salons and studios work by appointment. When two clients get the same slot, often because they press Book at the same moment, the shop loses trust.',
-      task: 'Build booking software where double bookings are impossible rather than just unlikely, and that is secure by default.',
-      action: [
-         'Enforced the no-overlap rule with a PostgreSQL exclusion constraint, so the database itself rejects overlapping appointments, even under simultaneous requests.',
-         'Built a FastAPI backend and a React and TypeScript frontend with client, staff and owner roles.',
-         'Calculated free times from opening hours, lunch breaks, closures and existing bookings.',
-         'Secured it with server-side sessions, CSRF tokens, origin checks, login throttling and argon2 password hashing, and met WCAG AA contrast with full keyboard support.',
+      problem: 'Barbershops, salons and studios work by appointment. When two clients get the same slot, often because they press Book at the same moment, the shop loses trust. I wanted booking software where a double booking is impossible, not just unlikely, and that is secure by default.',
+      built: [
+         'The no-overlap rule lives in a PostgreSQL exclusion constraint, so the database itself rejects overlapping appointments, even under simultaneous requests.',
+         'A FastAPI backend and a React and TypeScript frontend with client, staff and owner roles.',
+         'Free times calculated from opening hours, lunch breaks, closures and existing bookings.',
+         'Server-side sessions, CSRF tokens, origin checks, login throttling and argon2 password hashing. It meets WCAG AA contrast and has full keyboard support.',
       ],
-      result: [
-         '772 automated tests across backend and frontend.',
-         'A live demo of a fictional barbershop with a full week of bookings and one-click sign-in for each role.',
-         'Clients can book, reschedule and cancel themselves, while staff handle walk-ins and no-shows from one day view.',
+      outcome: [
+         { figure: '772', text: 'automated tests across backend and frontend.' },
+         { text: 'A live demo of a fictional barbershop with a full week of bookings and one-click sign-in for each role.' },
+         { text: 'Clients book, reschedule and cancel on their own. Staff handle walk-ins and no-shows from one day view.' },
       ],
-      takeaway: 'Putting the rule in the database, not only in application code, is what makes the guarantee hold when two requests arrive at once.',
+      decision: 'I put the rule in the database, not only in application code. That is what makes the guarantee hold when two requests arrive at once.',
    },
    {
       slug: 'billing-engine',
@@ -93,19 +94,18 @@ window.PROJECTS = [
       repo: 'flyrank-billing-engine',
       tagline: 'Usage-based billing that never counts or charges twice.',
       stats: [['68', 'tests against PostgreSQL'], ['HMAC-SHA512', 'verified webhooks'], ['Integer', 'cents, no rounding drift']],
-      situation: 'For the FlyRank Backend Track capstone: a SaaS that charges for AI-token usage loses money or trust if a retried request is counted twice or a repeated payment webhook upgrades an account twice.',
-      task: 'Build the metering, quota and billing backend, including a real payment flow, that stays correct under retries and duplicate events.',
-      action: [
-         'Made metering exactly-once: a unique tenant + idempotency-key constraint means a retried request returns the original result instead of counting again.',
-         'Enforced Free and Pro quotas and calculated costs in integer cents, including cached-input and reasoning-token pricing.',
-         'Integrated Midtrans checkout, verified every webhook with an HMAC-SHA512 signature, and processed each event only once.',
-         'Used a layered design (API, services, repositories) with the payment provider behind a generic interface and tenant data kept isolated.',
+      problem: 'This was my capstone for the FlyRank Backend Track. A SaaS that charges for AI-token usage loses money or trust if a retried request is counted twice, or a repeated payment webhook upgrades an account twice. My job was the metering, quota and billing backend, including a real payment flow, and it had to stay correct under retries and duplicate events.',
+      built: [
+         'Exactly-once metering. A unique tenant + idempotency-key constraint means a retried request returns the original result instead of counting again.',
+         'Free and Pro quotas, with costs calculated in integer cents, including cached-input and reasoning-token pricing.',
+         'Midtrans checkout. Every webhook is verified with an HMAC-SHA512 signature, and each event is processed only once.',
+         'A layered design (API, services, repositories). The payment provider sits behind a generic interface, and tenant data stays isolated.',
       ],
-      result: [
-         '68 tests against PostgreSQL covering idempotency, quotas, pricing, webhook signatures, duplicates and tenant isolation.',
-         'Verified end to end against a real Midtrans Sandbox account: checkout, bank transfer, signed webhook, upgrade to Pro. Logs are documented in the repo.',
+      outcome: [
+         { figure: '68', text: 'tests against PostgreSQL covering idempotency, quotas, pricing, webhook signatures, duplicates and tenant isolation.' },
+         { text: 'Verified end to end against a real Midtrans Sandbox account: checkout, bank transfer, signed webhook, upgrade to Pro. The logs are documented in the repo.' },
       ],
-      takeaway: 'I kept the scope honest: two plans, no invoicing or proration, and no monthly reset yet. All of it is listed in the README as known limitations.',
+      decision: 'I kept the scope honest: two plans, no invoicing or proration, and no monthly reset yet. All of it is listed in the README as known limitations.',
    },
    {
       slug: 'semis',
@@ -117,18 +117,17 @@ window.PROJECTS = [
       repo: 'SEMIS-Secure-Employee-Management-Information-System',
       tagline: 'A full HR platform built security-first.',
       stats: [['10', 'controls mapped to OWASP Top 10'], ['3', 'roles: admin, HR, employee'], ['AES-256', 'field-level encryption']],
-      situation: 'HR systems hold some of a company\'s most sensitive data, such as salaries and national IDs. Typical CRUD apps leave the common OWASP Top 10 risks open. Built for NexCore, a fictional 150-person software firm.',
-      task: 'Build a complete HR platform where each major risk has a concrete, implemented control, not just a checklist entry.',
-      action: [
-         'Built a React, Node.js/Express and MongoDB platform with admin, HR and employee roles and no public sign-up.',
-         'Required an email OTP on every login (hashed, five-minute expiry), hashed passwords with bcrypt, and forced a reset on first login.',
-         'Checked the role on every protected route and encrypted salary and national ID fields with AES-256 before storing them.',
-         'Added CSRF tokens, input sanitisation, security headers, a lockout after five failed logins and an append-only audit log.',
+      problem: 'HR systems hold some of a company\'s most sensitive data, such as salaries and national IDs, and typical CRUD apps leave the common OWASP Top 10 risks open. I built a complete HR platform for NexCore, a fictional 150-person software firm, where each major risk has a concrete, implemented control instead of a checklist entry.',
+      built: [
+         'A React, Node.js/Express and MongoDB platform with admin, HR and employee roles and no public sign-up.',
+         'An email OTP on every login (hashed, five-minute expiry), bcrypt password hashing, and a forced reset on first login.',
+         'A role check on every protected route, and AES-256 encryption on salary and national ID fields before they are stored.',
+         'CSRF tokens, input sanitisation, security headers, a lockout after five failed logins and an append-only audit log.',
       ],
-      result: [
-         '10 security controls, each mapped to a specific OWASP Top 10 risk.',
-         'Complete HR workflows: employees, attendance, payroll, leave approvals and audit review.',
-         'Every critical action is recorded with time, user and IP address.',
+      outcome: [
+         { figure: '10', text: 'security controls, each mapped to a specific OWASP Top 10 risk.' },
+         { text: 'Complete HR workflows: employees, attendance, payroll, leave approvals and audit review.' },
+         { text: 'Every critical action is recorded with time, user and IP address.' },
       ],
    },
    {
@@ -141,19 +140,18 @@ window.PROJECTS = [
       repo: 'WAF-HomeLab-SafeLine',
       tagline: 'What a web application firewall really stops, and what it lets through.',
       stats: [['6', 'attack and defence tests'], ['5', 'stopped by the WAF'], ['1', 'gap found and documented']],
-      situation: 'I wanted to understand how a web application firewall works as a reverse proxy, and what it catches in practice, beyond what the documentation promises.',
-      task: 'Put a deliberately vulnerable app behind SafeLine WAF on an isolated network, attack it, and document what was detected, blocked and missed.',
-      action: [
-         'Built an isolated VirtualBox NAT network with a Kali attacker, an Ubuntu server running Apache and DVWA, and SafeLine in Docker as a TLS reverse proxy.',
-         'Ran SQL injection, reflected XSS, command injection and an HTTP flood of 200 rapid requests.',
-         'Configured rate limiting, an IP deny rule and SafeLine\'s authentication gateway in front of the app.',
+      problem: 'I wanted to understand how a web application firewall works as a reverse proxy, and what it catches in practice, beyond what the documentation promises. So I put a deliberately vulnerable app behind SafeLine WAF on an isolated network, attacked it, and documented what was detected, blocked and missed.',
+      built: [
+         'An isolated VirtualBox NAT network: a Kali attacker, an Ubuntu server running Apache and DVWA, and SafeLine in Docker as a TLS reverse proxy.',
+         'Attacks: SQL injection, reflected XSS, command injection and an HTTP flood of 200 rapid requests.',
+         'Defences: rate limiting, an IP deny rule and SafeLine\'s authentication gateway in front of the app.',
       ],
-      result: [
-         'SQL injection and XSS were blocked. The flood triggered rate limiting and an anti-bot challenge. The IP rule and the auth gateway both held.',
-         'Found a real gap: command injection was only logged as "audited", so the payload still ran.',
-         'Published a step-by-step build guide so the lab can be reproduced.',
+      outcome: [
+         { figure: '5 of 6', text: 'tests stopped. SQL injection and XSS were blocked, the flood triggered rate limiting and an anti-bot challenge, and the IP rule and the auth gateway both held.' },
+         { figure: '1', text: 'real gap: command injection was only logged as "audited", so the payload still ran.' },
+         { text: 'A step-by-step build guide, published so the lab can be reproduced.' },
       ],
-      takeaway: 'Detecting an attack and blocking it are separate settings. A WAF only protects what it is configured to stop.',
+      decision: 'Detecting an attack and blocking it are separate settings. A WAF only protects what it is configured to stop.',
    },
    {
       slug: 'auditshield',
@@ -165,17 +163,16 @@ window.PROJECTS = [
       repo: 'AI-Assisted-Risk-Assessment-Security-Audit-Platform',
       tagline: 'A NIST CSF 2.0 audit, from asset inventory to final report.',
       stats: [['51', 'NIST CSF controls'], ['11', 'modules in one workflow'], ['Local', 'LLM: data stays on the machine']],
-      situation: 'Auditing university IT systems against NIST CSF 2.0 means tracking assets, risks, controls and evidence together, then explaining the findings to people who aren\'t security specialists.',
-      task: 'Build one platform that walks an auditor through the whole audit and turns technical findings into plain language.',
-      action: [
-         'Built a Flask and SQLite app with admin, auditor and auditee roles and 11 modules covering the full audit workflow.',
-         'Scored risk as likelihood × impact for assets rated on confidentiality, integrity and availability, with OWASP and CWE vulnerabilities pre-loaded.',
-         'Built a 51-control NIST CSF checklist with evidence upload and compliance scores per function.',
-         'Added an AI explainer running on a local LLM (Llama 3.2 via Ollama), so vulnerability data never leaves the machine.',
+      problem: 'Auditing university IT systems against NIST CSF 2.0 means tracking assets, risks, controls and evidence together, then explaining the findings to people who aren\'t security specialists. I built one platform that walks an auditor through the whole audit and turns technical findings into plain language.',
+      built: [
+         'A Flask and SQLite app with admin, auditor and auditee roles and 11 modules covering the full audit workflow.',
+         'Risk scored as likelihood × impact, for assets rated on confidentiality, integrity and availability, with OWASP and CWE vulnerabilities pre-loaded.',
+         'A 51-control NIST CSF checklist with evidence upload and compliance scores per function.',
+         'An AI explainer running on a local LLM (Llama 3.2 via Ollama), so vulnerability data never leaves the machine.',
       ],
-      result: [
-         'One guided workflow from organisation profile to an exported audit report.',
-         'Findings generated automatically from the audit, with a plain-language explanation for each vulnerability.',
+      outcome: [
+         { text: 'One guided workflow from organisation profile to an exported audit report.' },
+         { text: 'Findings generated automatically from the audit, each with a plain-language explanation.' },
       ],
    },
 ]
