@@ -22,6 +22,12 @@
    <link rel="preload" href="assets/vendor/remixicon/remixicon-subset.woff2" as="font" type="font/woff2" crossorigin>
    <link rel="stylesheet" href="assets/vendor/remixicon/remixicon-subset.css">
 
+   <!--=============== MOTION (motion.dev, pinned; preloaded so animations start quickly) ===============-->
+   <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/motion@14.14.0/+esm" crossorigin>
+   <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/framer-motion@14.14.0/dom/+esm" crossorigin>
+   <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/motion-dom@14.14.0/+esm" crossorigin>
+   <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/motion-utils@14.7.0/+esm" crossorigin>
+
    <!--=============== CSS ===============-->
    <link rel="stylesheet" href="assets/css/styles.css">
 
@@ -37,6 +43,7 @@
             <ul class="nav__list">
                <li><a href="#about" class="nav__link">About</a></li>
                <li><a href="#work" class="nav__link">Projects</a></li>
+               <li><a href="#writeups" class="nav__link">Writeups</a></li>
                <li><a href="#experience" class="nav__link">Experience</a></li>
                <li><a href="#skills" class="nav__link">Skills</a></li>
                <li><a href="#contact" class="nav__contact">Contact me</a></li>
@@ -131,12 +138,18 @@
          <h2 class="section__title">Featured <span>Projects</span></h2>
 
          <div class="work__container container">
-            <div class="work__track" id="work-wrapper" tabindex="0" aria-label="Projects"><!-- Filled by main.js --></div>
-            <div class="work__controls">
-               <button class="work__nav" id="work-prev" aria-label="Previous project"><i class="ri-arrow-left-line"></i></button>
-               <div class="work__dots" id="work-dots"></div>
-               <button class="work__nav" id="work-next" aria-label="Next project"><i class="ri-arrow-right-line"></i></button>
-            </div>
+            <div class="work__featured" id="work-featured"><!-- Filled by main.js --></div>
+            <h3 class="work__subtitle">More projects</h3>
+            <div class="work__grid" id="work-grid"><!-- Filled by main.js --></div>
+         </div>
+      </section>
+
+      <!--==================== WRITEUPS ====================-->
+      <section class="writeups section" id="writeups">
+         <h2 class="section__title">Security <span>Writeups</span></h2>
+
+         <div class="writeups__container container">
+            <div class="writeups__grid" id="writeups-grid"><!-- Filled by main.js --></div>
          </div>
       </section>
 
@@ -197,7 +210,7 @@
                      <li class="services__item"><i class="ri-check-line"></i> SQLi, XSS & command injection</li>
                      <li class="services__item"><i class="ri-check-line"></i> WAF deployment & testing</li>
                      <li class="services__item"><i class="ri-check-line"></i> Kali, Nmap & Wireshark</li>
-                     <li class="services__item"><i class="ri-check-line"></i> CTF challenges & write-ups</li>
+                     <li class="services__item"><i class="ri-check-line"></i> <a href="#writeups" class="services__link">CTF challenges & write-ups</a></li>
                   </ul>
                </div>
             </article>
@@ -331,57 +344,35 @@
 
       <!--==================== CONTACT ====================-->
       <section class="contact section" id="contact">
-         <h2 class="section__title">Contact <span>Me</span></h2>
+         <h2 class="section__title">Contact</h2>
 
-         <div class="contact__container container grid">
-            <form class="contact__form grid" id="contact-form">
-               <div class="contact__group grid">
-                  <div class="contact__box">
-                     <label for="name" class="contact__label">Name</label>
-                     <input type="text" name="user_name" id="name" required placeholder="Your name" class="contact__input">
-                  </div>
-                  <div class="contact__box">
-                     <label for="email" class="contact__label">Email</label>
-                     <input type="email" name="user_email" id="email" required placeholder="you@email.com" class="contact__input">
-                  </div>
-               </div>
-               <div class="contact__box">
-                  <label for="message" class="contact__label">Message</label>
-                  <textarea name="user_message" id="message" required placeholder="Tell me about the role or project" class="contact__input"></textarea>
-               </div>
-               <!-- Honeypot: hidden from people, bots fill it in -->
-               <input type="text" name="company" class="contact__hp" tabindex="-1" autocomplete="off" aria-hidden="true">
-               <p class="contact__message" id="contact-message" role="status"></p>
-               <button type="submit" class="button contact__button">Send Message <i class="ri-send-plane-line"></i></button>
-            </form>
+         <div class="contact__container container">
+            <p class="contact__intro">Open to cybersecurity and software roles.</p>
 
-            <div class="contact__data grid">
-               <p class="contact__intro">Open to cybersecurity and software roles. Use the form, or reach me directly:</p>
-               <button type="button" class="contact__card" id="copy-email" data-email="halimamohamedabdirizak@gmail.com">
-                  <i class="ri-mail-line contact__icon"></i>
-                  <div>
-                     <h3 class="contact__title">Email</h3>
-                     <span class="contact__address">halimamohamedabdirizak@gmail.com</span>
-                  </div>
-                  <span class="contact__copy" id="copy-email-label"><i class="ri-file-copy-line"></i> Copy</span>
-               </button>
-               <a href="https://www.linkedin.com/in/halima-abdirizak-mohamed/" target="_blank" rel="noopener" class="contact__card">
-                  <i class="ri-linkedin-box-line contact__icon"></i>
-                  <div>
-                     <h3 class="contact__title">LinkedIn</h3>
-                     <span class="contact__address">halima-abdirizak-mohamed</span>
-                  </div>
-                  <i class="ri-arrow-right-up-line contact__go"></i>
-               </a>
-               <a href="https://github.com/hal-imaxabdi" target="_blank" rel="noopener" class="contact__card">
-                  <i class="ri-github-line contact__icon"></i>
-                  <div>
-                     <h3 class="contact__title">GitHub</h3>
-                     <span class="contact__address">hal-imaxabdi</span>
-                  </div>
-                  <i class="ri-arrow-right-up-line contact__go"></i>
-               </a>
-            </div>
+            <ul class="contact__links">
+               <li>
+                  <a href="https://github.com/hal-imaxabdi" target="_blank" rel="noopener" class="contact__link" aria-label="GitHub (opens in a new tab)">
+                     <span class="contact__circle"><i class="ri-github-fill" aria-hidden="true"></i></span>
+                     <span class="contact__name">GitHub</span>
+                  </a>
+               </li>
+               <li>
+                  <a href="https://www.linkedin.com/in/halima-abdirizak-mohamed/" target="_blank" rel="noopener" class="contact__link" aria-label="LinkedIn (opens in a new tab)">
+                     <span class="contact__circle"><i class="ri-linkedin-box-fill" aria-hidden="true"></i></span>
+                     <span class="contact__name">LinkedIn</span>
+                  </a>
+               </li>
+               <li>
+                  <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=halimamohamedabdirizak@gmail.com" target="_blank" rel="noopener" class="contact__link" aria-label="Email me in Gmail (opens in a new tab)">
+                     <span class="contact__circle"><i class="ri-mail-fill" aria-hidden="true"></i></span>
+                     <span class="contact__name">Gmail</span>
+                  </a>
+               </li>
+            </ul>
+
+            <a href="assets/pdf/Halima_Abdirizak_Mohamed_CV.pdf" class="button button--ghost contact__cv" download>
+               Download CV <i class="ri-download-2-line"></i>
+            </a>
          </div>
          <div class="blob-big" style="bottom: 0; right: -4rem;"></div>
       </section>
@@ -399,9 +390,9 @@
                <li><a href="#skills" class="footer__link">Skills</a></li>
             </ul>
             <div class="footer__social">
-               <a href="https://github.com/hal-imaxabdi" target="_blank" rel="noopener" class="footer__social-link" aria-label="GitHub"><i class="ri-github-line"></i></a>
-               <a href="https://www.linkedin.com/in/halima-abdirizak-mohamed/" target="_blank" rel="noopener" class="footer__social-link" aria-label="LinkedIn"><i class="ri-linkedin-box-line"></i></a>
-               <a href="mailto:halimamohamedabdirizak@gmail.com" class="footer__social-link" aria-label="Email"><i class="ri-mail-line"></i></a>
+               <a href="https://github.com/hal-imaxabdi" target="_blank" rel="noopener" class="footer__social-link" aria-label="GitHub (opens in a new tab)"><i class="ri-github-fill" aria-hidden="true"></i></a>
+               <a href="https://www.linkedin.com/in/halima-abdirizak-mohamed/" target="_blank" rel="noopener" class="footer__social-link" aria-label="LinkedIn (opens in a new tab)"><i class="ri-linkedin-box-fill" aria-hidden="true"></i></a>
+               <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=halimamohamedabdirizak@gmail.com" target="_blank" rel="noopener" class="footer__social-link" aria-label="Email me in Gmail (opens in a new tab)"><i class="ri-mail-fill" aria-hidden="true"></i></a>
             </div>
          </div>
       </div>
@@ -413,10 +404,11 @@
 
    <!--=============== LIBRARIES ===============-->
    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.1.0/typed.umd.min.js" defer></script>
-   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
 
    <!--=============== MAIN JS ===============-->
    <script src="assets/js/projects-data.js" defer></script>
+   <script src="assets/js/writeups-data.js" defer></script>
    <script src="assets/js/main.js" defer></script>
+   <script type="module" src="assets/js/motion.js"></script>
 </body>
 </html>

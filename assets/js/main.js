@@ -1,4 +1,4 @@
-/*=============== DATA: projects live in projects-data.js, certificates here ===============*/
+/*=============== DATA: projects-data.js and writeups-data.js, certificates here ===============*/
 const projects = window.PROJECTS
 
 const certs = [
@@ -14,64 +14,71 @@ const certs = [
 ]
 
 /*=============== RENDER PROJECTS ===============*/
-const workTrack = document.getElementById('work-wrapper')
-workTrack.innerHTML = projects.map(p => `
-   <a href="project.html?p=${p.slug}" class="work__card">
-      <div class="work__image">
-         <img src="assets/img/projects/${p.img}" alt="${p.name} screenshot" class="work__img" loading="lazy" decoding="async">
+/* Three featured projects as large alternating rows, the rest as a two-column grid */
+const FEATURED = ['hookline', 'dependency-compass', 'slotwise']
+const caseUrl = p => `project.html?p=${p.slug}`
+const tags = p => `<div class="work__tags">${p.tags.map(t => `<span class="work__tag">${t}</span>`).join('')}</div>`
+
+/* Whole numbers of 10 or more count up in motion.js; everything else is shown as written */
+const countable = value => /^\d+$/.test(value) && +value >= 10 ? ` data-count="${value}"` : ''
+
+document.getElementById('work-featured').innerHTML = FEATURED
+   .map(slug => projects.find(p => p.slug === slug))
+   .map(p => {
+      const [value, label] = p.stats[0]
+      return `
+      <article class="work__row">
+         <a href="${caseUrl(p)}" class="work__media" tabindex="-1" aria-hidden="true">
+            <img src="assets/img/projects/${p.img}" alt="" class="work__img" width="1200" height="750" loading="lazy" decoding="async">
+         </a>
+         <div class="work__body">
+            <span class="work__kicker">${p.kicker}</span>
+            <h3 class="work__title">${p.name}</h3>
+            <p class="work__description">${p.desc}</p>
+            <p class="work__stat"><strong${countable(value)}>${value}</strong> <span>${label}</span></p>
+            ${tags(p)}
+            <a href="${caseUrl(p)}" class="button work__button">Read case study <i class="ri-arrow-right-line" aria-hidden="true"></i><span class="sr-only">: ${p.name}</span></a>
+         </div>
+      </article>`
+   }).join('')
+
+document.getElementById('work-grid').innerHTML = projects
+   .filter(p => !FEATURED.includes(p.slug))
+   .map(p => `
+      <a href="${caseUrl(p)}" class="work__card">
+         <div class="work__image">
+            <img src="assets/img/projects/${p.img}" alt="" class="work__img" width="1200" height="750" loading="lazy" decoding="async">
+         </div>
+         <div class="work__data">
+            <span class="work__kicker">${p.kicker.split(' · ')[0]}</span>
+            <h3 class="work__name">${p.name}</h3>
+            <p class="work__summary">${p.tagline}</p>
+            ${tags(p)}
+            <span class="work__more">Read case study <i class="ri-arrow-right-line" aria-hidden="true"></i></span>
+         </div>
+      </a>`).join('')
+
+/*=============== RENDER WRITEUPS ===============*/
+document.getElementById('writeups-grid').innerHTML = window.WRITEUPS.map(w => `
+   <article class="writeups__card">
+      <span class="writeups__context">${w.context}</span>
+      <h3 class="writeups__title">${w.title}</h3>
+      <dl class="writeups__numbers">
+         ${w.numbers.map(([value, label]) => `
+            <div class="writeups__number">
+               <dt>${label}</dt>
+               <dd${countable(value)}>${value}</dd>
+            </div>`).join('')}
+      </dl>
+      <p class="writeups__description">${w.desc}</p>
+      <ul class="writeups__tools" aria-label="Tools">${w.tools.map(t => `<li class="work__tag">${t}</li>`).join('')}</ul>
+      <div class="writeups__links">
+         ${w.links.map((l, i) => `
+            <a href="${l.url}" target="_blank" rel="noopener" class="button${i ? ' button--ghost' : ''} writeups__button">
+               ${l.label} <i class="${l.label === 'Repo' ? 'ri-github-fill' : 'ri-arrow-right-up-line'}" aria-hidden="true"></i><span class="sr-only">: ${w.title} (opens in a new tab)</span>
+            </a>`).join('')}
       </div>
-      <div class="work__data">
-         <span class="work__kicker">${p.kicker.split(' · ')[0]}</span>
-         <h3 class="work__name">${p.name}</h3>
-         <p class="work__description">${p.tagline}</p>
-         <span class="work__more">View case study <i class="ri-arrow-right-line"></i></span>
-      </div>
-   </a>`).join('')
-
-/*=============== PROJECTS CAROUSEL ===============*/
-/* A native scroll-snap track: swipe on phones, scroll on trackpads,
-   arrows and dots on desktop. No autoplay, so cards never move on their own. */
-const workPrev = document.getElementById('work-prev'),
-      workNext = document.getElementById('work-next'),
-      workDots = document.getElementById('work-dots')
-
-const cardStep = () => {
-   const cards = workTrack.children
-   return cards.length > 1 ? cards[1].offsetLeft - cards[0].offsetLeft : workTrack.clientWidth
-}
-const perView = () => Math.max(1, Math.round(workTrack.clientWidth / cardStep()))
-const positions = () => Math.max(1, projects.length - perView() + 1)
-const currentIndex = () => Math.round(workTrack.scrollLeft / cardStep())
-const goTo = i => workTrack.scrollTo({ left: i * cardStep(), behavior: 'smooth' })
-
-const buildDots = () => {
-   workDots.innerHTML = Array.from({ length: positions() }, (_, i) =>
-      `<button class="work__dot" aria-label="Go to project ${i + 1}"></button>`).join('')
-   ;[...workDots.children].forEach((dot, i) => dot.addEventListener('click', () => goTo(i)))
-   updateCarousel()
-}
-const updateCarousel = () => {
-   const i = currentIndex(), last = positions() - 1
-   ;[...workDots.children].forEach((dot, d) => dot.classList.toggle('is-active', d === Math.min(i, last)))
-   workPrev.disabled = i <= 0
-   workNext.disabled = i >= last
-}
-
-workPrev.addEventListener('click', () => goTo(Math.max(0, currentIndex() - 1)))
-workNext.addEventListener('click', () => goTo(Math.min(positions() - 1, currentIndex() + 1)))
-let workTicking = false
-workTrack.addEventListener('scroll', () => {
-   if (workTicking) return
-   workTicking = true
-   requestAnimationFrame(() => { updateCarousel(); workTicking = false })
-})
-workTrack.addEventListener('keydown', e => {
-   if (e.key === 'ArrowRight') { e.preventDefault(); workNext.click() }
-   if (e.key === 'ArrowLeft') { e.preventDefault(); workPrev.click() }
-})
-let workResize
-window.addEventListener('resize', () => { clearTimeout(workResize); workResize = setTimeout(buildDots, 150) })
-buildDots()
+   </article>`).join('')
 
 /*=============== RENDER CERTIFICATES ===============*/
 const certsTrack = document.getElementById('certs-track')
@@ -142,59 +149,6 @@ window.addEventListener('resize', () => servicesCards.forEach(setInfoHeight))
    certsTrack.appendChild(clone)
 })
 
-/*=============== CONTACT EMAIL JS ===============*/
-/* Create a free account at https://www.emailjs.com/ and paste your IDs below.
-   Template content:  Name: {{user_name}} / Email: {{user_email}} / Message: {{user_message}}
-   Until the IDs are set, the form falls back to opening the visitor's email app. */
-const EMAILJS = {
-   serviceID: 'service_byebz6i',
-   templateID: 'template_rokzb9e',
-   publicKey: 'tlTdicu14qj_du7UM',
-}
-const CONTACT_EMAIL = 'halimamohamedabdirizak@gmail.com'
-
-const contactForm = document.getElementById('contact-form'),
-      contactMessage = document.getElementById('contact-message')
-
-const showMessage = text => {
-   contactMessage.textContent = text
-   setTimeout(() => contactMessage.textContent = '', 5000)    // Remove message after five seconds
-}
-
-contactForm.addEventListener('submit', e => {
-   e.preventDefault()                                         // Prevent the page from reloading
-   if (contactForm.company.value) { showMessage('Message sent successfully ✅'); contactForm.reset(); return } // Bot caught by honeypot
-   const isPlaceholder = v => !v || v.startsWith('YOUR_') || v.startsWith('PASTE')
-   const configured = window.emailjs && !Object.values(EMAILJS).some(isPlaceholder)
-
-   if (!configured) {
-      const f = new FormData(contactForm)
-      const subject = encodeURIComponent(`Portfolio message from ${f.get('user_name')}`)
-      const body = encodeURIComponent(`${f.get('user_message')}\n\n${f.get('user_name')} <${f.get('user_email')}>`)
-      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`
-      showMessage('Opening your email app… ✉️')
-      return
-   }
-
-   emailjs.sendForm(EMAILJS.serviceID, EMAILJS.templateID, contactForm, EMAILJS.publicKey)
-      .then(() => { showMessage('Message sent successfully ✅'); contactForm.reset() })
-      .catch(() => showMessage('Message not sent (service error) ❌'))
-})
-
-/*=============== COPY EMAIL ===============*/
-const copyEmail = document.getElementById('copy-email'),
-      copyEmailLabel = document.getElementById('copy-email-label')
-
-copyEmail.addEventListener('click', async () => {
-   try {
-      await navigator.clipboard.writeText(copyEmail.dataset.email)
-      copyEmailLabel.innerHTML = '<i class="ri-check-line"></i> Copied'
-   } catch {
-      window.location.href = `mailto:${copyEmail.dataset.email}`  // Clipboard blocked: open the email app instead
-   }
-   setTimeout(() => copyEmailLabel.innerHTML = '<i class="ri-file-copy-line"></i> Copy', 2000)
-})
-
 /*=============== SHOW SCROLL UP ===============*/
 const scrollUp = document.getElementById('scroll-up')
 window.addEventListener('scroll', () => scrollUp.classList.toggle('show-scroll', window.scrollY >= 350))
@@ -236,20 +190,4 @@ document.querySelectorAll('a, button').forEach(item => {
 /*=============== FOOTER YEAR ===============*/
 document.getElementById('year').textContent = new Date().getFullYear()
 
-/*=============== REVEAL ON SCROLL ===============*/
-/* The hero is never hidden, so it shows the moment the page loads.
-   Everything below fades in once as it scrolls into view. */
-if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-   const revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {
-      if (!entry.isIntersecting) return
-      entry.target.classList.add('is-visible')
-      revealObserver.unobserve(entry.target)
-   }), { rootMargin: '0px 0px -10% 0px' })
-
-   document.querySelectorAll('.section__title, .about__title, .about__data, .work__container, .services__card, .experience__item, .skills__card, .contact__form, .contact__data')
-      .forEach(el => {
-         if (el.getBoundingClientRect().top < innerHeight) return // Already on screen: leave it visible
-         el.classList.add('reveal')
-         revealObserver.observe(el)
-      })
-}
+/* Scroll reveals and count-ups live in motion.js */

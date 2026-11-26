@@ -1,6 +1,7 @@
 /*=============== PROJECTS DATA ===============
-   One entry per project. Used by the homepage carousel (index.html)
+   One entry per project. Used by the Projects section (index.html)
    and by the case-study page (project.html?p=<slug>).
+   stats[0] is the headline number on the homepage.
    Case study fields:
      problem   one paragraph: what was wrong and what I set out to do
      built     the build steps, in order

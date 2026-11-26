@@ -12,8 +12,8 @@ const statValue = value => /^\d+$/.test(value) && +value >= 10
    ? `<span class="case__stat-value" data-count="${value}">${value}</span>`
    : `<span class="case__stat-value">${value}</span>`
 
-const block = (id, title, body, mod = '') => `
-   <section class="case__block${mod}" aria-labelledby="${id}">
+const block = (id, title, body) => `
+   <section class="case__block" aria-labelledby="${id}">
       <h2 class="case__heading" id="${id}">${title}</h2>
       <div class="case__body">${body}</div>
    </section>`
@@ -35,16 +35,14 @@ if (index === -1) {
    content.innerHTML = `
       <header class="case__intro">
          <div class="case__lead">
-            <a href="index.html#work" class="case__back" data-enter><i class="ri-arrow-left-line"></i> All projects</a>
+            <a href="index.html#work" class="case__back" data-enter><i class="ri-arrow-left-line" aria-hidden="true"></i> All projects</a>
+            <p class="case__kind" data-enter>${p.kicker}</p>
             <h1 class="case__title" data-enter>${p.name}</h1>
             <p class="case__tagline" data-enter>${p.tagline}</p>
-            <div class="case__meta" data-enter>
-               <span class="case__kind">${p.kicker}</span>
-               <div class="case__tags">${p.tags.map(t => `<span class="work__tag">${t}</span>`).join('')}</div>
-            </div>
+            <div class="case__tags" data-enter>${p.tags.map(t => `<span class="work__tag">${t}</span>`).join('')}</div>
             <div class="case__buttons" data-enter>
-               ${p.live ? `<a href="${p.live}" target="_blank" rel="noopener" class="button">Live demo <i class="ri-external-link-line"></i></a>` : ''}
-               <a href="${GITHUB + p.repo}" target="_blank" rel="noopener" class="button${p.live ? ' button--ghost' : ''}">View code <i class="ri-github-line"></i></a>
+               ${p.live ? `<a href="${p.live}" target="_blank" rel="noopener" class="button">Live demo <i class="ri-external-link-line" aria-hidden="true"></i></a>` : ''}
+               <a href="${GITHUB + p.repo}" target="_blank" rel="noopener" class="button${p.live ? ' button--ghost' : ''}">Code <i class="ri-github-fill" aria-hidden="true"></i></a>
             </div>
          </div>
          <figure class="case__cover" data-enter>
@@ -63,17 +61,18 @@ if (index === -1) {
       ${block('problem-title', 'The problem', `<p class="case__problem">${p.problem}</p>`)}
 
       ${block('built-title', 'What I built', `
-         <div class="case__timeline">
-            <span class="case__rail" aria-hidden="true"><span class="case__rail-fill"></span></span>
-            <ol class="case__steps">
-               ${p.built.map(step => `<li class="case__build">${step}</li>`).join('')}
-            </ol>
-         </div>`)}
+         <ol class="case__timeline">
+            ${p.built.map((step, i) => `
+               <li class="case__milestone">
+                  <span class="case__num" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>
+                  <p>${step}</p>
+               </li>`).join('')}
+         </ol>`)}
 
       ${block('outcome-title', 'What it delivered', `
          <ul class="case__outcomes">
             ${p.outcome.map(o => `
-               <li class="case__outcome${o.figure ? '' : ' case__outcome--plain'}">
+               <li class="case__outcome">
                   ${o.figure ? `<strong class="case__figure">${o.figure}</strong>` : '<i class="ri-check-line case__check" aria-hidden="true"></i>'}
                   <p>${o.text}</p>
                </li>`).join('')}
@@ -83,18 +82,12 @@ if (index === -1) {
          <blockquote class="case__quote">
             <i class="ri-double-quotes-l" aria-hidden="true"></i>
             <p>${p.decision}</p>
-         </blockquote>`, ' case__block--decision') : ''}
+         </blockquote>`) : ''}
 
       <nav class="case__pager" aria-label="More projects">
-         <a href="project.html?p=${prev.slug}"><span><i class="ri-arrow-left-line"></i> Previous project</span><strong>${prev.name}</strong></a>
-         <a href="project.html?p=${next.slug}" class="case__pager-next"><span>Next project <i class="ri-arrow-right-line"></i></span><strong>${next.name}</strong></a>
-      </nav>
-
-      <section class="case__cta">
-         <h2>Hiring for a security or backend role?</h2>
-         <p>I'd be glad to walk you through this project in more depth.</p>
-         <a href="index.html#contact" class="button">Get in touch <i class="ri-arrow-right-line"></i></a>
-      </section>`
+         <a href="project.html?p=${prev.slug}"><span><i class="ri-arrow-left-line" aria-hidden="true"></i> Previous project</span><strong>${prev.name}</strong></a>
+         <a href="project.html?p=${next.slug}" class="case__pager-next"><span>Next project <i class="ri-arrow-right-line" aria-hidden="true"></i></span><strong>${next.name}</strong></a>
+      </nav>`
 
    /* Hand-off to motion.js: hide the header for its entrance, from JS only.
       If motion.js hasn't taken over within a second (slow or blocked CDN), show it anyway. */
