@@ -13,72 +13,104 @@ const certs = [
    { name: 'Cybersecurity Bootcamp', org: 'TechCrush', img: 'techcrush.webp', date: 'Jun 2026' },
 ]
 
+const pad = n => String(n).padStart(2, '0')
+
 /*=============== RENDER PROJECTS ===============*/
-/* Three featured projects as large alternating rows, the rest as a two-column grid */
-const FEATURED = ['hookline', 'dependency-compass', 'slotwise']
-const caseUrl = p => `project.html?p=${p.slug}`
-const tags = p => `<div class="work__tags">${p.tags.map(t => `<span class="work__tag">${t}</span>`).join('')}</div>`
-
-/* Whole numbers of 10 or more count up in motion.js; everything else is shown as written */
-const countable = value => /^\d+$/.test(value) && +value >= 10 ? ` data-count="${value}"` : ''
-
-document.getElementById('work-featured').innerHTML = FEATURED
-   .map(slug => projects.find(p => p.slug === slug))
-   .map(p => {
-      const [value, label] = p.stats[0]
-      return `
-      <article class="work__row">
-         <a href="${caseUrl(p)}" class="work__media" tabindex="-1" aria-hidden="true">
-            <img src="assets/img/projects/${p.img}" alt="" class="work__img" width="1200" height="750" loading="lazy" decoding="async">
-         </a>
-         <div class="work__body">
-            <span class="work__kicker">${p.kicker}</span>
-            <h3 class="work__title">${p.name}</h3>
-            <p class="work__description">${p.desc}</p>
-            <p class="work__stat"><strong${countable(value)}>${value}</strong> <span>${label}</span></p>
-            ${tags(p)}
-            <a href="${caseUrl(p)}" class="button work__button">Read case study <i class="ri-arrow-right-line" aria-hidden="true"></i><span class="sr-only">: ${p.name}</span></a>
+/* One swipeable row of large cards, in projects-data.js order.
+   Adding a project adds a card; the layout never gets more crowded. */
+const workTrack = document.getElementById('work-track')
+/* The screenshot is the card. Only the name and what it is sit on top; the case study has the rest */
+workTrack.innerHTML = projects.map(p => `
+   <li class="work__slide">
+      <a href="project.html?p=${p.slug}" class="work__card" draggable="false">
+         <img src="assets/img/projects/${p.img}" alt="" class="work__img" width="1200" height="750" loading="lazy" decoding="async" draggable="false">
+         <div class="work__overlay">
+            <div>
+               <h3 class="work__name">${p.name}</h3>
+               <p class="work__type">${p.kicker.split(' · ')[0]}</p>
+            </div>
+            <span class="work__go" aria-hidden="true"><i class="ri-arrow-right-up-line"></i></span>
          </div>
-      </article>`
-   }).join('')
+      </a>
+   </li>`).join('')
 
-document.getElementById('work-grid').innerHTML = projects
-   .filter(p => !FEATURED.includes(p.slug))
-   .map(p => `
-      <a href="${caseUrl(p)}" class="work__card">
-         <div class="work__image">
-            <img src="assets/img/projects/${p.img}" alt="" class="work__img" width="1200" height="750" loading="lazy" decoding="async">
-         </div>
-         <div class="work__data">
-            <span class="work__kicker">${p.kicker.split(' · ')[0]}</span>
-            <h3 class="work__name">${p.name}</h3>
-            <p class="work__summary">${p.tagline}</p>
-            ${tags(p)}
-            <span class="work__more">Read case study <i class="ri-arrow-right-line" aria-hidden="true"></i></span>
-         </div>
-      </a>`).join('')
+/*=============== PROJECTS: SWIPE, DRAG, ARROWS ===============*/
+/* Native scroll-snap does the swiping on touch screens and trackpads.
+   On desktop the row can also be dragged with the mouse, or moved with the arrows. */
+const workPrev = document.getElementById('work-prev'),
+      workNext = document.getElementById('work-next'),
+      workCurrent = document.getElementById('work-current'),
+      workBar = document.getElementById('work-bar')
+const slides = [...workTrack.children]
+document.getElementById('work-total').textContent = pad(slides.length)
+
+const slideStep = () => slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : workTrack.clientWidth
+const maxScroll = () => workTrack.scrollWidth - workTrack.clientWidth
+const slideIndex = () => Math.min(slides.length - 1, Math.round(workTrack.scrollLeft / slideStep()))
+const goToSlide = i => workTrack.scrollTo({ left: Math.max(0, Math.min(i, slides.length - 1)) * slideStep(), behavior: 'smooth' })
+
+const updateWork = () => {
+   const atEnd = workTrack.scrollLeft >= maxScroll() - 4
+   const progress = maxScroll() > 0 ? workTrack.scrollLeft / maxScroll() : 1
+   workCurrent.textContent = pad(atEnd ? slides.length : slideIndex() + 1)
+   workBar.style.transform = `scaleX(${Math.max(1 / slides.length, progress)})`
+   workPrev.disabled = workTrack.scrollLeft <= 4
+   workNext.disabled = atEnd
+}
+workPrev.addEventListener('click', () => goToSlide(slideIndex() - 1))
+workNext.addEventListener('click', () => goToSlide(slideIndex() + 1))
+let workTicking = false
+workTrack.addEventListener('scroll', () => {
+   if (workTicking) return
+   workTicking = true
+   requestAnimationFrame(() => { updateWork(); workTicking = false })
+})
+window.addEventListener('resize', updateWork)
+updateWork()
+
+/* Mouse drag. A drag of more than a few pixels cancels the click, so dragging never opens a project */
+let drag = null, dragged = false
+workTrack.addEventListener('pointerdown', e => {
+   if (e.pointerType !== 'mouse' || e.button !== 0) return
+   drag = { x: e.clientX, left: workTrack.scrollLeft }
+   dragged = false
+})
+window.addEventListener('pointermove', e => {
+   if (!drag) return
+   const dx = e.clientX - drag.x
+   if (!dragged && Math.abs(dx) > 6) { dragged = true; workTrack.classList.add('is-dragging') }
+   if (dragged) workTrack.scrollLeft = drag.left - dx
+})
+window.addEventListener('pointerup', () => {
+   if (!drag) return
+   drag = null
+   if (!dragged) return
+   workTrack.classList.remove('is-dragging')
+   goToSlide(slideIndex())
+})
+workTrack.addEventListener('click', e => { if (dragged) { e.preventDefault(); dragged = false } }, true)
 
 /*=============== RENDER WRITEUPS ===============*/
-document.getElementById('writeups-grid').innerHTML = window.WRITEUPS.map(w => `
-   <article class="writeups__card">
-      <span class="writeups__context">${w.context}</span>
-      <h3 class="writeups__title">${w.title}</h3>
-      <dl class="writeups__numbers">
-         ${w.numbers.map(([value, label]) => `
-            <div class="writeups__number">
-               <dt>${label}</dt>
-               <dd${countable(value)}>${value}</dd>
-            </div>`).join('')}
-      </dl>
-      <p class="writeups__description">${w.desc}</p>
-      <ul class="writeups__tools" aria-label="Tools">${w.tools.map(t => `<li class="work__tag">${t}</li>`).join('')}</ul>
-      <div class="writeups__links">
-         ${w.links.map((l, i) => `
-            <a href="${l.url}" target="_blank" rel="noopener" class="button${i ? ' button--ghost' : ''} writeups__button">
-               ${l.label} <i class="${l.label === 'Repo' ? 'ri-github-fill' : 'ri-arrow-right-up-line'}" aria-hidden="true"></i><span class="sr-only">: ${w.title} (opens in a new tab)</span>
-            </a>`).join('')}
-      </div>
-   </article>`).join('')
+/* Same card language as the projects: one link each, the writeup itself has the detail */
+const MAX_TOOLS = 3
+document.getElementById('writeups-list').innerHTML = window.WRITEUPS.map(w => {
+   const extra = w.tools.length - MAX_TOOLS
+   return `
+   <li class="writeups__slide">
+      <a href="${w.link.url}" target="_blank" rel="noopener" class="writeups__card">
+         <h3 class="writeups__title">${w.title}</h3>
+         <p class="writeups__context">${w.context}</p>
+         <div class="writeups__tools">
+            ${w.tools.slice(0, MAX_TOOLS).map(t => `<span class="work__tag">${t}</span>`).join('')}
+            ${extra > 0 ? `<span class="work__tag work__tag--more">+${extra}</span>` : ''}
+         </div>
+         <div class="writeups__foot">
+            <span class="writeups__cta">${w.link.label}<span class="sr-only"> (opens in a new tab)</span></span>
+            <span class="work__go" aria-hidden="true"><i class="${w.link.icon}"></i></span>
+         </div>
+      </a>
+   </li>`
+}).join('')
 
 /*=============== RENDER CERTIFICATES ===============*/
 const certsTrack = document.getElementById('certs-track')
@@ -158,11 +190,11 @@ const sections = document.querySelectorAll('section[id]')
 const scrollActive = () => {
    const scrollDown = window.scrollY
    sections.forEach(section => {
-      const top = section.offsetTop - 80,
+      const top = section.offsetTop - 120,
             height = section.offsetHeight,
             link = document.querySelector(`.nav__list a[href*="#${section.id}"]`)
       if (!link) return
-      link.classList.toggle('active-link', scrollDown > top && scrollDown <= top + height)
+      link.classList.toggle('active-link', scrollDown >= top && scrollDown < top + height)
    })
 }
 window.addEventListener('scroll', scrollActive)

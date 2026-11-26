@@ -27,11 +27,12 @@
    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/framer-motion@14.14.0/dom/+esm" crossorigin>
    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/motion-dom@14.14.0/+esm" crossorigin>
    <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/motion-utils@14.7.0/+esm" crossorigin>
+   <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/lenis@1.3.28/+esm" crossorigin>
 
    <!--=============== CSS ===============-->
    <link rel="stylesheet" href="assets/css/styles.css">
 
-   <title>Halima A. Mohamed | Cybersecurity & Software</title>
+   <title>Halima Mohamed</title>
 </head>
 <body>
    <!--==================== HEADER & NAV ====================-->
@@ -126,9 +127,6 @@
 
             <div class="about__buttons">
                <a href="#contact" class="button">Contact me <i class="ri-arrow-right-line"></i></a>
-               <a href="assets/pdf/Halima_Abdirizak_Mohamed_CV.pdf" class="button button--ghost" download>
-                  Download CV <i class="ri-download-2-line"></i>
-               </a>
             </div>
          </div>
       </section>
@@ -137,10 +135,13 @@
       <section class="work section" id="work">
          <h2 class="section__title">Featured <span>Projects</span></h2>
 
-         <div class="work__container container">
-            <div class="work__featured" id="work-featured"><!-- Filled by main.js --></div>
-            <h3 class="work__subtitle">More projects</h3>
-            <div class="work__grid" id="work-grid"><!-- Filled by main.js --></div>
+         <ul class="work__track" id="work-track" aria-label="Projects, scroll sideways for more"><!-- Filled by main.js --></ul>
+
+         <div class="work__controls container">
+            <div class="work__progress" aria-hidden="true"><span id="work-bar"></span></div>
+            <span class="work__count" aria-hidden="true"><strong id="work-current">01</strong> / <span id="work-total">00</span></span>
+            <button class="work__arrow" id="work-prev" aria-label="Previous project"><i class="ri-arrow-left-line" aria-hidden="true"></i></button>
+            <button class="work__arrow" id="work-next" aria-label="Next project"><i class="ri-arrow-right-line" aria-hidden="true"></i></button>
          </div>
       </section>
 
@@ -149,7 +150,7 @@
          <h2 class="section__title">Security <span>Writeups</span></h2>
 
          <div class="writeups__container container">
-            <div class="writeups__grid" id="writeups-grid"><!-- Filled by main.js --></div>
+            <ul class="writeups__list" id="writeups-list"><!-- Filled by main.js --></ul>
          </div>
       </section>
 
@@ -242,38 +243,53 @@
 
          <div class="experience__container container">
             <article class="experience__item">
-               <span class="experience__date">Nov 2026 — now</span>
-               <div>
+               <div class="experience__meta">
+                  <span class="experience__date">Nov 2026 – Present <span class="experience__now">Current</span></span>
+                  <span class="experience__org">SkyyTech</span>
+                  <span class="experience__where">Remote</span>
+               </div>
+               <div class="experience__body">
                   <h3 class="experience__role">Backend Software Engineering Intern</h3>
-                  <p class="experience__org">SkyyTech · Remote</p>
-                  <p class="experience__context">Securing sign-in for an adaptive learning platform.</p>
+                  <p class="experience__headline">Securing sign-in for an adaptive learning platform.</p>
                   <ul class="experience__list">
-                     <li>Built session-based auth and API endpoints on TypeScript, Cloudflare Workers and D1; now adding OIDC login.</li>
-                     <li>Found and fixed an open redirect that let crafted “//” links send users from the login page to outside sites.</li>
+                     <li>Built <strong>session-based login</strong> and API endpoints. Now adding OIDC sign-in.</li>
+                     <li>Found and fixed an <strong>open redirect</strong>: crafted “//” links could send users from the login page to outside sites.</li>
+                  </ul>
+                  <ul class="experience__tags" aria-label="Stack">
+                     <li class="work__tag">TypeScript</li><li class="work__tag">Cloudflare Workers</li><li class="work__tag">D1</li><li class="work__tag">OIDC</li>
                   </ul>
                </div>
             </article>
             <article class="experience__item">
-               <span class="experience__date">Sep 2026 — now</span>
-               <div>
+               <div class="experience__meta">
+                  <span class="experience__date">Sep 2026 – Present <span class="experience__now">Current</span></span>
+                  <span class="experience__org">President University</span>
+                  <span class="experience__where">On-site</span>
+               </div>
+               <div class="experience__body">
                   <h3 class="experience__role">System Intern, E-Technology Program</h3>
-                  <p class="experience__org">President University · On-site</p>
-                  <p class="experience__context">Keeping the program's course content safe and recoverable.</p>
+                  <p class="experience__headline">Keeping the program's course content safe and recoverable.</p>
                   <ul class="experience__list">
-                     <li>Built and maintain a backup dashboard for backing up and restoring course content.</li>
-                     <li>Administer the program's Moodle learning platform.</li>
+                     <li>Built and maintain the <strong>backup dashboard</strong> that backs up and restores course content.</li>
+                     <li>Administer the program's <strong>Moodle</strong> learning platform.</li>
                   </ul>
                </div>
             </article>
             <article class="experience__item">
-               <span class="experience__date">Jul — Sep 2026</span>
-               <div>
+               <div class="experience__meta">
+                  <span class="experience__date">Jul – Sep 2026</span>
+                  <span class="experience__org">FlyRank AI</span>
+                  <span class="experience__where">Remote</span>
+               </div>
+               <div class="experience__body">
                   <h3 class="experience__role">Backend AI Engineering Intern</h3>
-                  <p class="experience__org">FlyRank AI · Remote</p>
-                  <p class="experience__context">Billing for AI-token usage that never counts or charges twice.</p>
+                  <p class="experience__headline">Billing for AI-token usage that never counts or charges twice.</p>
                   <ul class="experience__list">
-                     <li>Built the metering and billing service in FastAPI and PostgreSQL, with idempotency keys for exactly-once metering.</li>
-                     <li>Verified every Midtrans payment webhook with HMAC-SHA512 signatures, backed by 68 automated tests.</li>
+                     <li>Built the metering and billing service. Idempotency keys make every usage record count <strong>exactly once</strong>.</li>
+                     <li>Every Midtrans payment webhook is verified with an <strong>HMAC-SHA512</strong> signature, covered by <strong>68 automated tests</strong>.</li>
+                  </ul>
+                  <ul class="experience__tags" aria-label="Stack">
+                     <li class="work__tag">FastAPI</li><li class="work__tag">PostgreSQL</li><li class="work__tag">Midtrans</li>
                   </ul>
                </div>
             </article>
@@ -369,10 +385,6 @@
                   </a>
                </li>
             </ul>
-
-            <a href="assets/pdf/Halima_Abdirizak_Mohamed_CV.pdf" class="button button--ghost contact__cv" download>
-               Download CV <i class="ri-download-2-line"></i>
-            </a>
          </div>
          <div class="blob-big" style="bottom: 0; right: -4rem;"></div>
       </section>

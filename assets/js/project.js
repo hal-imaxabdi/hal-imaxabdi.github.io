@@ -19,7 +19,7 @@ const block = (id, title, body) => `
    </section>`
 
 if (index === -1) {
-   document.title = 'Project not found | Halima A. Mohamed'
+   document.title = 'Not found · Halima Mohamed'
    content.innerHTML = `
       <div class="case__missing">
          <h1>Project not found</h1>
@@ -29,7 +29,7 @@ if (index === -1) {
    const p = projects[index]
    const prev = projects[(index - 1 + projects.length) % projects.length]
    const next = projects[(index + 1) % projects.length]
-   document.title = `${p.name} case study | Halima A. Mohamed`
+   document.title = `${p.name} · Halima Mohamed`
    document.querySelector('meta[name="description"]').content = `${p.name}: ${p.tagline} ${p.desc}`
 
    content.innerHTML = `

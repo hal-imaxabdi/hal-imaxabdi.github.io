@@ -1,12 +1,12 @@
-/*=============== MOTION (motion.dev) ===============
-   Scroll reveals, staggered cards, the case-study timeline and count-up numbers,
-   for both index.html and project.html. Rules this file keeps:
+/*=============== MOTION (motion.dev + Lenis) ===============
+   Smooth scrolling, a reading-progress line, headings that rise in word by word,
+   staggered cards and count-up numbers, for index.html and project.html.
+   Rules this file keeps:
    - Content is visible by default. Only this file hides something, right before animating it.
      If the CDN fails, this module never runs and the page stays fully visible.
-   - prefers-reduced-motion: nothing here runs.
-   - Only opacity and transform are animated (plus the count-up text).
+   - prefers-reduced-motion: no smooth scrolling and no animation at all.
    - The hero section on the homepage is never touched. */
-import { animate, inView, stagger } from "https://cdn.jsdelivr.net/npm/motion@14.14.0/+esm"
+import { animate, inView, stagger, scroll } from "https://cdn.jsdelivr.net/npm/motion@14.14.0/+esm"
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 const ease = [0.16, 1, 0.3, 1]
@@ -15,60 +15,94 @@ const enterEls = [...document.querySelectorAll('[data-enter]')]
 if (reduced) {
    enterEls.forEach(el => el.style.opacity = '')
 } else {
-   /* Only elements that start below the fold are hidden, so nothing on screen flickers at load */
+   /*----- Smooth, weighted scrolling. Loaded separately so a failure here never blocks the rest -----*/
+   import("https://cdn.jsdelivr.net/npm/lenis@1.3.28/+esm")
+      .then(({ default: Lenis }) => {
+         new Lenis({ autoRaf: true, lerp: 0.09, anchors: true }) // anchors honour the CSS scroll-padding under the fixed header
+      })
+      .catch(() => {})
+
+   /*----- Reading progress along the top edge -----*/
+   const bar = document.createElement('div')
+   bar.className = 'scroll-progress'
+   bar.setAttribute('aria-hidden', 'true')
+   document.body.prepend(bar)
+   scroll(progress => { bar.style.transform = `scaleX(${progress})` })
+
+   /* Only what starts below the fold is hidden, so nothing on screen flickers at load */
    const below = el => el.getBoundingClientRect().top > innerHeight * 0.92
    const outsideHero = el => !el.closest('#home')
+   const watch = (el, run) => inView(el, () => { run() }, { margin: '0px 0px -12% 0px' })
 
-   /* Hand inline transform back to CSS when done, so hover lifts keep working */
+   /* Hand inline styles back to CSS when done, so hover effects keep working */
    const play = (els, from, opts) =>
-      animate(els, { opacity: [0, 1], ...from }, { duration: 0.5, ease, ...opts })
-         .then(() => els.forEach(el => el.style.transform = ''))
+      animate(els, { opacity: [0, 1], ...from }, { duration: 0.7, ease, ...opts })
+         .then(() => els.forEach(el => { el.style.transform = ''; el.style.filter = '' }))
 
-   /* Fade and rise one element, or stagger the children of a group */
-   const reveal = (selector, { children = false, y = 16, x = 0, step = 0.08 } = {}) => {
+   const reveal = (selector, from, { children = false, step = 0.08, duration } = {}) => {
       document.querySelectorAll(selector).forEach(group => {
          if (!outsideHero(group) || !below(group)) return
          const items = children ? [...group.children] : [group]
          items.forEach(el => el.style.opacity = '0')
-         const from = x ? { x: [x, 0] } : { y: [y, 0] }
-         inView(group, () => { play(items, from, { delay: stagger(step) }) }, { margin: '0px 0px -10% 0px' })
+         watch(group, () => play(items, from, { delay: stagger(step), ...(duration && { duration }) }))
       })
    }
+
+   /*----- Headings rise in word by word, out of a soft blur -----*/
+   const splitWords = heading => {
+      const walk = node => [...node.childNodes].forEach(child => {
+         if (child.nodeType === Node.ELEMENT_NODE) return walk(child)
+         if (child.nodeType !== Node.TEXT_NODE || !child.textContent.trim()) return
+         const frag = document.createDocumentFragment()
+         child.textContent.split(/(\s+)/).forEach(part => {
+            if (!part) return
+            if (/^\s+$/.test(part)) return frag.append(part)
+            const word = document.createElement('span')
+            word.className = 'split-word'
+            word.textContent = part
+            frag.append(word)
+         })
+         child.replaceWith(frag)
+      })
+      walk(heading)
+      return [...heading.querySelectorAll('.split-word')]
+   }
+   document.querySelectorAll('.section__title, .about__title').forEach(heading => {
+      if (!outsideHero(heading) || !below(heading)) return
+      const words = splitWords(heading)
+      words.forEach(w => w.style.opacity = '0')
+      watch(heading, () => play(words, { y: ['0.55em', 0], filter: ['blur(10px)', 'blur(0px)'] }, { duration: 0.8, delay: stagger(0.06) }))
+   })
 
    /*----- Case-study header: hidden by project.js, unless its 1s fallback already showed it -----*/
    clearTimeout(window.caseEnterFallback)
    if (enterEls.length && enterEls.every(el => el.style.opacity === '0')) {
-      play(enterEls, { y: [14, 0] }, { duration: 0.55, delay: stagger(0.05) })
+      play(enterEls, { y: [18, 0], filter: ['blur(6px)', 'blur(0px)'] }, { duration: 0.8, delay: stagger(0.06) })
    } else {
       enterEls.forEach(el => el.style.opacity = '')
    }
 
-   /*----- Homepage sections -----*/
-   reveal('.section__title')
-   reveal('.about__title')
-   reveal('.about__data')
-   reveal('.about__buttons')
-   reveal('.work__row')
-   reveal('.work__subtitle')
-   reveal('.work__grid', { children: true })
-   reveal('.writeups__grid', { children: true, step: 0.1 })
-   reveal('.services__container', { children: true, step: 0.06 })
-   reveal('.experience__container', { children: true })
-   reveal('.skills__description')
-   reveal('.skills__container', { children: true })
-   reveal('.testimonials__container')
-   reveal('.contact__intro')
-   reveal('.contact__links', { children: true })
-   reveal('.contact__cv')
+   /*----- Homepage -----*/
+   reveal('.about__data', { y: [24, 0] })
+   reveal('.about__buttons', { y: [16, 0] })
+   reveal('.work__track', { x: [80, 0], scale: [0.94, 1] }, { children: true, step: 0.09, duration: 0.9 })
+   reveal('.work__controls', { y: [12, 0] })
+   reveal('.writeups__list', { y: [48, 0], scale: [0.96, 1] }, { children: true, step: 0.1, duration: 0.8 })
+   reveal('.services__container', { y: [32, 0] }, { children: true, step: 0.07 })
+   reveal('.experience__container', { y: [32, 0] }, { children: true, step: 0.12 })
+   reveal('.skills__description', { y: [16, 0] })
+   reveal('.skills__container', { y: [40, 0] }, { children: true, step: 0.1 })
+   reveal('.testimonials__container', { y: [24, 0] })
+   reveal('.contact__intro', { y: [16, 0] })
+   reveal('.contact__links', { y: [24, 0], scale: [0.8, 1] }, { children: true, step: 0.08 })
 
-   /*----- Case-study sections -----*/
-   reveal('.case__stats', { children: true })
-   reveal('.case__heading')
-   reveal('.case__problem')
-   reveal('.case__timeline', { children: true, x: -14, step: 0.12 })
-   reveal('.case__outcomes', { children: true })
-   reveal('.case__quote')
-   reveal('.case__pager', { children: true, y: 10 })
+   /*----- Case-study page -----*/
+   reveal('.case__stats', { y: [24, 0] }, { children: true })
+   reveal('.case__problem', { y: [24, 0] })
+   reveal('.case__timeline', { x: [-24, 0] }, { children: true, step: 0.12 })
+   reveal('.case__outcomes', { y: [32, 0], scale: [0.96, 1] }, { children: true, step: 0.1 })
+   reveal('.case__quote', { y: [24, 0], filter: ['blur(8px)', 'blur(0px)'] })
+   reveal('.case__pager', { y: [16, 0] }, { children: true })
 
    /*----- Numbers count up the first time they are seen -----*/
    document.querySelectorAll('[data-count]').forEach(el => {
@@ -79,7 +113,7 @@ if (reduced) {
       el.textContent = '0'
       inView(el, () => {
          animate(0, target, {
-            duration: 1,
+            duration: 1.2,
             ease,
             onUpdate: v => { el.textContent = Math.round(v).toLocaleString('en-US') },
          })
