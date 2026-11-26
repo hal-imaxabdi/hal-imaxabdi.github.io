@@ -15,80 +15,112 @@ const certs = [
 
 const pad = n => String(n).padStart(2, '0')
 
-/*=============== RENDER PROJECTS ===============*/
-/* One swipeable row of large cards, in projects-data.js order.
-   Adding a project adds a card; the layout never gets more crowded. */
-const workTrack = document.getElementById('work-track')
-/* The screenshot is the card. Only the name and what it is sit on top; the case study has the rest */
-workTrack.innerHTML = projects.map(p => `
-   <li class="work__slide">
-      <a href="project.html?p=${p.slug}" class="work__card" draggable="false">
-         <img src="assets/img/projects/${p.img}" alt="" class="work__img" width="1200" height="750" loading="lazy" decoding="async" draggable="false">
-         <div class="work__overlay">
-            <div>
-               <h3 class="work__name">${p.name}</h3>
-               <p class="work__type">${p.kicker.split(' · ')[0]}</p>
-            </div>
-            <span class="work__go" aria-hidden="true"><i class="ri-arrow-right-up-line"></i></span>
-         </div>
-      </a>
-   </li>`).join('')
+/*=============== RENDER PROJECTS: A CARD DECK ===============*/
+/* One big card in front, the next two stacked behind it. Swipe, drag, use the arrows
+   or the arrow keys and the next project comes forward. It loops, so adding projects
+   to projects-data.js never makes the section any bigger. */
+const deck = document.getElementById('work-deck')
+deck.innerHTML = projects.map(p => `
+   <a href="project.html?p=${p.slug}" class="work__card" draggable="false">
+      <img src="assets/img/projects/${p.img}" alt="" class="work__img" width="1200" height="750" loading="lazy" decoding="async" draggable="false">
+      <span class="work__overlay">
+         <span>
+            <span class="work__name">${p.name}</span>
+            <span class="work__type">${p.kicker.split(' · ')[0]}</span>
+         </span>
+         <span class="work__go" aria-hidden="true"><i class="ri-arrow-right-up-line"></i></span>
+      </span>
+   </a>`).join('')
 
-/*=============== PROJECTS: SWIPE, DRAG, ARROWS ===============*/
-/* Native scroll-snap does the swiping on touch screens and trackpads.
-   On desktop the row can also be dragged with the mouse, or moved with the arrows. */
-const workPrev = document.getElementById('work-prev'),
-      workNext = document.getElementById('work-next'),
-      workCurrent = document.getElementById('work-current'),
-      workBar = document.getElementById('work-bar')
-const slides = [...workTrack.children]
-document.getElementById('work-total').textContent = pad(slides.length)
+const cards = [...deck.children]
+const total = cards.length
+const workCurrent = document.getElementById('work-current')
+let current = 0
 
-const slideStep = () => slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : workTrack.clientWidth
-const maxScroll = () => workTrack.scrollWidth - workTrack.clientWidth
-const slideIndex = () => Math.min(slides.length - 1, Math.round(workTrack.scrollLeft / slideStep()))
-const goToSlide = i => workTrack.scrollTo({ left: Math.max(0, Math.min(i, slides.length - 1)) * slideStep(), behavior: 'smooth' })
+document.getElementById('work-total').textContent = pad(total)
 
-const updateWork = () => {
-   const atEnd = workTrack.scrollLeft >= maxScroll() - 4
-   const progress = maxScroll() > 0 ? workTrack.scrollLeft / maxScroll() : 1
-   workCurrent.textContent = pad(atEnd ? slides.length : slideIndex() + 1)
-   workBar.style.transform = `scaleX(${Math.max(1 / slides.length, progress)})`
-   workPrev.disabled = workTrack.scrollLeft <= 4
-   workNext.disabled = atEnd
+/* data-pos 0 is the front card, 1 and 2 peek out behind it, the rest wait out of sight */
+const layout = () => {
+   cards.forEach((card, i) => {
+      const pos = (i - current + total) % total
+      card.dataset.pos = pos < 3 ? pos : 'rest'
+      card.tabIndex = pos === 0 ? 0 : -1
+      card.setAttribute('aria-hidden', pos === 0 ? 'false' : 'true')
+      card.setAttribute('aria-label', `${projects[i].name}, ${i + 1} of ${total}. Open case study`)
+   })
+   workCurrent.textContent = pad(current + 1)
 }
-workPrev.addEventListener('click', () => goToSlide(slideIndex() - 1))
-workNext.addEventListener('click', () => goToSlide(slideIndex() + 1))
-let workTicking = false
-workTrack.addEventListener('scroll', () => {
-   if (workTicking) return
-   workTicking = true
-   requestAnimationFrame(() => { updateWork(); workTicking = false })
-})
-window.addEventListener('resize', updateWork)
-updateWork()
 
-/* Mouse drag. A drag of more than a few pixels cancels the click, so dragging never opens a project */
-let drag = null, dragged = false
-workTrack.addEventListener('pointerdown', e => {
-   if (e.pointerType !== 'mouse' || e.button !== 0) return
-   drag = { x: e.clientX, left: workTrack.scrollLeft }
+/* Forward: the front card flies off to the left and drops to the back.
+   Back: the previous card flies in from the left. */
+const go = dir => {
+   if (total < 2) return
+   const hadFocus = deck.contains(document.activeElement)
+   if (dir > 0) {
+      const leaving = cards[current]
+      leaving.classList.add('is-out')
+      setTimeout(() => leaving.classList.remove('is-out'), 420)
+   }
+   current = (current + dir + total) % total
+   if (dir < 0) {
+      const entering = cards[current]
+      entering.style.transition = 'none'
+      entering.classList.add('is-out')
+      void entering.offsetWidth          // apply the off-screen start before animating in
+      entering.style.transition = ''
+      entering.classList.remove('is-out')
+   }
+   layout()
+   if (hadFocus) cards[current].focus({ preventScroll: true })
+}
+
+document.getElementById('work-prev').addEventListener('click', () => go(-1))
+document.getElementById('work-next').addEventListener('click', () => go(1))
+deck.addEventListener('keydown', e => {
+   if (e.key === 'ArrowRight') { e.preventDefault(); go(1) }
+   if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1) }
+})
+
+/* Swipe and drag (touch, pen and mouse). The card follows the finger and tilts a little;
+   let go past the threshold and it moves on. A drag never counts as a click. */
+let dragStart = null, dragX = 0, dragged = false
+deck.addEventListener('pointerdown', e => {
+   if (e.button !== 0 || !cards[current].contains(e.target)) return
+   dragStart = e.clientX
+   dragX = 0
    dragged = false
 })
 window.addEventListener('pointermove', e => {
-   if (!drag) return
-   const dx = e.clientX - drag.x
-   if (!dragged && Math.abs(dx) > 6) { dragged = true; workTrack.classList.add('is-dragging') }
-   if (dragged) workTrack.scrollLeft = drag.left - dx
+   if (dragStart === null) return
+   dragX = e.clientX - dragStart
+   if (!dragged && Math.abs(dragX) > 6) { dragged = true; deck.classList.add('is-dragging') }
+   if (dragged) cards[current].style.transform = `translateX(${dragX}px) rotate(${dragX / 28}deg)`
 })
-window.addEventListener('pointerup', () => {
-   if (!drag) return
-   drag = null
-   if (!dragged) return
-   workTrack.classList.remove('is-dragging')
-   goToSlide(slideIndex())
-})
-workTrack.addEventListener('click', e => { if (dragged) { e.preventDefault(); dragged = false } }, true)
+const endDrag = () => {
+   if (dragStart === null) return
+   dragStart = null
+   deck.classList.remove('is-dragging')
+   cards[current].style.transform = ''
+   const threshold = Math.min(110, deck.offsetWidth * 0.18)
+   if (dragX < -threshold) go(1)
+   else if (dragX > threshold) go(-1)
+}
+window.addEventListener('pointerup', endDrag)
+window.addEventListener('pointercancel', endDrag)
+deck.addEventListener('click', e => { if (dragged) { e.preventDefault(); dragged = false } }, true)
+
+/* Sideways trackpad swipes move the deck too; vertical scrolling is left alone */
+let wheelLock = false
+deck.addEventListener('wheel', e => {
+   if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) || Math.abs(e.deltaX) < 25) return
+   e.preventDefault()
+   if (wheelLock) return
+   wheelLock = true
+   go(e.deltaX > 0 ? 1 : -1)
+   setTimeout(() => wheelLock = false, 650)
+}, { passive: false })
+
+layout()
 
 /*=============== RENDER WRITEUPS ===============*/
 /* Same card language as the projects: one link each, the writeup itself has the detail */

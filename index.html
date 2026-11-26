@@ -135,13 +135,14 @@
       <section class="work section" id="work">
          <h2 class="section__title">Featured <span>Projects</span></h2>
 
-         <ul class="work__track" id="work-track" aria-label="Projects, scroll sideways for more"><!-- Filled by main.js --></ul>
+         <div class="work__container container">
+            <div class="work__deck" id="work-deck" role="region" aria-roledescription="carousel" aria-label="Projects. Swipe, drag or use the arrow keys for the next one."><!-- Filled by main.js --></div>
 
-         <div class="work__controls container">
-            <div class="work__progress" aria-hidden="true"><span id="work-bar"></span></div>
-            <span class="work__count" aria-hidden="true"><strong id="work-current">01</strong> / <span id="work-total">00</span></span>
-            <button class="work__arrow" id="work-prev" aria-label="Previous project"><i class="ri-arrow-left-line" aria-hidden="true"></i></button>
-            <button class="work__arrow" id="work-next" aria-label="Next project"><i class="ri-arrow-right-line" aria-hidden="true"></i></button>
+            <div class="work__controls">
+               <button class="work__arrow" id="work-prev" aria-label="Previous project"><i class="ri-arrow-left-line" aria-hidden="true"></i></button>
+               <span class="work__count" aria-live="polite"><strong id="work-current">01</strong> / <span id="work-total">00</span></span>
+               <button class="work__arrow" id="work-next" aria-label="Next project"><i class="ri-arrow-right-line" aria-hidden="true"></i></button>
+            </div>
          </div>
       </section>
 
@@ -360,33 +361,50 @@
 
       <!--==================== CONTACT ====================-->
       <section class="contact section" id="contact">
-         <h2 class="section__title">Contact</h2>
+         <h2 class="section__title">Contact <span>Me</span></h2>
 
          <div class="contact__container container">
             <p class="contact__intro">Open to cybersecurity and software roles.</p>
 
             <ul class="contact__links">
                <li>
-                  <a href="https://github.com/hal-imaxabdi" target="_blank" rel="noopener" class="contact__link" aria-label="GitHub (opens in a new tab)">
-                     <span class="contact__circle"><i class="ri-github-fill" aria-hidden="true"></i></span>
-                     <span class="contact__name">GitHub</span>
+                  <a href="https://github.com/hal-imaxabdi" target="_blank" rel="noopener" class="contact__link" aria-label="GitHub: hal-imaxabdi (opens in a new tab)">
+                     <span class="contact__top">
+                        <span class="contact__circle"><i class="ri-github-fill" aria-hidden="true"></i></span>
+                        <span class="work__go" aria-hidden="true"><i class="ri-arrow-right-up-line"></i></span>
+                     </span>
+                     <span class="contact__text">
+                        <span class="contact__name">GitHub</span>
+                        <span class="contact__handle">hal-imaxabdi</span>
+                     </span>
                   </a>
                </li>
                <li>
-                  <a href="https://www.linkedin.com/in/halima-abdirizak-mohamed/" target="_blank" rel="noopener" class="contact__link" aria-label="LinkedIn (opens in a new tab)">
-                     <span class="contact__circle"><i class="ri-linkedin-box-fill" aria-hidden="true"></i></span>
-                     <span class="contact__name">LinkedIn</span>
+                  <a href="https://www.linkedin.com/in/halima-abdirizak-mohamed/" target="_blank" rel="noopener" class="contact__link" aria-label="LinkedIn: Halima Abdirizak Mohamed (opens in a new tab)">
+                     <span class="contact__top">
+                        <span class="contact__circle"><i class="ri-linkedin-box-fill" aria-hidden="true"></i></span>
+                        <span class="work__go" aria-hidden="true"><i class="ri-arrow-right-up-line"></i></span>
+                     </span>
+                     <span class="contact__text">
+                        <span class="contact__name">LinkedIn</span>
+                        <span class="contact__handle">halima-abdirizak-mohamed</span>
+                     </span>
                   </a>
                </li>
                <li>
                   <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=halimamohamedabdirizak@gmail.com" target="_blank" rel="noopener" class="contact__link" aria-label="Email me in Gmail (opens in a new tab)">
-                     <span class="contact__circle"><i class="ri-mail-fill" aria-hidden="true"></i></span>
-                     <span class="contact__name">Gmail</span>
+                     <span class="contact__top">
+                        <span class="contact__circle"><i class="ri-mail-fill" aria-hidden="true"></i></span>
+                        <span class="work__go" aria-hidden="true"><i class="ri-arrow-right-up-line"></i></span>
+                     </span>
+                     <span class="contact__text">
+                        <span class="contact__name">Gmail</span>
+                        <span class="contact__handle">halimamohamedabdirizak@gmail.com</span>
+                     </span>
                   </a>
                </li>
             </ul>
          </div>
-         <div class="blob-big" style="bottom: 0; right: -4rem;"></div>
       </section>
    </main>
 

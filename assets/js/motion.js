@@ -85,8 +85,7 @@ if (reduced) {
    /*----- Homepage -----*/
    reveal('.about__data', { y: [24, 0] })
    reveal('.about__buttons', { y: [16, 0] })
-   reveal('.work__track', { x: [80, 0], scale: [0.94, 1] }, { children: true, step: 0.09, duration: 0.9 })
-   reveal('.work__controls', { y: [12, 0] })
+   reveal('.work__container', { y: [70, 0], scale: [0.94, 1] }, { duration: 1 })
    reveal('.writeups__list', { y: [48, 0], scale: [0.96, 1] }, { children: true, step: 0.1, duration: 0.8 })
    reveal('.services__container', { y: [32, 0] }, { children: true, step: 0.07 })
    reveal('.experience__container', { y: [32, 0] }, { children: true, step: 0.12 })
@@ -94,7 +93,7 @@ if (reduced) {
    reveal('.skills__container', { y: [40, 0] }, { children: true, step: 0.1 })
    reveal('.testimonials__container', { y: [24, 0] })
    reveal('.contact__intro', { y: [16, 0] })
-   reveal('.contact__links', { y: [24, 0], scale: [0.8, 1] }, { children: true, step: 0.08 })
+   reveal('.contact__links', { y: [48, 0], scale: [0.96, 1] }, { children: true, step: 0.1, duration: 0.8 })
 
    /*----- Case-study page -----*/
    reveal('.case__stats', { y: [24, 0] }, { children: true })
